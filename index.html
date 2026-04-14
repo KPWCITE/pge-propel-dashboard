@@ -196,6 +196,11 @@
   .email-btn .tooltip { display:none; position:absolute; top:calc(100% + 6px); right:0; background:#1e293b; color:#fff; font-size:10px; white-space:nowrap; padding:5px 9px; border-radius:6px; font-family:var(--mono); font-weight:400; pointer-events:none; z-index:99; }
   .email-btn:hover .tooltip { display:block; }
   @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes pulse { 0%,100% { box-shadow: 0 0 0 3px rgba(34,197,94,0.3); } 50% { box-shadow: 0 0 0 6px rgba(34,197,94,0.1); } }
+  .pc-box:focus { outline:none; border-color:var(--sp-color) !important; box-shadow:0 0 0 3px rgba(8,145,178,0.18); }
+  .pc-box.pc-ok  { border-color:#16a34a !important; background:#f0fdf4; }
+  .pc-box.pc-err { border-color:#dc2626 !important; background:#fef2f2; animation:shake 0.3s; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
   /* data-loaded indicator dots on the button */
   .refresh-dots { display: flex; gap: 3px; margin-left: 4px; }
   .rdot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.35); }
@@ -1254,12 +1259,18 @@
           </svg>
           Reset All
         </button>
-        <input type="file" id="csv-sprint-input" accept=".csv" style="display:none">
-        <input type="file" id="csv-raid-input" accept=".csv" style="display:none">
-        <input type="file" id="csv-cf-input" accept=".csv" style="display:none">
-        <input type="file" id="csv-bpml-input" accept=".csv" style="display:none">
-        <input type="file" id="csv-sprintplan-input" accept=".csv" style="display:none">
-        <input type="file" id="csv-testplan-input" accept=".csv" style="display:none">
+
+        <!-- Active User Chip -->
+        <div id="active-user-chip" style="display:none;align-items:center;gap:8px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);border-radius:10px;padding:6px 12px;cursor:pointer;transition:background 0.15s" onclick="_showActiveUsers()" title="Click to see active users">
+          <div style="position:relative">
+            <div id="auc-avatar" style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--sp-color),var(--bpml-color));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;letter-spacing:0.02em"></div>
+            <div style="position:absolute;bottom:-1px;right:-1px;width:9px;height:9px;background:#22c55e;border:2px solid var(--navy);border-radius:50%"></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0">
+            <div id="auc-name" style="font-size:11px;font-weight:700;color:#fff;line-height:1.2;white-space:nowrap;max-width:140px;overflow:hidden;text-overflow:ellipsis"></div>
+            <div id="auc-role" style="font-size:9px;color:rgba(255,255,255,0.55);line-height:1.2;white-space:nowrap;max-width:140px;overflow:hidden;text-overflow:ellipsis"></div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -2394,15 +2405,15 @@
             </div>
             <div>
               <div class="insights-title" style="color:var(--bpml-dark)">BPML — AI Insights &amp; Analysis</div>
-              <div class="insights-sub" id="bpml-ins-meta">Powered by Claude · Generated from loaded BPML data</div>
+              <div class="insights-sub" id="bpml-ins-meta">Powered by Claude · Auto-generated on load</div>
             </div>
-            <button onclick="_bpmlGenerateInsights()" id="bpml-ins-btn" style="margin-left:auto;background:var(--bpml-color);color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:6px">
-              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px"><path d="M8 1v14M1 8h14"/></svg>
-              Generate Insights
+            <button onclick="_bpmlGenerateInsights()" id="bpml-ins-btn" style="margin-left:auto;background:var(--bpml-color);color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:6px" title="Re-generate insights">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px"><path d="M13.5 8a5.5 5.5 0 11-1.1-3.3"/><path d="M13.5 2v3h-3"/></svg>
+              Refresh
             </button>
           </div>
           <div class="insights-body" id="bpml-insights-body">
-            <div style="color:var(--text3);font-size:12px;font-family:var(--mono);padding:8px 0">Click "Generate Insights" to analyse the BPML structure with AI.</div>
+            <div style="color:var(--text3);font-size:12px;font-family:var(--mono);padding:8px 0">Generating insights…</div>
           </div>
         </div>
 
@@ -3049,6 +3060,10 @@
             <div style="display:flex;align-items:center;gap:6px;background:var(--tp-lt);border:1px solid #fde68a;border-radius:8px;padding:6px 12px;font-size:11px;font-weight:600;color:var(--tp-dark)">
               <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" style="width:11px;height:11px"><path d="M3 2h8l3 3v7H1V2z"/><path d="M11 2v3h3"/></svg>Test Planning — FUT/FSD readiness, TC coverage, Overview</div>
           </div>
+          <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--grey200);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+            <div style="font-size:11px;color:var(--text3)">Upload locks track who last loaded each section to prevent concurrent overwrites.</div>
+            <button onclick="if(typeof _uploadClearAllLocks==='function'){_uploadClearAllLocks();showToast('Upload locks cleared — all sections unlocked');}" style="background:#f1f5f9;border:1px solid var(--grey300);border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--font)" title="Clear all upload lock indicators — use if locks appear stale or blocking">Clear Upload Locks</button>
+          </div>
         </div>
 
         <div class="upload-two-col">
@@ -3082,6 +3097,7 @@
                 <span class="ufg-tag">Custom field (Reviewer)</span><span class="ufg-tag">Description</span>
               </div>
             </div>
+            <div id="upload-lock-sprint" style="display:none;align-items:center;gap:6px;font-size:10px;font-family:var(--mono);padding:5px 10px;border-radius:6px;margin-top:4px;flex-wrap:wrap"></div>
           </div>
 
           <!-- RAID Log -->
@@ -3113,6 +3129,7 @@
                 <span class="ufg-tag">Custom field (Mitigation / Notes)</span>
               </div>
             </div>
+            <div id="upload-lock-raid" style="display:none;align-items:center;gap:6px;font-size:10px;font-family:var(--mono);padding:5px 10px;border-radius:6px;margin-top:4px;flex-wrap:wrap"></div>
           </div>
 
           <!-- Cross Functional -->
@@ -3143,6 +3160,7 @@
                 <span class="ufg-tag">Custom field (Dependent Workstream)</span><span class="ufg-tag">Watchers</span>
               </div>
             </div>
+            <div id="upload-lock-cf" style="display:none;align-items:center;gap:6px;font-size:10px;font-family:var(--mono);padding:5px 10px;border-radius:6px;margin-top:4px;flex-wrap:wrap"></div>
           </div>
 
           <!-- BPML Structure -->
@@ -3176,6 +3194,7 @@
                 <span class="ufg-tag">Custom field (Actual Complete Date)</span>
               </div>
             </div>
+            <div id="upload-lock-bpml" style="display:none;align-items:center;gap:6px;font-size:10px;font-family:var(--mono);padding:5px 10px;border-radius:6px;margin-top:4px;flex-wrap:wrap"></div>
           </div>
 
           <!-- Sprint Planning -->
@@ -3209,6 +3228,7 @@
                 <span class="ufg-tag">Custom field (Phase (Multi))</span>
               </div>
             </div>
+            <div id="upload-lock-sprintplan" style="display:none;align-items:center;gap:6px;font-size:10px;font-family:var(--mono);padding:5px 10px;border-radius:6px;margin-top:4px;flex-wrap:wrap"></div>
           </div>
 
           <!-- Test Planning -->
@@ -3242,6 +3262,7 @@
                 <span class="ufg-tag">Custom field (Acceptance Criteria)</span>
               </div>
             </div>
+            <div id="upload-lock-testplan" style="display:none;align-items:center;gap:6px;font-size:10px;font-family:var(--mono);padding:5px 10px;border-radius:6px;margin-top:4px;flex-wrap:wrap"></div>
           </div>
 
         </div>
@@ -3357,6 +3378,13 @@
 
 <div id="toast"><div class="t-dot"></div><span id="toast-msg"></span></div>
 
+<!-- file inputs at body level, before scripts, for reliable .click() -->
+<input type="file" id="csv-sprint-input" accept=".csv" style="display:none">
+<input type="file" id="csv-raid-input" accept=".csv" style="display:none">
+<input type="file" id="csv-cf-input" accept=".csv" style="display:none">
+<input type="file" id="csv-bpml-input" accept=".csv" style="display:none">
+<input type="file" id="csv-sprintplan-input" accept=".csv" style="display:none">
+<input type="file" id="csv-testplan-input" accept=".csv" style="display:none">
 <script>
 /* ═══════════════════════════════════════════════════
    NO DEFAULT DATA — sprint data only loads from CSV
@@ -3426,8 +3454,9 @@ function render(d){
   today4.setHours(0,0,0,0);
   const allOverdue = bl4.filter(b => b.due && b.due !== '—' && new Date(parseDue(b.due)) < today4 && b.status !== 'Completed');
   const ov = allOverdue.length;
+  const bannerRag = (ov > 0 && pctDone < 0.5) ? 'RED' : (ov > 0 || pctDone < 0.7) ? 'AMBER' : 'GREEN';
   const healthHtml = ov>0
-    ? '<div class="alert-banner" style="margin-bottom:16px"><div class="alert-icon"><span>!</span></div><div class="alert-text"><strong>Sprint Health: '+(pctDone<0.3?'RED':pctDone<0.7?'AMBER':'GREEN')+'.</strong> '+ov+' item'+(ov>1?'s':'')+' overdue · '+d.hold+' on hold · Only '+Math.round(pctDone*100)+'% complete with '+calcDaysLeft(d.reportDate,d.sprintEnd)+' days remaining. Escalation required.</div></div>'
+    ? '<div class="alert-banner" style="margin-bottom:16px"><div class="alert-icon"><span>!</span></div><div class="alert-text"><strong>Sprint Health: '+bannerRag+'.</strong> '+ov+' item'+(ov>1?'s':'')+' overdue · '+d.hold+' on hold · Only '+Math.round(pctDone*100)+'% complete with '+calcDaysLeft(d.reportDate,d.sprintEnd)+' days remaining. Escalation required.</div></div>'
     : '';
   const suAlert = document.getElementById('su-health-alert');
   if(suAlert) suAlert.innerHTML = healthHtml;
@@ -3486,9 +3515,14 @@ function render(d){
   const _dSE=_seE.length===3?new Date(+_seE[0],+_seE[1]-1,+_seE[2]):new Date();
   const elapsed = Math.round((_dRD-_dSS)/(_dSE-_dSS)*100);
   const eB = document.getElementById('elapsed-bar'); if(eB) eB.style.width = elapsed+'%';
-  const ko = document.getElementById('k-overdue'); if(ko) ko.textContent = d.critical.filter(c=>c.type==='overdue').length;
+  // Compute overdue rows inline (same logic as renderSprintUpdate) to avoid ReferenceError
+  const _koKeys = new Set((d.critical||[]).filter(c=>c.type==='overdue').map(o=>o.key).filter(Boolean));
+  const _koRows = (d.backlog||[]).filter(function(b){ return _koKeys.has(b.key)||(b.due&&b.due!=='—'&&new Date(parseDue(b.due))<today4&&b.status!=='Completed'); });
+  const ko = document.getElementById('k-overdue'); if(ko) ko.textContent = _koRows.length;
   const dl = document.getElementById('days-left'); if(dl) dl.textContent = calcDaysLeft(d.reportDate,d.sprintEnd);
-  const on = document.getElementById('overdue-names'); if(on) on.textContent = d.critical.filter(c=>c.type==='overdue').map(c=>c.assignee.split('@')[0].split('.').map(p=>p.charAt(0).toUpperCase()+p.slice(1)).join(' ')).join(', ');
+  // Deduplicate assignee names from the full overdue rows set
+  const _koNames = [...new Set(_koRows.map(function(b){ return b.assignee ? b.assignee.split('.').map(function(p){return p.charAt(0).toUpperCase()+p.slice(1);}).join(' ') : ''; }).filter(Boolean))];
+  const on = document.getElementById('overdue-names'); if(on) on.textContent = _koNames.join(', ');
 
   // Calendar
   renderCalendar(d);
@@ -3744,7 +3778,10 @@ function renderSprintUpdate(d) {
   document.getElementById('su-meta-line').textContent =
     d.sprint + '  ·  Supply Chain  ·  ' +
     d.sprintStart.slice(5) + ' – ' + d.sprintEnd.slice(5) + ' ' + d.sprintStart.slice(0,4);
-  const ragCls = pctDone < 30 ? 'red' : pctDone < 70 ? 'amber' : 'green';
+  // RAG: RED if overdue>0 AND <50% done, AMBER if overdue>0 OR <70% done, GREEN only if 0 overdue AND ≥70% done
+  const ragCls = (overdueItems.length > 0 && pctDone < 50) ? 'red'
+               : (overdueItems.length > 0 || pctDone < 70) ? 'amber'
+               : 'green';
   document.getElementById('su-rag-pill').className = 'rag-pill ' + ragCls;
   document.getElementById('su-rag-text').textContent = ragCls.toUpperCase();
   document.getElementById('su-pct').textContent = pctDone + '%';
@@ -3760,7 +3797,6 @@ function renderSprintUpdate(d) {
   document.getElementById('su-inprogress').textContent = inprogress;
   document.getElementById('su-ns').textContent         = d.ns;
   document.getElementById('su-hold').textContent       = d.hold;
-  document.getElementById('su-overdue').textContent    = overdueItems.length;
   document.getElementById('su-sp-done').textContent    = d.spDone;
   document.getElementById('su-sp-total').textContent   = d.spTotal;
 
@@ -3776,6 +3812,9 @@ function renderSprintUpdate(d) {
   };
   const overdueKeys2 = new Set(overdueItems.map(o=>o.key).filter(Boolean));
   const overdueRows2 = bl.filter(b => overdueKeys2.has(b.key) || (b.due && b.due !== '—' && new Date(parseDue(b.due)) < today2 && b.status !== 'Completed'));
+
+  // Sync the displayed overdue KPI count to exactly match the drill-down rows
+  document.getElementById('su-overdue').textContent = overdueRows2.length;
   _kpiDrill('su-total',      'All',         bl);
   _kpiDrill('su-done',       'Completed',   bl.filter(b=>b.status==='Completed'));
   _kpiDrill('su-review',     'In Review',   bl.filter(b=>b.status==='In Review'));
@@ -3807,8 +3846,15 @@ function renderSprintUpdate(d) {
   const vb = document.getElementById('su-velocity-box');
   vb.className = 'su-velocity-box' + (velOk ? ' ok' : '');
   document.getElementById('su-vel-num').textContent = velPerDay;
+  // Build category breakdown dynamically from all categories in the loaded file
+  const catBreakdownParts = (d.categories || [])
+    .map(c => { const rem = c.review + (c.inprogress||0) + c.ns + c.hold; return rem > 0 ? rem + ' ' + c.name : ''; })
+    .filter(Boolean);
+  const catBreakdownStr = catBreakdownParts.length > 0
+    ? catBreakdownParts.join(', ')
+    : d.ns + ' not started, ' + inprogress + ' in progress';
   document.getElementById('su-vel-sub').textContent =
-    'stories/day to complete ' + toDeliver + ' remaining (' + d.ns + ' not started, ' + inprogress + ' in progress) in ' + daysLeft + ' days';
+    'stories/day to complete ' + toDeliver + ' remaining across ' + (d.categories||[]).length + ' categor' + ((d.categories||[]).length === 1 ? 'y' : 'ies') + ' (' + catBreakdownStr + ') in ' + daysLeft + ' days';
 
   // Risk count badge — su-risk-ct shows critical/high internally; sidebar shows total stories like RAID
   const critHigh = (d.risks||[]).filter(r => r.prio === 'critical' || r.prio === 'high').length;
@@ -3912,6 +3958,18 @@ function renderSprintUpdate(d) {
     const probCls = r.prob === 'CONFIRMED' ? 'critical' : pc[(r.prob||'').toLowerCase()] || 'medium';
     const hasItems = r.items && r.items.length > 0;
     const expandId = 'risk-expand-' + idx;
+    const chevronId = 'chev-' + idx;
+
+    // Expand controls — must be declared before actionHtml uses actionExpandHint
+    const clickAttr = hasItems
+      ? `onclick="_toggleRiskExpand(${idx})" style="cursor:pointer" title="Click to expand ${hasItems ? r.items.length : 0} affected item${hasItems && r.items.length!==1?'s':''}"`
+      : '';
+    const expandIndicator = hasItems
+      ? `<span id="${chevronId}" style="float:right;font-size:10px;color:var(--amber);font-family:var(--mono);margin-left:8px;transition:transform 0.15s">▼ ${r.items.length} item${r.items.length>1?'s':''}</span>`
+      : '';
+    const actionExpandHint = hasItems
+      ? `<span onclick="event.stopPropagation();_toggleRiskExpand(${idx})" style="cursor:pointer;font-size:10px;color:var(--amber);font-family:var(--mono);margin-left:8px;white-space:nowrap;font-weight:600;text-decoration:underline dotted">↓ view ${r.items.length} item${r.items.length>1?'s':''}</span>`
+      : '';
 
     // Matching action for this risk (same index)
     const a = actions[idx];
@@ -3921,7 +3979,7 @@ function renderSprintUpdate(d) {
     const actionHtml = a ? `
       <div style="display:flex;gap:8px;align-items:flex-start;margin-top:6px;padding:7px 10px;background:${actionColors[a.prio]||'#f8fafc'};border-radius:6px;border-left:3px solid ${actionTextCol[a.prio]||'#94a3b8'}">
         <span style="font-size:12px;flex-shrink:0">${actionIcons[a.prio]||'📋'}</span>
-        <span style="font-size:11px;color:${actionTextCol[a.prio]||'#475569'};line-height:1.5"><strong>Action:</strong> ${a.text}</span>
+        <span style="font-size:11px;color:${actionTextCol[a.prio]||'#475569'};line-height:1.5"><strong>Action:</strong> ${a.text}${actionExpandHint}</span>
       </div>` : '';
 
     // Build expandable detail rows if this risk has linked items
@@ -3967,13 +4025,6 @@ function renderSprintUpdate(d) {
         </td>
       </tr>` : '';
 
-    const chevronId = 'chev-' + idx;
-    const clickAttr = hasItems
-      ? `onclick="_toggleRiskExpand(${idx})" style="cursor:pointer" title="Click to see affected items"`
-      : '';
-    const expandIndicator = hasItems
-      ? `<span id="${chevronId}" style="float:right;font-size:10px;color:var(--amber);font-family:var(--mono);margin-left:8px;transition:transform 0.15s">▼ ${r.items.length} item${r.items.length>1?'s':''}</span>`
-      : '';
 
     return `<tr ${clickAttr} class="${hasItems ? 'risk-expandable-row' : ''}">
       <td style="font-family:var(--mono);color:var(--text3);font-size:11px;padding:9px 10px;border-top:1px solid var(--grey200)">${r.n}</td>
@@ -4686,38 +4737,82 @@ function parseCSV(text){
   // Built-in risks derived from the sprint data itself
   const derivedRisks = [];
   let rn = 1;
-  const overdueCount = overdue.length;
   const fmtOwner = (assignee) => (assignee||'').split('@')[0].split('.').map(p=>p.charAt(0).toUpperCase()+p.slice(1)).join(' ');
-  if(overdueCount > 0) derivedRisks.push({
-    n:rn++,
-    desc:overdueCount+' item'+(overdueCount>1?'s':'')+' overdue & not started',
-    impact:'HIGH', prob:'CONFIRMED',
-    owner:overdue.map(o=>fmtOwner(o.assignee)).join(', '),
-    action:'Immediate escalation to team lead',
-    prio:'critical',
-    items: overdue   // attach items for expandable detail
-  });
-  const holdItems = critical.filter(c=>c.type==='hold');
-  if(holdItems.length) derivedRisks.push({
-    n:rn++,
-    desc:holdItems.length+' item'+(holdItems.length>1?'s':'')+' blocked (On Hold)',
-    impact:'MEDIUM', prob:'HIGH',
-    owner:holdItems.map(o=>fmtOwner(o.assignee)).join(', '),
-    action:'Identify blocker; unblock within 24h',
-    prio:'high',
-    items: holdItems
-  });
-  const pctDone2 = recognisedTotal > 0 ? sc['Completed']/recognisedTotal : 0;
-  const sprintInProgress = sc['In Progress']||0;
-  if(pctDone2<0.3) derivedRisks.push({n:rn++,desc:'Sprint completion at risk — only '+Math.round(pctDone2*100)+'% done',impact:'HIGH',prob:'HIGH',owner:'Sprint Master',action:'Daily burn-down; re-scope if needed',prio:'critical'});
-  const noDateItems = critical.filter(c=>c.type==='nodate');
-  if(noDateItems.length) derivedRisks.push({n:rn++,desc:noDateItems.length+' item'+(noDateItems.length>1?'s':'')+' have no due date assigned',impact:'LOW',prob:'LOW',owner:noDateItems.map(o=>fmtOwner(o.assignee)).join(', '),action:'Assign due dates in Jira immediately',prio:'medium'});
 
+  // Use the FULL overdue set (all statuses, not just 'not started')
+  const overdueCount = overdue.length;
+  if (overdueCount > 0) {
+    // Group overdue items by their actual status
+    const overdueByStatus = {};
+    overdue.forEach(o => { overdueByStatus[o.status] = (overdueByStatus[o.status]||0) + 1; });
+    const statusBreakdown = Object.entries(overdueByStatus).map(([s,n]) => n+' '+s).join(', ');
+    // Deduplicate owners
+    const uniqueOwners = [...new Set(overdue.map(o=>fmtOwner(o.assignee)).filter(Boolean))];
+    derivedRisks.push({
+      n:rn++,
+      desc: overdueCount+' item'+(overdueCount>1?'s':'')+' overdue ('+statusBreakdown+')',
+      impact:'HIGH', prob:'CONFIRMED',
+      owner: uniqueOwners.join(', '),
+      action:'Immediate escalation to team lead — contact assignees directly',
+      prio:'critical',
+      items: overdue
+    });
+  }
+
+  const holdItems = critical.filter(c=>c.type==='hold');
+  if (holdItems.length) {
+    const uniqueHoldOwners = [...new Set(holdItems.map(o=>fmtOwner(o.assignee)).filter(Boolean))];
+    derivedRisks.push({
+      n:rn++,
+      desc: holdItems.length+' item'+(holdItems.length>1?'s':'')+' blocked (On Hold)',
+      impact:'MEDIUM', prob:'HIGH',
+      owner: uniqueHoldOwners.join(', '),
+      action:'Identify blocker; unblock within 24h',
+      prio:'high',
+      items: holdItems
+    });
+  }
+
+  const pctDone2 = recognisedTotal > 0 ? sc['Completed']/recognisedTotal : 0;
+  if (pctDone2 < 0.3) {
+    // Items still to close = all non-Completed backlog rows
+    const atRiskItems = bl.filter(function(b){ return b.status !== 'Completed'; });
+    derivedRisks.push({n:rn++, desc:'Sprint completion at risk — only '+Math.round(pctDone2*100)+'% done with '+recognisedTotal+' total stories', impact:'HIGH', prob:'HIGH', owner:'Sprint Master', action:'Daily burn-down review; re-scope if needed', prio:'critical', items: atRiskItems});
+  }
+
+  const noDateItems = critical.filter(c=>c.type==='nodate');
+  if (noDateItems.length) {
+    const uniqueNDOwners = [...new Set(noDateItems.map(o=>fmtOwner(o.assignee)).filter(Boolean))];
+    // Enrich nodate items with full backlog rows for consistent drill-down display
+    const noDateKeys = new Set(noDateItems.map(o=>o.key).filter(Boolean));
+    const noDateBLRows = bl.filter(function(b){ return noDateKeys.has(b.key) || (!b.due && b.status !== 'Completed' && b.status !== 'In Progress' && b.status !== 'In Review'); });
+    derivedRisks.push({n:rn++, desc:noDateItems.length+' item'+(noDateItems.length>1?'s':'')+' have no due date assigned', impact:'LOW', prob:'LOW', owner:uniqueNDOwners.join(', '), action:'Assign due dates in Jira immediately', prio:'medium', items: noDateBLRows.length ? noDateBLRows : noDateItems});
+  }
+
+  // Category-level risks — any category at 0% with items remaining
+  const catRisks = Object.values(catMap).filter(c => {
+    const total = c.done + c.review + (c.inprogress||0) + c.ns + c.hold;
+    return total > 0 && c.done === 0;
+  });
+  if (catRisks.length) {
+    const catRiskNames = new Set(catRisks.map(c=>c.name));
+    const catRiskItems = bl.filter(function(b){ return catRiskNames.has(b.cat); });
+    derivedRisks.push({n:rn++, desc:catRisks.length+' categor'+(catRisks.length>1?'ies have':'y has')+' 0% completion: '+catRisks.map(c=>c.name).join(', '), impact:'MEDIUM', prob:'HIGH', owner:'Category Leads', action:'Review and activate stories in stalled categories', prio:'high', items: catRiskItems});
+  }
+
+  // Build actions dynamically based on actual status breakdown
   const derivedActions = [];
-  if(overdueCount>0) derivedActions.push({prio:'critical',text:'Contact individual assignee immediately — '+overdueCount+' overdue item'+(overdueCount>1?'s are':' is')+' not started. Escalate to Sprint Master.'});
-  if(holdItems.length) derivedActions.push({prio:'critical',text:'Resolve blocker on: '+holdItems.map(o=>o.title.slice(0,50)).join('; ')+'. Clarify dependency and unblock today.'});
-  if(pctDone2<0.5) derivedActions.push({prio:'high',text:'Institute daily burn-down review — any story not moving within 24h of its due date window should be flagged immediately. Contact your Sprint Master.'});
-  if(noDateItems.length) derivedActions.push({prio:'medium',text:'Assign due dates to '+noDateItems.length+' item'+(noDateItems.length>1?'s':'')+' currently missing them to bring them into sprint governance. Contact your Sprint Master.'});
+  if (overdueCount > 0) {
+    const overdueByStatus2 = {};
+    overdue.forEach(o => { overdueByStatus2[o.status] = (overdueByStatus2[o.status]||0) + 1; });
+    const breakdown2 = Object.entries(overdueByStatus2).map(([s,n]) => n+' '+s.toLowerCase()).join(', ');
+    const uniqueOverdueOwners2 = [...new Set(overdue.map(o=>fmtOwner(o.assignee)).filter(Boolean))];
+    derivedActions.push({prio:'critical',text:'Contact assignees immediately — '+overdueCount+' overdue item'+(overdueCount>1?'s':'')+' ('+breakdown2+') assigned to: '+uniqueOverdueOwners2.join(', ')+'. Escalate to Sprint Master.'});
+  }
+  if (holdItems.length) derivedActions.push({prio:'critical',text:'Resolve blocker on: '+holdItems.slice(0,3).map(o=>o.title.slice(0,45)).join('; ')+(holdItems.length>3?' and '+(holdItems.length-3)+' more':'')+'. Clarify dependency and unblock today.'});
+  if (pctDone2 < 0.5) derivedActions.push({prio:'high',text:'Institute daily burn-down review — any story not moving within 24h of its due date should be flagged. Contact Sprint Master.'});
+  if (noDateItems.length) derivedActions.push({prio:'medium',text:'Assign due dates to '+noDateItems.length+' item'+(noDateItems.length>1?'s':'')+' missing them — required for sprint governance. Contact Sprint Master.'});
+  if (catRisks.length) derivedActions.push({prio:'medium',text:'Activate stalled categories: '+catRisks.map(c=>c.name).join(', ')+'. At least one story per category should move to In Progress this sprint.'});
 
   return {
     total:recognisedTotal, done:sc['Completed'], review:sc['In Review'], inprogress:sc['In Progress']||0, ns:sc['Not Started'], hold:sc['On Hold'],
@@ -4726,7 +4821,7 @@ function parseCSV(text){
     subworkstreams:Object.values(swMap).sort((a,b)=>b.total-a.total),
     categories:Object.values(catMap),
     team:Object.values(aMap).sort((a,b)=>b.total-a.total),
-    critical:critical.slice(0,8),
+    critical:critical,  // full list — no cap, all overdue/hold/nodate items included
     risks:derivedRisks, actions:derivedActions,
     backlog:bl
   };
@@ -5349,6 +5444,7 @@ function _cfFallbackInsights(items) {
 // ── File handler ──
 function handleCFFile(file) {
   if (!file) return;
+  if (typeof _uploadCheckConflict === 'function' && !_uploadCheckConflict('cf', 'Cross Functional')) return;
   // Show filename immediately so chip never stays blank
   setUploadChip('cf-status-chip', file.name, 'Reading\u2026', '#059669');
   const rd = new FileReader();
@@ -5368,13 +5464,13 @@ function handleCFFile(file) {
     _loaded.cf = true;
 
     // Render table/charts synchronously first
-    renderCF(items);
+    try { renderCF(items); } catch(e) { console.error('renderCF:',e); }
 
     // Update chip with actual count immediately after render
     setUploadChip('cf-status-chip', file.name, items.length + ' items', '#059669');
 
     // Insights is async — run it but don't let it block or break the chip
-    try { renderCFInsights(items); } catch(err) { /* non-fatal */ }
+    try { renderCFInsights(items); } catch(err) { console.error('cfInsights:',err); }
 
     // Refresh Overview feed so CF insights appear immediately
     renderOverview(window._data || null, window._raidData || null);
@@ -5382,6 +5478,7 @@ function handleCFFile(file) {
     document.getElementById('footer-date').textContent = new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
     updateRefreshBtn();
     showToast('Cross Functional loaded: ' + items.length + ' items');
+    if (typeof _uploadSetLock === 'function') _uploadSetLock('cf');
   };
   rd.onerror = () => {
     setUploadChip('cf-status-chip', file.name, 'Read error', '#dc2626');
@@ -5416,10 +5513,10 @@ function reloadAllData() {
   const sprintData = window._data || null;
   const raidData   = window._raidData || null;
 
-  if (!sprintData && !raidData) {
+  if (!sprintData && !raidData && !window._cfData && !window._bpmlData && !window._spData) {
     btn.classList.remove('spinning');
     btn.disabled = false;
-    showToast('No files loaded — upload Sprint or RAID CSV first');
+    showToast('No files loaded — upload data first');
     showSection('upload');
     return;
   }
@@ -5448,6 +5545,12 @@ function reloadAllData() {
       renderCFInsights(cfData);
     }
 
+    // BPML data
+    if (window._bpmlData) {
+      _bpmlRender();
+      _bpmlGenerateInsights();
+    }
+
     updateRefreshBtn();
     btn.classList.remove('spinning');
     btn.disabled = false;
@@ -5464,6 +5567,7 @@ function reloadAllData() {
 /* ── FILE HANDLING ── */
 function handleSprintFile(file) {
   if (!file || !file.name.endsWith('.csv')) { showToast('Please upload a .csv Jira export'); return; }
+  if (typeof _uploadCheckConflict === 'function' && !_uploadCheckConflict('sprint', 'Sprint Update')) return;
   spinRefresh(true);
   const rd = new FileReader();
   rd.onload = e => {
@@ -5471,18 +5575,20 @@ function handleSprintFile(file) {
     const parsed = parseCSV(e.target.result);
     if (!parsed) { showToast('Could not parse — check field names'); return; }
     _loaded.sprint = true;
-    render(parsed);
-    renderSprintInsights(parsed);
+    try { render(parsed); } catch(e) { console.error('render error:', e); }
+    try { renderSprintInsights(parsed); } catch(e) { console.error('insights error:', e); }
     updateRefreshBtn();
     showToast('Sprint loaded: ' + parsed.total + ' stories from ' + file.name);
     document.getElementById('footer-date').textContent = new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
     setUploadChip('sprint-status-chip', file.name, parsed.total + ' stories', '#16a34a');
+    if (typeof _uploadSetLock === 'function') _uploadSetLock('sprint');
   };
   rd.readAsText(file);
 }
 
 function handleRaidFile(file) {
   if (!file || !file.name.endsWith('.csv')) { showToast('Please upload a .csv RAID export'); return; }
+  if (typeof _uploadCheckConflict === 'function' && !_uploadCheckConflict('raid', 'RAID Log')) return;
   spinRefresh(true);
   const rd = new FileReader();
   rd.onload = e => {
@@ -5490,9 +5596,9 @@ function handleRaidFile(file) {
     const parsed = parseRAID(e.target.result);
     if (!parsed) { showToast('Could not parse RAID file — check field names'); return; }
     _loaded.raid = true;
-    renderRAID(parsed);
-    renderRAIDInsights(parsed);
-    renderRAIDDuplicates(parsed);
+    try { renderRAID(parsed); } catch(e) { console.error('renderRAID:',e); }
+    try { renderRAIDInsights(parsed); } catch(e) { console.error('raidInsights:',e); }
+    try { renderRAIDDuplicates(parsed); } catch(e) { console.error('raidDups:',e); }
     renderWSRaidTable(parsed);
     renderTeamRaidTable(parsed);
     renderOverview(window._data, parsed);
@@ -5502,6 +5608,7 @@ function handleRaidFile(file) {
     document.getElementById('sb-raid-badge').textContent = parsed.items.length;
     document.getElementById('sb-raid-count').textContent = parsed.items.length;
     document.getElementById('footer-date').textContent = new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    if (typeof _uploadSetLock === 'function') _uploadSetLock('raid');
   };
   rd.readAsText(file);
 }
@@ -5542,7 +5649,8 @@ function _renderOvSprintSummary(d) {
   const pct = Math.round(d.done / d.total * 100);
   const daysLeft = calcDaysLeft(d.reportDate, d.sprintEnd);
   const spPct = Math.round(d.spDone / d.spTotal * 100);
-  const storiesPerDay = daysLeft > 0 ? (d.ns / daysLeft).toFixed(1) : '\u221e';
+  const storiesRemaining = d.total - d.done;
+  const storiesPerDay = daysLeft > 0 ? (storiesRemaining / daysLeft).toFixed(1) : '\u221e';
   const cls = pct < 15 ? 'critical' : pct < 50 ? 'warning' : 'good';
   const overdueCount = d.critical.filter(c => c.type === 'overdue').length;
   el.innerHTML =
@@ -5552,7 +5660,7 @@ function _renderOvSprintSummary(d) {
     '<li>Sprint is <strong>' + (pct < 15 ? 'critically behind' : pct < 50 ? 'behind schedule' : 'on track') + '</strong> \u2014 <strong>' + pct + '%</strong> complete with <strong>' + daysLeft + '</strong> working days remaining.</li>' +
     '<li><strong>' + d.done + '</strong> done, <strong>' + d.review + '</strong> in review, <strong>' + (d.inprogress||0) + '</strong> in progress, <strong>' + d.ns + '</strong> not started, <strong>' + d.hold + '</strong> on hold.</li>' +
     '<li>Story point velocity: <strong>' + spPct + '%</strong> (' + d.spDone + ' of ' + d.spTotal + ' points). ' + (spPct < 20 ? 'Critically low — immediate action required.' : spPct < 60 ? 'Moderate — needs acceleration.' : 'Good, maintain cadence.') + '</li>' +
-    '<li>Team must complete <strong>' + storiesPerDay + ' stories/day</strong> for the remaining ' + daysLeft + ' days to finish on time.</li>' +
+    '<li>Team must complete <strong>' + storiesPerDay + ' stories/day</strong> for the remaining ' + daysLeft + ' days (' + storiesRemaining + ' stories still to close).</li>' +
     (overdueCount > 0 ? '<li>\u26a0 <strong>' + overdueCount + ' item' + (overdueCount>1?'s':' ') + ' overdue</strong> \u2014 escalation required immediately.</li>' : '') +
     '</ul></div>';
 }
@@ -5717,7 +5825,7 @@ function renderOverview(sprintData, raidData) {
   document.getElementById('ov-inprogress').textContent  = d.inprogress || 0;
   document.getElementById('ov-ns').textContent          = d.ns;
   document.getElementById('ov-hold').textContent        = d.hold;
-  document.getElementById('ov-overdue').textContent     = overdueItems.length;
+  // ov-overdue count set below after ovOvRows is computed (exact match to drill-down)
   document.getElementById('ov-sp').textContent      = d.spDone + '/' + d.spTotal;
   document.getElementById('ov-days').textContent    = daysLeft;
 
@@ -5733,6 +5841,8 @@ function renderOverview(sprintData, raidData) {
   };
   const ovOvKeys = new Set(overdueItems.map(o=>o.key).filter(Boolean));
   const ovOvRows = bl3.filter(b => ovOvKeys.has(b.key) || (b.due && b.due !== '—' && new Date(parseDue(b.due)) < today3 && b.status !== 'Completed'));
+  // Sync Overview overdue KPI count to match drill-down rows exactly
+  document.getElementById('ov-overdue').textContent = ovOvRows.length;
   _ovKpiDrill('ov-total',      'All',         bl3);
   _ovKpiDrill('ov-done',       'Completed',   bl3.filter(b=>b.status==='Completed'));
   _ovKpiDrill('ov-review',     'In Review',   bl3.filter(b=>b.status==='In Review'));
@@ -6060,7 +6170,14 @@ function _renderOvFeed(d, rd, cf) {
       cls: overdueCount > 0 ? 'critical' : d.hold > 0 ? 'warning' : 'good',
       title: overdueCount > 0 ? '\uD83D\uDEA8 Overdue & Blocked' : '\u2705 No Overdue Items',
       body: overdueCount > 0
-        ? `${overdueCount} item${overdueCount>1?'s':''} past due date. ${d.hold} item${d.hold>1?'s':''} on hold. Immediate escalation required.`
+        ? (() => {
+            const ovItems = d.critical.filter(c => c.type === 'overdue');
+            const byStatus = {};
+            ovItems.forEach(o => { byStatus[o.status] = (byStatus[o.status]||0) + 1; });
+            const breakdown = Object.entries(byStatus).map(([s,n]) => n+' '+s).join(', ');
+            const uniqueOwners = [...new Set(ovItems.map(o=>(o.assignee||'').split('@')[0].split('.').map(p=>p.charAt(0).toUpperCase()+p.slice(1)).join(' ')).filter(Boolean))];
+            return overdueCount+' item'+(overdueCount>1?'s':'')+' past due date ('+breakdown+'). Assigned to: '+uniqueOwners.join(', ')+'. '+(d.hold>0?d.hold+' item'+(d.hold>1?'s':'')+' also on hold. ':'')+'Immediate escalation required.';
+          })()
         : d.hold > 0
         ? `${d.hold} item${d.hold>1?'s':''} blocked. No items overdue. Resolve blockers before they become critical.`
         : `No overdue or blocked items. Sprint is progressing cleanly.`,
@@ -6218,14 +6335,15 @@ function renderSprintInsights(d) {
   const pctNS = Math.round(d.ns / d.total * 100);
   const daysLeft = calcDaysLeft(d.reportDate, d.sprintEnd);
   const overdueItems = d.critical.filter(c => c.type === 'overdue');
+  const overdueCount = overdueItems.length;
   const holdItems = d.critical.filter(c => c.type === 'hold');
   const nodateItems = d.critical.filter(c => c.type === 'nodate');
   const storiesPerDay = daysLeft > 0 ? (d.ns / daysLeft).toFixed(1) : '∞';
   const spPct = Math.round(d.spDone / d.spTotal * 100);
 
-  // RAG chip (Sprint Update tab panel)
-  const ragCls = pctDone < 30 ? 'rag-pill red' : pctDone < 70 ? 'rag-pill amber' : 'rag-pill green';
-  const ragTxt = pctDone < 30 ? 'RED' : pctDone < 70 ? 'AMBER' : 'GREEN';
+  // RAG chip (Sprint Update tab panel) — RED if overdue>0 AND <50%, AMBER if overdue>0 OR <70%, GREEN only if 0 overdue AND >=70%
+  const ragCls = (overdueCount > 0 && pctDone < 50) ? 'rag-pill red' : (overdueCount > 0 || pctDone < 70) ? 'rag-pill amber' : 'rag-pill green';
+  const ragTxt = (overdueCount > 0 && pctDone < 50) ? 'RED' : (overdueCount > 0 || pctDone < 70) ? 'AMBER' : 'GREEN';
   const ragChip = document.getElementById('su-ins-rag-chip');
   if (ragChip) ragChip.innerHTML = '<div class="' + ragCls + '" style="margin:0"><div class="rag-dot"></div>' + ragTxt + '</div>';
 
@@ -6251,12 +6369,13 @@ function renderSprintInsights(d) {
     </ul>`
   });
 
-  // 2. Overdue & blockers
+  // 2. Overdue & blockers — full list, deduplicated assignees
   if (overdueItems.length > 0 || holdItems.length > 0) {
+    const uniqueOverdueAssignees = [...new Set(overdueItems.map(i=>fmtAssignee(i.assignee)).filter(Boolean))];
     blocks.push({ cls: 'critical', title: '🚨 Overdue & Blocked Items',
       html: `<ul class="ins-list">
-        ${overdueItems.length > 0 ? '<li><strong>' + overdueItems.length + ' item(s) past due date</strong> and not completed: ' + overdueItems.map(i => i.title.slice(0,50) + '… (' + fmtAssignee(i.assignee) + ')').join('; ') + '</li>' : ''}
-        ${holdItems.length > 0 ? '<li><strong>' + holdItems.length + ' item(s) blocked (On Hold)</strong>: ' + holdItems.map(i => i.title.slice(0,50) + '… (' + fmtAssignee(i.assignee) + ')').join('; ') + ' — blocker must be resolved immediately.</li>' : ''}
+        ${overdueItems.length > 0 ? '<li><strong>' + overdueItems.length + ' item(s) past due date</strong> and not completed — assigned to: <strong>' + uniqueOverdueAssignees.join(', ') + '</strong>. Items: ' + overdueItems.slice(0,5).map(i => i.title.slice(0,45) + '… (' + fmtAssignee(i.assignee) + ')').join('; ') + (overdueItems.length>5?` and ${overdueItems.length-5} more`:'') + '</li>' : ''}
+        ${holdItems.length > 0 ? '<li><strong>' + holdItems.length + ' item(s) blocked (On Hold)</strong>: ' + holdItems.slice(0,4).map(i => i.title.slice(0,45) + '… (' + fmtAssignee(i.assignee) + ')').join('; ') + (holdItems.length>4?` and ${holdItems.length-4} more`:'') + ' — blocker must be resolved immediately.</li>' : ''}
         <li>Overdue items represent a dependency risk; downstream work on the same workstream may be blocked until these are resolved.</li>
         <li>Escalate overdue items to Sprint Master and programme lead within 24 hours.</li>
       </ul>`
@@ -6324,20 +6443,46 @@ function renderSprintInsights(d) {
     </ul>`
   });
 
-  // 6. Due date risk
-  const dueThisWeek = d.backlog ? d.backlog.filter(b => {
-    const dd = parseDue(b.due); return dd && calcDaysLeft(d.reportDate, dd) <= 5 && calcDaysLeft(d.reportDate, dd) >= 0;
+  // 6. Due date risk — uses full backlog scan, all categories
+  const _rp6=(d.reportDate||'').split('-');
+  const _today6=_rp6.length===3?new Date(+_rp6[0],+_rp6[1]-1,+_rp6[2]):new Date();
+  _today6.setHours(0,0,0,0);
+  const _sp6=(d.sprintEnd||'').split('-');
+  const _spEnd6=_sp6.length===3?new Date(+_sp6[0],+_sp6[1]-1,+_sp6[2]):new Date();
+  _spEnd6.setHours(0,0,0,0);
+
+  // Full overdue set from backlog (not capped critical array)
+  const allOverdueRows = d.backlog ? d.backlog.filter(function(b){
+    return b.due && b.due!=='—' && new Date(parseDue(b.due)) < _today6 && b.status !== 'Completed';
+  }) : [];
+  // Deduplicated assignee names
+  const overdueAssigneeNames = [...new Set(allOverdueRows.map(function(b){
+    return b.assignee ? b.assignee.split('.').map(function(p){return p.charAt(0).toUpperCase()+p.slice(1);}).join(' ') : '';
+  }).filter(Boolean))];
+
+  const dueThisWeek = d.backlog ? d.backlog.filter(function(b){
+    const dd=parseDue(b.due); return dd && calcDaysLeft(d.reportDate,dd)<=5 && calcDaysLeft(d.reportDate,dd)>=0 && b.status!=='Completed';
   }).length : 0;
-  const lastDayItems = d.backlog ? (() => {
-    const _sp5=(d.sprintEnd||'').split('-'); const spEnd=_sp5.length===3?new Date(+_sp5[0],+_sp5[1]-1,+_sp5[2]):new Date(); spEnd.setHours(0,0,0,0);
-    return d.backlog.filter(b => { const dd = parseDue(b.due); return dd && new Date(dd).toDateString() === spEnd.toDateString(); }).length;
-  })() : 0;
-  blocks.push({ cls: dueThisWeek > 5 ? 'critical' : 'warning', title: '📅 Due Date Risk Assessment',
+  const lastDayItems = d.backlog ? d.backlog.filter(function(b){
+    const dd=parseDue(b.due); return dd && new Date(dd).toDateString()===_spEnd6.toDateString() && b.status!=='Completed';
+  }).length : 0;
+
+  // Per-category overdue breakdown (dynamic — all categories in the file)
+  const catOverdueLines = (d.categories||[]).map(function(c){
+    const n = d.backlog ? d.backlog.filter(function(b){
+      return b.cat===c.name && b.due && b.due!=='—' && new Date(parseDue(b.due))<_today6 && b.status!=='Completed';
+    }).length : 0;
+    return n>0 ? '<li>'+c.name+': <strong style="color:var(--red)">'+n+' overdue</strong></li>' : '';
+  }).filter(Boolean).join('');
+
+  blocks.push({ cls: allOverdueRows.length > 0 ? 'critical' : dueThisWeek > 5 ? 'warning' : 'info',
+    title: '📅 Due Date Risk Assessment',
     html: `<ul class="ins-list">
-      <li><strong>${overdueItems.length} item${overdueItems.length!==1?'s are':' is'} already overdue</strong> — ${overdueItems.length > 0 ? 'assigned to: ' + overdueItems.map(i=>fmtAssignee(i.assignee)).join(', ') : 'none'}.</li>
-      <li><strong>${dueThisWeek} stor${dueThisWeek!==1?'ies are':'y is'} due within the next 5 days</strong> — items not yet In Progress are at risk of becoming overdue.</li>
-      ${lastDayItems > 3 ? '<li><strong>' + lastDayItems + ' stories are due on the final sprint day</strong> — this deadline spike reduces the team\'s ability to course-correct.</li>' : ''}
-      <li>Recommend redistributing due dates where possible to create an even daily burn-rate rather than end-of-sprint concentration.</li>
+      <li><strong>${allOverdueRows.length} item${allOverdueRows.length!==1?'s are':' is'} already overdue</strong>${allOverdueRows.length>0?' — assigned to: <strong>'+overdueAssigneeNames.join(', ')+'</strong>':' — sprint is on schedule'}.</li>
+      ${catOverdueLines ? '<li>Overdue by category:<ul style="margin:4px 0 0 16px">'+catOverdueLines+'</ul></li>' : ''}
+      <li><strong>${dueThisWeek} stor${dueThisWeek!==1?'ies are':'y is'} due within the next 5 days</strong>${dueThisWeek>0?' — items not yet In Progress are at risk':' — no immediate deadline pressure'}.</li>
+      ${lastDayItems > 3 ? '<li><strong>' + lastDayItems + ' stories due on the final sprint day</strong> — this end-of-sprint concentration limits recovery options.</li>' : ''}
+      <li>Recommend even distribution of due dates across the sprint to maintain a steady burn-rate.</li>
     </ul>`
   });
 
@@ -7257,6 +7402,7 @@ function resetAllData() {
 
   // Navigate to upload tab
   showSection('upload');
+  if (typeof _uploadClearAllLocks === 'function') _uploadClearAllLocks();
   showToast('Dashboard reset — upload new files to begin');
 }
 /* ── DRILL-DOWN MODAL (paginated — 10 rows per page) ── */
@@ -7598,11 +7744,24 @@ function generateEmailReport() {
   const ip       = d ? (d.inprogress||0) : '—';
   const ns       = d ? d.ns      : '—';
   const hold     = d ? d.hold    : '—';
-  const overdue  = d ? d.critical.filter(c=>c.type==='overdue').length : '—';
+  const overdue  = d ? (() => {
+    const _bl6 = d.backlog || [];
+    const _rp6 = (d.reportDate||'').split('-');
+    const _td6 = _rp6.length===3 ? new Date(+_rp6[0],+_rp6[1]-1,+_rp6[2]) : new Date();
+    _td6.setHours(0,0,0,0);
+    return _bl6.filter(b => b.due && b.due !== '—' && new Date(parseDue(b.due)) < _td6 && b.status !== 'Completed').length;
+  })() : '—';
   const spPct    = d && d.spTotal>0 ? Math.round(d.spDone/d.spTotal*100)+'%' : '—';
   const daysLeft = d ? calcDaysLeft(d.reportDate, d.sprintEnd) : '—';
   const pctDone  = d && d.total>0 ? Math.round(d.done/d.total*100) : 0;
-  const ragWord  = d ? (pctDone<30?'RED':pctDone<70?'AMBER':'GREEN') : 'NO DATA';
+  const _emOverdue = d ? (() => {
+    const _bl = d.backlog || [];
+    const _rp = (d.reportDate||'').split('-');
+    const _td = _rp.length===3 ? new Date(+_rp[0],+_rp[1]-1,+_rp[2]) : new Date();
+    _td.setHours(0,0,0,0);
+    return _bl.filter(b => b.due && b.due !== '—' && new Date(parseDue(b.due)) < _td && b.status !== 'Completed').length;
+  })() : 0;
+  const ragWord  = d ? ((_emOverdue>0 && pctDone<30)?'RED':(_emOverdue>0||pctDone<70)?'AMBER':'GREEN') : 'NO DATA';
   const ragEmoji = ragWord==='RED' ? '🔴' : ragWord==='AMBER' ? '🟡' : ragWord==='GREEN' ? '🟢' : '⚪';
   const ragBg    = ragWord==='RED'?'#fee2e2':ragWord==='AMBER'?'#fef3c7':ragWord==='GREEN'?'#dcfce7':'#f1f5f9';
   const ragFg    = ragWord==='RED'?'#991b1b':ragWord==='AMBER'?'#92400e':ragWord==='GREEN'?'#166534':'#64748b';
@@ -7921,7 +8080,7 @@ function generateEmailReport() {
     <span>Generated ${today}</span>
   </div>
 </div>
-<script>
+\u003cscript\u003e
 function openOutlook() {
   var btn = document.querySelector('.btn-outlook');
   var origHtml = btn ? btn.innerHTML : '';
@@ -7996,7 +8155,7 @@ function openOutlook() {
   document.body.appendChild(ov);
   ov.addEventListener('click', function(e) { if (e.target === ov) ov.remove(); });
 }
-<\/script>
+\u003c/script>
 </body></html>`;
 
   // Open in a new window
@@ -8584,6 +8743,7 @@ function _bpmlCollapseAll() {
 
 // ── Handle file upload ──
 function handleBPMLFile(file) {
+  if (typeof _uploadCheckConflict === 'function' && !_uploadCheckConflict('bpml', 'BPML Structure')) return;
   const chip = document.getElementById('bpml-status-chip');
   if (chip) chip.innerHTML = '<span class="usc-dot" style="background:var(--amber)"></span>Parsing…';
 
@@ -8632,8 +8792,10 @@ function handleBPMLFile(file) {
 
       _bpmlInitFilters(items);
       _bpmlRender();
+      _bpmlGenerateInsights(); // auto-generate on load
 
       showToast('✓ BPML loaded — ' + items.length + ' items across 4 levels');
+      if (typeof _uploadSetLock === 'function') _uploadSetLock('bpml');
       _updateOvBpml(items);
       // Update sidebar query badge and view badge
       const sbBpml = document.getElementById('sb-bpml-count');
@@ -9577,6 +9739,7 @@ function _spStyleSheet(ws, rowCount, colCount) {
 
 // ── Main handler ──
 function handleSprintPlanFile(file) {
+  if (typeof _uploadCheckConflict === 'function' && !_uploadCheckConflict('sprintplan', 'Sprint Planning')) return;
   const chip = document.getElementById('spplan-status-chip');
   if (chip) chip.innerHTML = '<span class="usc-dot" style="background:var(--amber)"></span>Parsing…';
 
@@ -9623,6 +9786,7 @@ function handleSprintPlanFile(file) {
       _spRenderPlanned();
 
       showToast('✓ Sprint Planning loaded — '+items.length+' stories');
+      if (typeof _uploadSetLock === 'function') _uploadSetLock('sprintplan');
       _updateOvSprintPlan(items);
       const sbSp = document.getElementById('sb-spplan-count');
       if (sbSp) sbSp.textContent = items.length;
@@ -10023,6 +10187,7 @@ Write 5 concise HTML insights: FUT readiness, FSD readiness, TC health, top 3 ri
 
 // File handler
 function handleTestPlanFile(file) {
+  if (typeof _uploadCheckConflict === 'function' && !_uploadCheckConflict('testplan', 'Test Planning')) return;
   const chip = document.getElementById('testplan-status-chip');
   if (chip) chip.innerHTML='<span class="usc-dot" style="background:var(--amber)"></span>Parsing…';
 
@@ -10067,6 +10232,7 @@ function handleTestPlanFile(file) {
       _tpRenderPage(1);
 
       showToast('✓ Test Planning loaded — '+items.length+' stories');
+      if (typeof _uploadSetLock === 'function') _uploadSetLock('testplan');
       _updateOvTestPlan(items);
     } catch(err) {
       console.error('Test Plan parse error',err);
@@ -10997,11 +11163,884 @@ function renderInitialEmptyState() {
   if (sbSprint) sbSprint.textContent = 'No sprint loaded';
   const sbDates = document.getElementById('sb-sprint-dates');
   if (sbDates) sbDates.textContent = 'Upload CSV to begin';
-
-  // Topbar subtitle
-  const tSub = document.getElementById('topbar-sub');
-  // topbar-sub is static HTML — not changed by JS
 }
 </script>
+
+<!-- ═══════════════════════════════════════════════════════
+     USER LOGIN MODAL
+═══════════════════════════════════════════════════════ -->
+<div id="user-login-overlay" style="position:fixed;inset:0;z-index:99999;background:rgba(10,20,50,0.88);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;font-family:var(--font)">
+  <div style="background:#fff;border-radius:16px;box-shadow:0 32px 80px rgba(0,0,0,0.4);width:min(400px,92vw);overflow:hidden;animation:slideIn 0.3s ease">
+
+    <!-- Shared header -->
+    <div style="background:linear-gradient(135deg,var(--navy) 0%,#1e3a6e 100%);padding:20px 24px 16px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:38px;height:38px;background:rgba(255,255,255,0.15);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" style="width:20px;height:20px"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.58-7 8-7s8 3 8 7"/></svg>
+        </div>
+        <div>
+          <div style="font-size:15px;font-weight:800;color:#fff;letter-spacing:-0.02em">PG&amp;E Propel SCM</div>
+          <div id="login-header-sub" style="font-size:10px;color:rgba(255,255,255,0.55);margin-top:1px;font-family:var(--mono)">Supply Chain · CONAMER1000364</div>
+        </div>
+      </div>
+      <!-- Step indicator -->
+      <div style="display:flex;gap:4px;margin-top:14px">
+        <div id="login-step-dot-1" style="height:3px;border-radius:2px;flex:1;background:rgba(255,255,255,0.8);transition:background 0.2s"></div>
+        <div id="login-step-dot-2" style="height:3px;border-radius:2px;flex:1;background:rgba(255,255,255,0.25);transition:background 0.2s"></div>
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div style="padding:20px 24px 24px">
+
+      <!-- Loading -->
+      <div id="login-loading" style="text-align:center;padding:24px 0;color:var(--text3);font-size:12px;font-family:var(--mono)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--sp-color)" stroke-width="2" style="width:26px;height:26px;animation:spin 1s linear infinite;margin:0 auto 10px;display:block"><circle cx="12" cy="12" r="10" stroke-opacity="0.2"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
+        Loading user directory…
+      </div>
+
+      <!-- STEP 1: Select name -->
+      <div id="login-step-1" style="display:none">
+        <div style="font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:5px">Step 1 of 2 — Who are you?</div>
+        <p style="font-size:13px;color:var(--text2);margin:0 0 14px;line-height:1.5">Select your name from the team roster.</p>
+        <div style="position:relative">
+          <select id="login-user-select" style="width:100%;padding:10px 34px 10px 12px;font-size:13px;font-family:var(--font);border:2px solid var(--grey300);border-radius:8px;background:#fff;color:var(--text);cursor:pointer;appearance:none;-webkit-appearance:none">
+            <option value="" disabled selected>— Select your name —</option>
+          </select>
+          <svg viewBox="0 0 16 16" fill="none" stroke="var(--text3)" stroke-width="1.5" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);width:13px;height:13px;pointer-events:none"><path d="M4 6l4 4 4-4"/></svg>
+        </div>
+        <button id="login-step1-next" onclick="_loginStep1Next()" disabled
+          style="width:100%;margin-top:14px;background:#94a3b8;color:#fff;border:none;border-radius:8px;padding:11px;font-size:13px;font-weight:700;cursor:not-allowed;font-family:var(--font);transition:background 0.15s">
+          Continue →
+        </button>
+      </div>
+
+      <!-- STEP 2a: Enter existing passcode -->
+      <div id="login-step-2-enter" style="display:none">
+        <div style="font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:5px">Step 2 of 2 — Enter Passcode</div>
+        <div id="login-user-chip-2" style="display:flex;align-items:center;gap:8px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:7px;padding:8px 12px;margin-bottom:14px">
+          <div id="login-avatar-2" style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--sp-color),var(--bpml-color));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;flex-shrink:0"></div>
+          <div>
+            <div id="login-chip-name-2" style="font-size:12px;font-weight:700;color:var(--navy)"></div>
+            <div id="login-chip-id-2" style="font-size:10px;color:var(--text3);font-family:var(--mono)"></div>
+          </div>
+          <button onclick="_loginBackToStep1()" style="margin-left:auto;background:transparent;border:none;color:var(--text3);font-size:10px;cursor:pointer;font-family:var(--mono);text-decoration:underline">Change</button>
+        </div>
+        <p style="font-size:12px;color:var(--text2);margin:0 0 12px">Enter your 4-character alphanumeric passcode.</p>
+        <div style="display:flex;gap:10px;justify-content:center;margin-bottom:6px">
+          <input id="pc-e-0" type="password" maxlength="1" class="pc-box" oninput="_pcInput(this,1,'e')" onkeydown="_pcKey(event,0,'e')" style="width:48px;height:52px;text-align:center;font-size:20px;font-weight:700;border:2px solid var(--grey300);border-radius:8px;font-family:var(--mono);text-transform:uppercase;color:var(--navy)">
+          <input id="pc-e-1" type="password" maxlength="1" class="pc-box" oninput="_pcInput(this,2,'e')" onkeydown="_pcKey(event,1,'e')" style="width:48px;height:52px;text-align:center;font-size:20px;font-weight:700;border:2px solid var(--grey300);border-radius:8px;font-family:var(--mono);text-transform:uppercase;color:var(--navy)">
+          <input id="pc-e-2" type="password" maxlength="1" class="pc-box" oninput="_pcInput(this,3,'e')" onkeydown="_pcKey(event,2,'e')" style="width:48px;height:52px;text-align:center;font-size:20px;font-weight:700;border:2px solid var(--grey300);border-radius:8px;font-family:var(--mono);text-transform:uppercase;color:var(--navy)">
+          <input id="pc-e-3" type="password" maxlength="1" class="pc-box" oninput="_pcInput(this,null,'e')" onkeydown="_pcKey(event,3,'e')" style="width:48px;height:52px;text-align:center;font-size:20px;font-weight:700;border:2px solid var(--grey300);border-radius:8px;font-family:var(--mono);text-transform:uppercase;color:var(--navy)">
+        </div>
+        <div id="login-pc-error" style="display:none;text-align:center;font-size:11px;color:#dc2626;font-family:var(--mono);margin-bottom:8px"></div>
+        <button onclick="_loginVerifyPasscode()" id="login-verify-btn"
+          style="width:100%;margin-top:8px;background:var(--navy);color:#fff;border:none;border-radius:8px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)">
+          Enter Dashboard
+        </button>
+        <div style="text-align:center;margin-top:10px">
+          <button onclick="_loginForgotPasscode()" style="background:transparent;border:none;color:var(--text3);font-size:11px;cursor:pointer;font-family:var(--mono);text-decoration:underline">Forgot passcode?</button>
+        </div>
+      </div>
+
+      <!-- STEP 2b: Create new passcode -->
+      <div id="login-step-2-create" style="display:none">
+        <div style="font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:5px">Step 2 of 2 — Create Passcode</div>
+        <div id="login-user-chip-c" style="display:flex;align-items:center;gap:8px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:7px;padding:8px 12px;margin-bottom:12px">
+          <div id="login-avatar-c" style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--sp-color),var(--bpml-color));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;flex-shrink:0"></div>
+          <div>
+            <div id="login-chip-name-c" style="font-size:12px;font-weight:700;color:#14532d"></div>
+            <div id="login-chip-id-c" style="font-size:10px;color:var(--text3);font-family:var(--mono)"></div>
+          </div>
+          <button onclick="_loginBackToStep1()" style="margin-left:auto;background:transparent;border:none;color:var(--text3);font-size:10px;cursor:pointer;font-family:var(--mono);text-decoration:underline">Change</button>
+        </div>
+        <p style="font-size:12px;color:var(--text2);margin:0 0 6px">First time? Create a 4-character alphanumeric passcode.<br><span style="color:var(--text3);font-size:11px">Letters and numbers only. You'll use this every time you log in.</span></p>
+        <!-- Create -->
+        <div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin:10px 0 4px">New Passcode</div>
+        <div style="display:flex;gap:10px;justify-content:center">
+          <input id="pc-c-0" type="password" maxlength="1" class="pc-box" oninput="_pcInput(this,1,'c')" onkeydown="_pcKey(event,0,'c')" style="width:48px;height:52px;text-align:center;font-size:20px;font-weight:700;border:2px solid var(--grey300);border-radius:8px;font-family:var(--mono);text-transform:uppercase;color:var(--navy)">
+          <input id="pc-c-1" type="password" maxlength="1" class="pc-box" oninput="_pcInput(this,2,'c')" onkeydown="_pcKey(event,1,'c')" style="width:48px;height:52px;text-align:center;font-size:20px;font-weight:700;border:2px solid var(--grey300);border-radius:8px;font-family:var(--mono);text-transform:uppercase;color:var(--navy)">
+          <input id="pc-c-2" type="password" maxlength="1" class="pc-box" oninput="_pcInput(this,3,'c')" onkeydown="_pcKey(event,2,'c')" style="width:48px;height:52px;text-align:center;font-size:20px;font-weight:700;border:2px solid var(--grey300);border-radius:8px;font-family:var(--mono);text-transform:uppercase;color:var(--navy)">
+          <input id="pc-c-3" type="password" maxlength="1" class="pc-box" oninput="_pcInput(this,null,'c')" onkeydown="_pcKey(event,3,'c')" style="width:48px;height:52px;text-align:center;font-size:20px;font-weight:700;border:2px solid var(--grey300);border-radius:8px;font-family:var(--mono);text-transform:uppercase;color:var(--navy)">
+        </div>
+        <!-- Confirm -->
+        <div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin:10px 0 4px">Confirm Passcode</div>
+        <div style="display:flex;gap:10px;justify-content:center">
+          <input id="pc-cf-0" type="password" maxlength="1" class="pc-box" oninput="_pcInput(this,1,'cf')" onkeydown="_pcKey(event,0,'cf')" style="width:48px;height:52px;text-align:center;font-size:20px;font-weight:700;border:2px solid var(--grey300);border-radius:8px;font-family:var(--mono);text-transform:uppercase;color:var(--navy)">
+          <input id="pc-cf-1" type="password" maxlength="1" class="pc-box" oninput="_pcInput(this,2,'cf')" onkeydown="_pcKey(event,1,'cf')" style="width:48px;height:52px;text-align:center;font-size:20px;font-weight:700;border:2px solid var(--grey300);border-radius:8px;font-family:var(--mono);text-transform:uppercase;color:var(--navy)">
+          <input id="pc-cf-2" type="password" maxlength="1" class="pc-box" oninput="_pcInput(this,3,'cf')" onkeydown="_pcKey(event,2,'cf')" style="width:48px;height:52px;text-align:center;font-size:20px;font-weight:700;border:2px solid var(--grey300);border-radius:8px;font-family:var(--mono);text-transform:uppercase;color:var(--navy)">
+          <input id="pc-cf-3" type="password" maxlength="1" class="pc-box" oninput="_pcInput(this,null,'cf')" onkeydown="_pcKey(event,3,'cf')" style="width:48px;height:52px;text-align:center;font-size:20px;font-weight:700;border:2px solid var(--grey300);border-radius:8px;font-family:var(--mono);text-transform:uppercase;color:var(--navy)">
+        </div>
+        <div id="login-create-error" style="display:none;text-align:center;font-size:11px;color:#dc2626;font-family:var(--mono);margin-top:8px"></div>
+        <button onclick="_loginCreatePasscode()" id="login-create-btn"
+          style="width:100%;margin-top:12px;background:#16a34a;color:#fff;border:none;border-radius:8px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)">
+          Create Passcode &amp; Continue →
+        </button>
+      </div>
+
+      <!-- Re-login after idle (step 2 only — name shown, just passcode) -->
+      <div id="login-step-relogin" style="display:none">
+        <div style="text-align:center;margin-bottom:12px">
+          <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--sp-color),var(--bpml-color));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;margin:0 auto 8px" id="login-relogin-avatar"></div>
+          <div id="login-relogin-name" style="font-size:13px;font-weight:700;color:var(--navy)"></div>
+          <div style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-top:2px">Session expired — re-enter your passcode</div>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:center;margin-bottom:6px">
+          <input id="pc-r-0" type="password" maxlength="1" class="pc-box" oninput="_pcInput(this,1,'r')" onkeydown="_pcKey(event,0,'r')" style="width:48px;height:52px;text-align:center;font-size:20px;font-weight:700;border:2px solid var(--grey300);border-radius:8px;font-family:var(--mono);text-transform:uppercase;color:var(--navy)">
+          <input id="pc-r-1" type="password" maxlength="1" class="pc-box" oninput="_pcInput(this,2,'r')" onkeydown="_pcKey(event,1,'r')" style="width:48px;height:52px;text-align:center;font-size:20px;font-weight:700;border:2px solid var(--grey300);border-radius:8px;font-family:var(--mono);text-transform:uppercase;color:var(--navy)">
+          <input id="pc-r-2" type="password" maxlength="1" class="pc-box" oninput="_pcInput(this,3,'r')" onkeydown="_pcKey(event,2,'r')" style="width:48px;height:52px;text-align:center;font-size:20px;font-weight:700;border:2px solid var(--grey300);border-radius:8px;font-family:var(--mono);text-transform:uppercase;color:var(--navy)">
+          <input id="pc-r-3" type="password" maxlength="1" class="pc-box" oninput="_pcInput(this,null,'r')" onkeydown="_pcKey(event,3,'r')" style="width:48px;height:52px;text-align:center;font-size:20px;font-weight:700;border:2px solid var(--grey300);border-radius:8px;font-family:var(--mono);text-transform:uppercase;color:var(--navy)">
+        </div>
+        <div id="login-relogin-error" style="display:none;text-align:center;font-size:11px;color:#dc2626;font-family:var(--mono);margin-bottom:6px"></div>
+        <button onclick="_loginVerifyRelogin()"
+          style="width:100%;margin-top:6px;background:var(--navy);color:#fff;border:none;border-radius:8px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)">
+          Unlock Dashboard
+        </button>
+        <div style="text-align:center;margin-top:8px;display:flex;justify-content:center;gap:16px">
+          <button onclick="_loginForgotPasscode()" style="background:transparent;border:none;color:var(--text3);font-size:11px;cursor:pointer;font-family:var(--mono);text-decoration:underline">Forgot passcode?</button>
+          <button onclick="_loginSwitchUserFromIdle()" style="background:transparent;border:none;color:var(--text3);font-size:11px;cursor:pointer;font-family:var(--mono);text-decoration:underline">Not you?</button>
+        </div>
+      </div>
+
+      <!-- Not found -->
+      <div id="login-not-found" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px 14px;margin-top:10px">
+        <div style="font-size:12px;font-weight:700;color:#7f1d1d;margin-bottom:4px">⚠ Name not in roster</div>
+        <div style="font-size:11px;color:#991b1b;line-height:1.6">Contact <strong>Project Admin / PMO</strong> to be added.<br>
+          <a href="mailto:KUNTAL.PHARAS@PWC.COM" style="color:#1e40af">Kuntal Pharas · KUNTAL.PHARAS@PWC.COM</a></div>
+      </div>
+
+      <!-- Roster load error -->
+      <div id="login-error" style="display:none;background:#fefce8;border:1px solid #fde047;border-radius:7px;padding:8px 12px;margin-top:10px">
+        <div style="font-size:11px;color:#713f12;font-family:var(--mono)" id="login-error-msg"></div>
+        <button onclick="_userLoadRoster()" style="margin-top:6px;background:#eab308;color:#fff;border:none;border-radius:5px;padding:3px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font)">Retry</button>
+      </div>
+
+      <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--grey100);text-align:center;font-size:10px;color:var(--text3);font-family:var(--mono)">
+        PwC · PG&amp;E Propel Supply Chain · PROPEL SCM · WBS USC0171161.1.1
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Active Users Panel Modal -->
+<div id="user-switch-overlay" onclick="if(event.target===this)_closeActiveUsers()" style="display:none;position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;font-family:var(--font)">
+  <div style="background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,0.3);width:min(480px,92vw);max-height:70vh;display:flex;flex-direction:column;overflow:hidden">
+    <!-- Header -->
+    <div style="background:linear-gradient(135deg,var(--navy) 0%,#1e3a6e 100%);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:8px;height:8px;background:#22c55e;border-radius:50%;box-shadow:0 0 0 3px rgba(34,197,94,0.3);animation:pulse 2s infinite"></div>
+        <div style="font-size:13px;font-weight:700;color:#fff">Active Users</div>
+        <div id="active-users-count-badge" style="background:rgba(255,255,255,0.18);color:#fff;font-size:10px;font-weight:700;font-family:var(--mono);padding:2px 8px;border-radius:10px">0 now</div>
+      </div>
+      <button onclick="_closeActiveUsers()" style="border:none;background:rgba(255,255,255,0.12);color:#fff;border-radius:6px;width:26px;height:26px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center">×</button>
+    </div>
+    <!-- Subheader -->
+    <div style="background:#f8fafc;border-bottom:1px solid var(--grey200);padding:9px 20px;font-size:10px;color:var(--text3);font-family:var(--mono);flex-shrink:0">
+      Users active in the last 2 hours · Updated every 60 seconds · Same-browser sessions
+    </div>
+    <!-- User list -->
+    <div id="active-users-list" style="overflow-y:auto;flex:1;padding:12px 16px;display:flex;flex-direction:column;gap:8px">
+      <div style="text-align:center;padding:24px;color:var(--text3);font-size:12px;font-family:var(--mono)">Loading sessions…</div>
+    </div>
+    <!-- Footer -->
+    <div style="border-top:1px solid var(--grey100);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:#f8fafc">
+      <span style="font-size:10px;color:var(--text3);font-family:var(--mono)">Idle &gt;2h sessions are excluded automatically</span>
+      <button onclick="_refreshActiveUsers()" style="background:var(--navy);color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:10px;font-weight:600;cursor:pointer;font-family:var(--font)">Refresh</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* USER AUTH SYSTEM - passcode login with 2-hour idle re-auth */
+
+var USER_ROSTER_URL   = 'https://raw.githubusercontent.com/YOUR-ORG/YOUR-REPO/main/users.json';
+var USER_STORAGE_KEY  = 'propel_scm_active_user';
+var PASSCODE_PREFIX   = 'propel_scm_pc_';
+var ATTEMPTS_PREFIX   = 'propel_scm_att_';
+var SESSION_STORE_KEY = 'propel_scm_sessions';
+var SESSION_TTL_MS    = 2 * 60 * 60 * 1000;
+var HEARTBEAT_INTERVAL= 60 * 1000;
+var MAX_ATTEMPTS      = 3;
+var LOCKOUT_MS        = 5 * 60 * 1000;
+
+var UPLOAD_LOCKS_KEY  = 'propel_scm_upload_locks';
+
+// ── Embedded fallback roster (from PROPEL_SCM_ROSTER_HOURS.xlsx, ACTIVE=YES, all fields present) ──
+var EMBEDDED_USERS = [
+  {name:'ALEXA BURNS',           pge_id:'AEBQ', pwc_email:'ALEXA.BURNS@PWC.COM',                 active:true, pc_hash:''},
+  {name:'ANIL G S',              pge_id:'AFGI', pwc_email:'ANIL.K.G.S@PWC.COM',                  active:true, pc_hash:''},
+  {name:'ANKIT ANAND',           pge_id:'AHAB', pwc_email:'ANKIT.A.ANAND@PWC.COM',               active:true, pc_hash:''},
+  {name:'ANSHUMAN BERA',         pge_id:'AW17', pwc_email:'ANSHUMAN.BERA@PWC.COM',               active:true, pc_hash:''},
+  {name:'AVINASHA HALAGERI',     pge_id:'AQHF', pwc_email:'AVINASHA.SIDDAPPA.HALAGERI@PWC.COM',  active:true, pc_hash:''},
+  {name:'BANTY KUMAR GUPTA',     pge_id:'B7G2', pwc_email:'BANTY.KUMAR.GUPTA@PWC.COM',           active:true, pc_hash:''},
+  {name:'BHAVANSHU MANDLOI',     pge_id:'BZM4', pwc_email:'BHAVANSHU.MANDLOI@PWC.COM',           active:true, pc_hash:''},
+  {name:'CAITLIN NGUYEN',        pge_id:'C3NG', pwc_email:'CAITLIN.NGUYEN@PWC.COM',              active:true, pc_hash:''},
+  {name:'GURMINDER SANDHU',      pge_id:'G4S4', pwc_email:'GURMINDER.SANDHU@PWC.COM',            active:true, pc_hash:''},
+  {name:'HEMA MURTHY',           pge_id:'H3MQ', pwc_email:'HEMA.MURTHY@PWC.COM',                 active:true, pc_hash:''},
+  {name:'KAUSTUBH KULKARNI',     pge_id:'K4KH', pwc_email:'KAUSTUBH.K.KULKARNI@PWC.COM',        active:true, pc_hash:''},
+  {name:'KETAN NAMDEO DAREKAR',  pge_id:'K6DO', pwc_email:'KETAN.NAMDEO.DAREKAR@PWC.COM',       active:true, pc_hash:''},
+  {name:'KUNTAL PHARAS',         pge_id:'K1PU', pwc_email:'KUNTAL.PHARAS@PWC.COM',               active:true, pc_hash:''},
+  {name:'KUSUM ARYA',            pge_id:'K5A0', pwc_email:'KUSUM.ARYA@PWC.COM',                  active:true, pc_hash:''},
+  {name:'MADDY BARRETT',         pge_id:'MZ2Y', pwc_email:'MADDY.BARRETT@PWC.COM',               active:true, pc_hash:''},
+  {name:'PEARSON KURKA',         pge_id:'P7K4', pwc_email:'PEARSON.K.KURKA@PWC.COM',             active:true, pc_hash:''},
+  {name:'PRADEEP KUMAR',         pge_id:'PK6I', pwc_email:'PRADEEP.H.KUMAR@PWC.COM',             active:true, pc_hash:''},
+  {name:'PRATYAY SAHA',          pge_id:'PUSH', pwc_email:'PRATYAY.SAHA@PWC.COM',                active:true, pc_hash:''},
+  {name:'RICHA MANGAL',          pge_id:'R12Q', pwc_email:'RICHA.MANGAL@PWC.COM',                active:false, pc_hash:''},
+  {name:'RUPAM CHATTERJEE',      pge_id:'RX1U', pwc_email:'RUPAM.CHATTERJEE@PWC.COM',            active:true, pc_hash:''},
+  {name:'SAYAN MUKHERJEE',       pge_id:'SA1E', pwc_email:'SAYAN.N.MUKHERJEE@PWC.COM',           active:true, pc_hash:''},
+  {name:'SHIVANI MAKADIA',       pge_id:'SR1X', pwc_email:'SHIVANI.MAKADIA@PWC.COM',             active:true, pc_hash:''},
+  {name:'SHRESTH IYER',          pge_id:'S1I7', pwc_email:'SHRESTH.IYER@PWC.COM',               active:true, pc_hash:''},
+  {name:'SIVA SAINATH B V',      pge_id:'SA11', pwc_email:'SIVA.SAINATH.B.V@PWC.COM',            active:true, pc_hash:''},
+  {name:'SUNITA SHARMA',         pge_id:'SJ1E', pwc_email:'SUNITA.S.SHARMA@PWC.COM',             active:true, pc_hash:''},
+  {name:'TANVI GOYAL',           pge_id:'T6G4', pwc_email:'TANVI.GOYAL@PWC.COM',                 active:false, pc_hash:''},
+  {name:'TULIKA DAS',            pge_id:'T5D7', pwc_email:'TULIKA.C.DAS@PWC.COM',                active:true, pc_hash:''},
+  {name:'VANESSA CHUA',          pge_id:'V3CO', pwc_email:'VANESSA.CHUA@PWC.COM',                active:true, pc_hash:''},
+  {name:'VENKAT NADELLA',        pge_id:'V2NE', pwc_email:'VENKAT.NADELLA@PWC.COM',              active:true, pc_hash:''},
+];
+
+window._rosterUsers  = [];
+window._activeUser   = null;
+window._loginUser    = null;
+var _heartbeatTimer  = null;
+var _broadcastChannel= null;
+var _lastActivity    = Date.now();
+
+function _hashPasscode(name, pc) {
+  var s = pc.toUpperCase() + '|' + name.toLowerCase() + '|PROPEL_SCM_2026';
+  var h = 0;
+  for (var i = 0; i < s.length; i++) {
+    h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+  }
+  return (h >>> 0).toString(16);
+}
+
+function _pcStorageKey(name) {
+  return PASSCODE_PREFIX + name.replace(/\s+/g,'_').toLowerCase();
+}
+
+function _hasPasscode(name) {
+  return !!localStorage.getItem(_pcStorageKey(name));
+}
+
+function _verifyPasscode(name, pc) {
+  return localStorage.getItem(_pcStorageKey(name)) === _hashPasscode(name, pc);
+}
+
+function _savePasscode(name, pc) {
+  var hash = _hashPasscode(name, pc);
+  // 1. Always save to localStorage (fast, local)
+  localStorage.setItem(_pcStorageKey(name), hash);
+  // 2. Update in-memory roster entry so exports include latest hash
+  if(window._rosterUsers) {
+    window._rosterUsers.forEach(function(u){ if(u.name===name) u.pc_hash=hash; });
+  }
+  // 3. Offer a users.json download so the PMO can save it alongside the dashboard
+  _downloadUsersJson();
+}
+
+function _downloadUsersJson() {
+  // Build updated users.json from in-memory roster (includes all pc_hash values)
+  var roster = (window._rosterUsers||[]).map(function(u){
+    return {
+      name:      u.name,
+      pge_id:    u.pge_id,
+      pwc_email: u.pwc_email||u.email||'',
+      active:    u.active!==false,
+      pc_hash:   u.pc_hash||''
+    };
+  });
+  // Also include inactive users from original load if available
+  var allUsers = (window._allRosterUsers||roster);
+  var json = JSON.stringify(allUsers, null, 2);
+  var blob = new Blob([json], {type:'application/json'});
+  var url  = URL.createObjectURL(blob);
+  var a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'users.json';
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){ URL.revokeObjectURL(url); document.body.removeChild(a); }, 1000);
+  if(typeof showToast==='function') showToast('📥 users.json downloaded — save it in the same folder as the dashboard');
+}
+
+function _getAttempts(name) {
+  try { return JSON.parse(localStorage.getItem(ATTEMPTS_PREFIX + name) || '{"count":0,"lockUntil":0}'); }
+  catch(e) { return {count:0, lockUntil:0}; }
+}
+
+function _setAttempts(name, rec) {
+  localStorage.setItem(ATTEMPTS_PREFIX + name, JSON.stringify(rec));
+}
+
+function _clearAttempts(name) {
+  localStorage.removeItem(ATTEMPTS_PREFIX + name);
+}
+
+function _getPcValue(prefix) {
+  var v = '';
+  for (var i = 0; i < 4; i++) {
+    var el = document.getElementById('pc-' + prefix + '-' + i);
+    v += el ? el.value.toUpperCase() : '';
+  }
+  return v;
+}
+
+function _clearPcInputs(prefix) {
+  for (var i = 0; i < 4; i++) {
+    var el = document.getElementById('pc-' + prefix + '-' + i);
+    if (el) { el.value = ''; el.classList.remove('pc-ok','pc-err'); }
+  }
+}
+
+function _setPcState(prefix, state) {
+  for (var i = 0; i < 4; i++) {
+    var el = document.getElementById('pc-' + prefix + '-' + i);
+    if (!el) continue;
+    el.classList.remove('pc-ok','pc-err');
+    if (state) el.classList.add(state);
+  }
+}
+
+function _pcInput(el, nextIdx, prefix) {
+  var v = el.value.replace(/[^a-zA-Z0-9]/g,'').slice(-1).toUpperCase();
+  el.value = v;
+  if (v && nextIdx !== null) {
+    var next = document.getElementById('pc-' + prefix + '-' + nextIdx);
+    if (next) next.focus();
+  }
+}
+
+function _pcKey(event, idx, prefix) {
+  if (event.key === 'Backspace') {
+    var el = document.getElementById('pc-' + prefix + '-' + idx);
+    if (el && !el.value && idx > 0) {
+      var prev = document.getElementById('pc-' + prefix + '-' + (idx-1));
+      if (prev) { prev.value = ''; prev.focus(); }
+    }
+  }
+  if (event.key === 'Enter') {
+    if (prefix === 'e') _loginVerifyPasscode();
+    else if (prefix === 'cf') _loginCreatePasscode();
+    else if (prefix === 'r') _loginVerifyRelogin();
+  }
+}
+
+function _loginShowScreen(screen) {
+  var screens = ['login-loading','login-step-1','login-step-2-enter','login-step-2-create','login-step-relogin'];
+  screens.forEach(function(s) {
+    var el = document.getElementById(s);
+    if (el) el.style.display = s === screen ? 'block' : 'none';
+  });
+  var d1 = document.getElementById('login-step-dot-1');
+  var d2 = document.getElementById('login-step-dot-2');
+  var bright = 'rgba(255,255,255,0.85)', dim = 'rgba(255,255,255,0.25)';
+  if (d1 && d2) {
+    if (screen === 'login-step-1') { d1.style.background=bright; d2.style.background=dim; }
+    else { d1.style.background=bright; d2.style.background=bright; }
+  }
+}
+
+function _userLoginSelectionChanged(user) {
+  var btn = document.getElementById('login-step1-next');
+  if (!btn) return;
+  if (user) { btn.disabled=false; btn.style.background='var(--navy)'; btn.style.cursor='pointer'; }
+  else { btn.disabled=true; btn.style.background='#94a3b8'; btn.style.cursor='not-allowed'; }
+  document.getElementById('login-not-found').style.display='none';
+}
+
+function _loginStep1Next() {
+  var sel  = document.getElementById('login-user-select');
+  var user = window._rosterUsers.filter(function(u){return u.name===sel.value;})[0];
+  if (!user) return;
+  window._loginUser = user;
+  _loginShowStep2(user);
+}
+
+function _loginShowStep2(user) {
+  var parts = user.name.trim().split(/\s+/);
+  var initials = (parts.length>=2?parts[0][0]+parts[parts.length-1][0]:user.name.slice(0,2)).toUpperCase();
+  var displayName = _toTitleCase(user.name) + ' - ' + user.pge_id;
+  if (_hasPasscode(user.name)) {
+    var av2=document.getElementById('login-avatar-2');
+    var nm2=document.getElementById('login-chip-name-2');
+    var id2=document.getElementById('login-chip-id-2');
+    if(av2) av2.textContent=initials;
+    if(nm2) nm2.textContent=displayName;
+    if(id2) id2.textContent=user.email;
+    _clearPcInputs('e');
+    document.getElementById('login-pc-error').style.display='none';
+    _loginShowScreen('login-step-2-enter');
+    setTimeout(function(){var f=document.getElementById('pc-e-0');if(f)f.focus();},100);
+  } else {
+    var avc=document.getElementById('login-avatar-c');
+    var nmc=document.getElementById('login-chip-name-c');
+    var idc=document.getElementById('login-chip-id-c');
+    if(avc) avc.textContent=initials;
+    if(nmc) nmc.textContent=displayName;
+    if(idc) idc.textContent=user.email;
+    _clearPcInputs('c'); _clearPcInputs('cf');
+    document.getElementById('login-create-error').style.display='none';
+    _loginShowScreen('login-step-2-create');
+    setTimeout(function(){var f=document.getElementById('pc-c-0');if(f)f.focus();},100);
+  }
+}
+
+function _loginBackToStep1() {
+  window._loginUser=null;
+  _clearPcInputs('e'); _clearPcInputs('c'); _clearPcInputs('cf');
+  _loginShowScreen('login-step-1');
+}
+
+function _loginVerifyPasscode() {
+  var user=window._loginUser; if(!user) return;
+  var pc=_getPcValue('e');
+  if(pc.length<4){
+    var e=document.getElementById('login-pc-error');
+    e.style.display='block'; e.textContent='Enter all 4 characters'; return;
+  }
+  var att=_getAttempts(user.name);
+  if(att.lockUntil>Date.now()){
+    var mins=Math.ceil((att.lockUntil-Date.now())/60000);
+    var e=document.getElementById('login-pc-error');
+    e.style.display='block'; e.textContent='Locked. Try again in '+mins+' min.';
+    _setPcState('e','pc-err'); return;
+  }
+  if(_verifyPasscode(user.name,pc)){
+    _clearAttempts(user.name);
+    _setPcState('e','pc-ok');
+    setTimeout(function(){_userApply(user);document.getElementById('user-login-overlay').style.display='none';},300);
+  } else {
+    att.count++;
+    if(att.count>=MAX_ATTEMPTS){att.lockUntil=Date.now()+LOCKOUT_MS;att.count=0;}
+    _setAttempts(user.name,att);
+    _setPcState('e','pc-err');
+    var remaining=MAX_ATTEMPTS-att.count;
+    var msg=att.lockUntil>Date.now()?'Locked for 5 minutes.':'Incorrect passcode.'+(remaining>0?' '+remaining+' attempt(s) left.':'');
+    var e=document.getElementById('login-pc-error');
+    e.style.display='block'; e.textContent=msg;
+    setTimeout(function(){_clearPcInputs('e');var f=document.getElementById('pc-e-0');if(f)f.focus();},600);
+  }
+}
+
+function _loginCreatePasscode() {
+  var user=window._loginUser; if(!user) return;
+  var pc=_getPcValue('c'), pcf=_getPcValue('cf');
+  var errEl=document.getElementById('login-create-error');
+  // Reset to red error style (may have been blue from forgot-passcode reset notice)
+  errEl.style.color='#dc2626'; errEl.style.background=''; errEl.style.padding=''; errEl.style.borderRadius='';
+  if(pc.length<4){errEl.style.display='block';errEl.textContent='Enter all 4 characters.';return;}
+  if(pcf.length<4){errEl.style.display='block';errEl.textContent='Confirm all 4 characters.';return;}
+  if(pc!==pcf){
+    errEl.style.display='block';errEl.textContent='Passcodes do not match.';
+    _setPcState('c','pc-err');_setPcState('cf','pc-err');
+    setTimeout(function(){_clearPcInputs('c');_clearPcInputs('cf');var f=document.getElementById('pc-c-0');if(f)f.focus();},600);
+    return;
+  }
+  if(!/^[A-Z0-9]{4}$/.test(pc)){errEl.style.display='block';errEl.textContent='Letters and numbers only (A-Z, 0-9).';return;}
+  _savePasscode(user.name,pc);
+  errEl.style.display='none';
+  _setPcState('c','pc-ok');_setPcState('cf','pc-ok');
+  showToast('Passcode created — log in with your new passcode');
+  setTimeout(function(){
+    _clearPcInputs('c');_clearPcInputs('cf');
+    window._loginUser=user;
+    _loginShowStep2(user);
+  },800);
+}
+
+function _loginForgotPasscode() {
+  var user = window._loginUser || window._activeUser;
+  if (!user) { _loginBackToStep1(); return; }
+
+  // Clear existing passcode and attempts — route straight to create screen
+  localStorage.removeItem(_pcStorageKey(user.name));
+  _clearAttempts(user.name);
+  window._loginUser = user;
+
+  // Show create screen with a reset notice
+  var parts = user.name.trim().split(/\s+/);
+  var initials = (parts.length>=2 ? parts[0][0]+parts[parts.length-1][0] : user.name.slice(0,2)).toUpperCase();
+  var displayName = _toTitleCase(user.name) + ' - ' + user.pge_id;
+
+  var avc = document.getElementById('login-avatar-c');
+  var nmc = document.getElementById('login-chip-name-c');
+  var idc = document.getElementById('login-chip-id-c');
+  if (avc) avc.textContent = initials;
+  if (nmc) nmc.textContent = displayName;
+  if (idc) idc.textContent = user.email;
+
+  _clearPcInputs('c'); _clearPcInputs('cf');
+
+  // Show reset notice inside create screen
+  var errEl = document.getElementById('login-create-error');
+  if (errEl) {
+    errEl.style.display = 'block';
+    errEl.style.color = '#0369a1';
+    errEl.style.background = '#e0f2fe';
+    errEl.style.padding = '6px 10px';
+    errEl.style.borderRadius = '6px';
+    errEl.textContent = 'Passcode reset. Please create a new one below.';
+  }
+
+  _loginShowScreen('login-step-2-create');
+  setTimeout(function() { var f = document.getElementById('pc-c-0'); if (f) f.focus(); }, 100);
+}
+
+function _loginSwitchUserFromIdle() {
+  window._activeUser = null;
+  window._loginUser  = null;
+  _loginBackToStep1();
+  document.getElementById('user-login-overlay').style.display = 'flex';
+}
+
+function _showIdleRelogin() {
+  var user=window._activeUser;
+  if(!user){_loginShowScreen('login-step-1');document.getElementById('user-login-overlay').style.display='flex';return;}
+  var parts=user.name.trim().split(/\s+/);
+  var initials=(parts.length>=2?parts[0][0]+parts[parts.length-1][0]:user.name.slice(0,2)).toUpperCase();
+  var av=document.getElementById('login-relogin-avatar');
+  var nm=document.getElementById('login-relogin-name');
+  if(av) av.textContent=initials;
+  if(nm) nm.textContent=_toTitleCase(user.name)+' - '+user.pge_id;
+  _clearPcInputs('r');
+  document.getElementById('login-relogin-error').style.display='none';
+  _loginShowScreen('login-step-relogin');
+  document.getElementById('user-login-overlay').style.display='flex';
+  setTimeout(function(){var f=document.getElementById('pc-r-0');if(f)f.focus();},100);
+}
+
+function _loginVerifyRelogin() {
+  var user=window._activeUser; if(!user) return;
+  var pc=_getPcValue('r'); if(pc.length<4) return;
+  var att=_getAttempts(user.name);
+  if(att.lockUntil>Date.now()){
+    var mins=Math.ceil((att.lockUntil-Date.now())/60000);
+    var e=document.getElementById('login-relogin-error');
+    e.style.display='block';e.textContent='Locked. Try again in '+mins+' min.';
+    _setPcState('r','pc-err');return;
+  }
+  if(_verifyPasscode(user.name,pc)){
+    _clearAttempts(user.name);
+    _setPcState('r','pc-ok');
+    setTimeout(function(){
+      document.getElementById('user-login-overlay').style.display='none';
+      _lastActivity=Date.now();
+      _sessionHeartbeat();
+    },300);
+  } else {
+    att.count++;
+    if(att.count>=MAX_ATTEMPTS){att.lockUntil=Date.now()+LOCKOUT_MS;att.count=0;}
+    _setAttempts(user.name,att);
+    _setPcState('r','pc-err');
+    var msg=att.lockUntil>Date.now()?'Locked for 5 minutes.':'Incorrect passcode.';
+    var e=document.getElementById('login-relogin-error');
+    e.style.display='block';e.textContent=msg;
+    setTimeout(function(){_clearPcInputs('r');var f=document.getElementById('pc-r-0');if(f)f.focus();},600);
+  }
+}
+
+function _userApply(user) {
+  window._activeUser=user; window._loginUser=null;
+  var chip=document.getElementById('active-user-chip');
+  var avatar=document.getElementById('auc-avatar');
+  var nameEl=document.getElementById('auc-name');
+  var roleEl=document.getElementById('auc-role');
+  if(chip) chip.style.display='flex';
+  if(avatar){
+    var parts=user.name.trim().split(/\s+/);
+    avatar.textContent=(parts.length>=2?parts[0][0]+parts[parts.length-1][0]:user.name.slice(0,2)).toUpperCase();
+  }
+  if(nameEl) nameEl.textContent=_toTitleCase(user.name)+' - '+user.pge_id;
+  if(roleEl) roleEl.textContent=user.email;
+  if(_heartbeatTimer) clearInterval(_heartbeatTimer);
+  _sessionStart();
+}
+
+function _userLoadRoster() {
+  var overlay=document.getElementById('user-login-overlay');
+  var errBox=document.getElementById('login-error');
+  var errMsg=document.getElementById('login-error-msg');
+  _loginShowScreen('login-loading');
+  overlay.style.display='flex';
+  errBox.style.display='none';
+
+  // Prune any upload locks older than SESSION_TTL_MS on every page load
+  (function _pruneStaleUploadLocks(){
+    try {
+      var locks=_uploadsRead(); var changed=false;
+      ['sprint','raid','cf','bpml','sprintplan','testplan'].forEach(function(s){
+        if(locks[s] && Date.now()-locks[s].at > SESSION_TTL_MS){ delete locks[s]; changed=true; }
+      });
+      if(changed) _uploadsWrite(locks);
+    } catch(e){}
+  })();
+
+  function applyRoster(users, fromFallback) {
+    if(fromFallback){errMsg.textContent='User data from approved and onboarded PG&E Propel program users only. If name not available, Contact PMO to update the users.json file';errBox.style.display='block';}
+
+    // Keep full roster copy (including inactive) so users.json download is complete
+    window._allRosterUsers = (users||[]).map(function(u){
+      return {
+        name:      (u.name||'').trim(),
+        pge_id:    (u.pge_id||'').trim(),
+        pwc_email: (u.pwc_email||u.email||'').trim(),
+        active:    u.active!==false && String(u.active).toUpperCase()!=='NO',
+        pc_hash:   u.pc_hash||''
+      };
+    });
+
+    window._rosterUsers=(users||[]).filter(function(u){
+      var nm=(u.name||'').trim(), pid=(u.pge_id||'').trim(), em=(u.pwc_email||u.email||'').trim();
+      var act=u.active!==false&&String(u.active).toUpperCase()!=='NO';
+      return nm&&pid&&em&&act;
+    }).sort(function(a,b){return a.name.localeCompare(b.name);});
+
+    // Seed localStorage passcode hashes from users.json pc_hash field
+    // so passcodes set on one device/browser work on another
+    window._rosterUsers.forEach(function(u){
+      if(u.pc_hash && u.pc_hash.trim()) {
+        var key = _pcStorageKey(u.name);
+        if(!localStorage.getItem(key)) {
+          // Only seed if not already set locally — local always wins
+          localStorage.setItem(key, u.pc_hash.trim());
+        }
+      }
+    });
+
+    _userBuildSelect('login-user-select','— Select your name —');
+    _loginShowScreen('login-step-1');
+    // Always start at Step 1 — user must select their name every session
+  }
+
+  if(typeof fetch!=='undefined'&&USER_ROSTER_URL.indexOf('YOUR-ORG')===-1&&USER_ROSTER_URL.indexOf('YOUR-REPO')===-1){
+    fetch(USER_ROSTER_URL,{cache:'no-cache'})
+      .then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
+      .then(function(d){applyRoster(Array.isArray(d)&&d.length?d:EMBEDDED_USERS,!Array.isArray(d)||!d.length);})
+      .catch(function(){applyRoster(EMBEDDED_USERS,true);});
+  } else {
+    applyRoster(EMBEDDED_USERS,true);
+  }
+}
+
+function _userBuildSelect(selectId, placeholder) {
+  var sel=document.getElementById(selectId); if(!sel) return;
+  sel.innerHTML='<option value="" disabled selected>'+placeholder+'</option>'+
+    window._rosterUsers.map(function(u){
+      return '<option value="'+_escH(u.name)+'">'+_escH(_toTitleCase(u.name))+' - '+_escH(u.pge_id)+'</option>';
+    }).join('');
+  sel.value='';
+  sel.onchange=function(){
+    var chosen=window._rosterUsers.filter(function(u){return u.name===sel.value;})[0];
+    _userLoginSelectionChanged(chosen||null);
+  };
+}
+
+function _sessionsRead(){try{return JSON.parse(localStorage.getItem(SESSION_STORE_KEY)||'[]');}catch(e){return[];}}
+function _sessionsWrite(s){try{localStorage.setItem(SESSION_STORE_KEY,JSON.stringify(s));}catch(e){}}
+function _sessionsPrune(s){var c=Date.now()-SESSION_TTL_MS;return s.filter(function(x){return x.lastSeen>c;});}
+
+function _sessionHeartbeat(){
+  if(!window._activeUser) return;
+  var sessions=_sessionsPrune(_sessionsRead()); var found=false;
+  for(var i=0;i<sessions.length;i++){
+    if(sessions[i].name===window._activeUser.name){sessions[i].lastSeen=Date.now();sessions[i].pge_id=window._activeUser.pge_id;found=true;break;}
+  }
+  if(!found) sessions.push({name:window._activeUser.name,pge_id:window._activeUser.pge_id,lastSeen:Date.now()});
+  _sessionsWrite(sessions);
+  if(_broadcastChannel){try{_broadcastChannel.postMessage({type:'heartbeat'});}catch(e){}}
+  _updateActiveCountBadge(sessions);
+}
+
+function _sessionRemove(){
+  if(!window._activeUser) return;
+  _sessionsWrite(_sessionsRead().filter(function(s){return s.name!==window._activeUser.name;}));
+}
+
+function _updateActiveCountBadge(sessions){
+  var active=_sessionsPrune(sessions||_sessionsRead());
+  var badge=document.getElementById('active-users-count-badge');
+  if(badge) badge.textContent=active.length+' active';
+}
+
+function _sessionStart(){
+  if(typeof BroadcastChannel!=='undefined'){
+    try{
+      if(_broadcastChannel) _broadcastChannel.close();
+      _broadcastChannel=new BroadcastChannel('propel_scm_channel');
+      _broadcastChannel.onmessage=function(e){
+        var msg=e.data||{};
+        _updateActiveCountBadge();
+        var ov=document.getElementById('user-switch-overlay');
+        if(ov&&ov.style.display!=='none') _renderActiveUsersList();
+        // Handle upload lock broadcasts
+        if(msg.type==='upload_lock'&&msg.section){
+          _uploadUpdateCard(msg.section,msg.lock);
+          if(window._activeUser&&msg.lock&&msg.lock.name!==window._activeUser.name){
+            showToast('\u26A0 '+msg.lock.label+' just loaded '+_uploadSectionName(msg.section)+' data');
+          }
+        } else if(msg.type==='upload_clear'&&msg.section){
+          _uploadUpdateCard(msg.section,null);
+        } else if(msg.type==='upload_reset'){
+          ['sprint','raid','cf','bpml','sprintplan','testplan'].forEach(function(s){_uploadUpdateCard(s,null);});
+        }
+      };
+    }catch(e){}
+  }
+  _sessionHeartbeat();
+  _heartbeatTimer=setInterval(_sessionHeartbeat,HEARTBEAT_INTERVAL);
+  _uploadRefreshAllCards(); // show who loaded what from localStorage
+  window.addEventListener('beforeunload',_sessionRemove);
+  window.addEventListener('pagehide',_sessionRemove);
+  _lastActivity=Date.now();
+  var _idleInterval=setInterval(function(){
+    if(!window._activeUser) return;
+    if(Date.now()-_lastActivity>SESSION_TTL_MS){
+      clearInterval(_heartbeatTimer); clearInterval(_idleInterval);
+      _sessionRemove(); _showIdleRelogin();
+    }
+  },30000);
+  ['mousemove','keydown','click','touchstart','scroll'].forEach(function(evt){
+    document.addEventListener(evt,function(){_lastActivity=Date.now();},{passive:true});
+  });
+}
+
+function _showActiveUsers(){var ov=document.getElementById('user-switch-overlay');if(ov)ov.style.display='flex';_renderActiveUsersList();}
+function _closeActiveUsers(){var ov=document.getElementById('user-switch-overlay');if(ov)ov.style.display='none';}
+function _refreshActiveUsers(){_sessionHeartbeat();_renderActiveUsersList();}
+
+function _renderActiveUsersList(){
+  var listEl=document.getElementById('active-users-list');
+  var cntEl=document.getElementById('active-users-count-badge');
+  if(!listEl) return;
+  var sessions=_sessionsPrune(_sessionsRead()); var now=Date.now();
+  var me=window._activeUser?window._activeUser.name:null;
+  if(cntEl) cntEl.textContent=sessions.length+' active';
+  if(!sessions.length){listEl.innerHTML='<div style="text-align:center;padding:28px;color:var(--text3);font-size:12px;font-family:var(--mono)">No active sessions detected.</div>';return;}
+  sessions.sort(function(a,b){if(a.name===me)return -1;if(b.name===me)return 1;return b.lastSeen-a.lastSeen;});
+  listEl.innerHTML=sessions.map(function(s){
+    var isMe=s.name===me,minAgo=Math.floor((now-s.lastSeen)/60000);
+    var lbl=minAgo===0?'Just now':minAgo===1?'1 min ago':minAgo+' mins ago';
+    var parts=s.name.trim().split(/\s+/);
+    var initials=(parts.length>=2?parts[0][0]+parts[parts.length-1][0]:s.name.slice(0,2)).toUpperCase();
+    var dot=minAgo<5?'#22c55e':minAgo<30?'#f59e0b':'#94a3b8';
+    return '<div style="display:flex;align-items:center;gap:10px;padding:9px 11px;background:'+(isMe?'#f0f9ff':'#f8fafc')+';border:1px solid '+(isMe?'#bae6fd':'var(--grey200)')+';border-radius:8px">'
+      +'<div style="position:relative;flex-shrink:0"><div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--sp-color),var(--bpml-color));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff">'+_escH(initials)+'</div>'
+      +'<div style="position:absolute;bottom:-1px;right:-1px;width:8px;height:8px;background:'+dot+';border:2px solid #fff;border-radius:50%"></div></div>'
+      +'<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:700;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+_escH(_toTitleCase(s.name))+' - '+_escH(s.pge_id)+(isMe?' <span style="font-size:9px;font-weight:600;color:#0369a1;background:#e0f2fe;padding:1px 5px;border-radius:4px;font-family:var(--mono)">YOU</span>':'')+'</div>'
+      +'<div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:1px">Last active: '+_escH(lbl)+'</div></div></div>';
+  }).join('');
+}
+
+// ── UPLOAD CONCURRENCY TRACKING ─────────────────────────────
+
+function _uploadsRead(){try{return JSON.parse(localStorage.getItem(UPLOAD_LOCKS_KEY)||'{}');}catch(e){return{};}}
+function _uploadsWrite(obj){try{localStorage.setItem(UPLOAD_LOCKS_KEY,JSON.stringify(obj));}catch(e){}}
+
+function _uploadSetLock(section){
+  if(!window._activeUser) return;
+  var locks=_uploadsRead();
+  locks[section]={name:window._activeUser.name,pge_id:window._activeUser.pge_id,
+    label:_toTitleCase(window._activeUser.name)+' - '+window._activeUser.pge_id,at:Date.now()};
+  _uploadsWrite(locks);
+  _uploadUpdateCard(section,locks[section]);
+  if(_broadcastChannel){try{_broadcastChannel.postMessage({type:'upload_lock',section:section,lock:locks[section]});}catch(e){}}
+}
+
+function _uploadClearLock(section){
+  var locks=_uploadsRead();
+  delete locks[section];
+  _uploadsWrite(locks);
+  _uploadUpdateCard(section,null);
+  if(_broadcastChannel){try{_broadcastChannel.postMessage({type:'upload_clear',section:section});}catch(e){}}
+}
+
+function _uploadClearAllLocks(){
+  _uploadsWrite({});
+  ['sprint','raid','cf','bpml','sprintplan','testplan'].forEach(function(s){_uploadUpdateCard(s,null);});
+  if(_broadcastChannel){try{_broadcastChannel.postMessage({type:'upload_reset'});}catch(e){}}
+}
+
+function _uploadCheckConflict(section,sectionLabel){
+  var locks=_uploadsRead(); var lock=locks[section];
+
+  // No lock — safe to proceed
+  if(!lock) return true;
+
+  // Stale lock (older than SESSION_TTL_MS) — clear silently and proceed
+  if(Date.now() - lock.at > SESSION_TTL_MS){
+    _uploadClearLock(section); return true;
+  }
+
+  // Not logged in yet — proceed
+  if(!window._activeUser) return true;
+
+  // Same user — clear old lock (fresh one set on success) and proceed
+  if(lock.name === window._activeUser.name){
+    _uploadClearLock(section); return true;
+  }
+
+  // Different user — check if they are currently online
+  var sessions=_sessionsPrune(_sessionsRead());
+  var lockerOnline=sessions.filter(function(s){return s.name===lock.name;}).length>0;
+  var when=_uploadTimeAgo(lock.at);
+
+  if(lockerOnline){
+    // Only block when the other user is actively online — show confirm dialog
+    return confirm(
+      '\u26A0 DATA CONFLICT WARNING\n\n'+
+      sectionLabel+' data was uploaded by:\n'+lock.label+'\n'+when+'\n\n'+
+      'That user is currently ONLINE.\n\n'+
+      'Uploading now will overwrite their data for ALL active users.\n'+
+      'Coordinate with '+_toTitleCase(lock.name)+' before proceeding.\n\n'+
+      'Upload anyway and overwrite?'
+    );
+  } else {
+    // Offline user — do NOT block, just show an informational toast and proceed
+    if(typeof showToast==='function'){
+      showToast('\u26A0 Overwriting '+sectionLabel+' data previously loaded by '+lock.label+' (offline)');
+    }
+    _uploadClearLock(section);
+    return true;
+  }
+}
+
+function _uploadTimeAgo(ts){
+  var m=Math.floor((Date.now()-ts)/60000);
+  if(m<1) return 'Just now';
+  if(m<60) return m+' min'+(m!==1?'s':'')+' ago';
+  var h=Math.floor(m/60);
+  if(h<24) return h+' hr'+(h!==1?'s':'')+' ago';
+  return Math.floor(h/24)+'d ago';
+}
+
+function _uploadUpdateCard(section,lock){
+  var el=document.getElementById('upload-lock-'+section);
+  if(!el) return;
+  if(!lock){el.style.display='none';el.innerHTML='';return;}
+  var isMe=window._activeUser&&lock.name===window._activeUser.name;
+  var bg=isMe?'#f0f9ff':'#fffbeb'; var border=isMe?'#bae6fd':'#fde68a'; var fg=isMe?'#0369a1':'#92400e';
+  el.style.display='flex'; el.style.background=bg; el.style.border='1px solid '+border;
+  el.innerHTML='<svg viewBox="0 0 14 14" fill="none" stroke="'+fg+'" stroke-width="1.5" style="width:10px;height:10px;flex-shrink:0"><circle cx="7" cy="5" r="2.5"/><path d="M2 12c0-2.76 2.24-5 5-5s5 2.24 5 5"/></svg>'
+    +'<span style="color:'+fg+'">Loaded by <strong>'+_escH(lock.label)+'</strong> &nbsp;·&nbsp; '+_escH(_uploadTimeAgo(lock.at))+(isMe?' (you)':'')+'</span>';
+}
+
+function _uploadRefreshAllCards(){
+  var locks=_uploadsRead();
+  ['sprint','raid','cf','bpml','sprintplan','testplan'].forEach(function(s){_uploadUpdateCard(s,locks[s]||null);});
+}
+
+function _uploadSectionName(section){
+  return {sprint:'Sprint Update',raid:'RAID Log',cf:'Cross Functional',bpml:'BPML Structure',sprintplan:'Sprint Planning',testplan:'Test Planning'}[section]||section;
+}
+
+function _toTitleCase(str){
+  if(!str) return '';
+  return str.toLowerCase().replace(/\b\w/g,function(c){return c.toUpperCase();});
+}
+
+_userLoadRoster();
+</script>
+
 </body>
 </html>
