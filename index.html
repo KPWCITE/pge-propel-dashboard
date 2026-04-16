@@ -2313,14 +2313,14 @@
             </div>
             <div>
               <div style="font-size:17px;font-weight:800;color:#fff;letter-spacing:-0.02em">BPML Structure</div>
-              <div style="font-size:11px;color:rgba(255,255,255,0.6);font-family:var(--mono);margin-top:3px">Business Process Master List — PG&amp;E Propel Supply Chain · 4-Tier Hierarchy</div>
+              <div style="font-size:11px;color:rgba(255,255,255,0.6);font-family:var(--mono);margin-top:3px">Business Process Master List — PG&amp;E Propel Supply Chain · BPML → RICEFW → Requirements → FSD/FUT</div>
             </div>
           </div>
           <div style="display:flex;align-items:center;gap:10px">
             <div id="bpml-header-chip" style="display:none;background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:6px 14px;font-size:11px;font-family:var(--mono);color:#fff"></div>
-            <button onclick="document.getElementById('csv-bpml-input').click()" style="background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.35);color:#fff;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:7px">
+            <button onclick="showSection('upload')" style="background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.35);color:#fff;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:7px">
               <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:13px;height:13px"><path d="M8 10V3m0 0L5.5 5.5M8 3l2.5 2.5M3 11v1.5A1.5 1.5 0 004.5 14h7a1.5 1.5 0 001.5-1.5V11"/></svg>
-              Upload BPML CSV
+              Upload BPML Files
             </button>
           </div>
         </div>
@@ -2331,7 +2331,10 @@
             <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" style="width:11px;height:11px"><rect x="1" y="3" width="12" height="8" rx="1.5"/><path d="M4 6h6M4 9h4"/></svg>
             BPML Summary
           </div>
-          <div style="display:flex;flex-wrap:wrap;gap:0">
+
+          <!-- Row 1: BPML levels -->
+          <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;padding-bottom:2px;border-bottom:1px solid var(--grey100)">BPML Levels</div>
+          <div style="display:flex;flex-wrap:wrap;gap:0;margin-bottom:10px">
             <div class="ov-kpi-cell"><div class="ov-kpi-val" id="bkpi-total" style="color:var(--bpml-color)">—</div><div class="ov-kpi-lbl">Total Items</div></div>
             <div class="ov-kpi-div"></div>
             <div class="ov-kpi-cell"><div class="ov-kpi-val" id="bkpi-l1">—</div><div class="ov-kpi-lbl">Level 1</div></div>
@@ -2340,16 +2343,12 @@
             <div class="ov-kpi-div"></div>
             <div class="ov-kpi-cell"><div class="ov-kpi-val" id="bkpi-l3">—</div><div class="ov-kpi-lbl">Level 3</div></div>
             <div class="ov-kpi-div"></div>
-            <div class="ov-kpi-cell"><div class="ov-kpi-val" id="bkpi-l4">—</div><div class="ov-kpi-lbl">Level 4</div></div>
-            <div class="ov-kpi-div"></div>
             <div class="ov-kpi-cell" style="background:#f5f3ff;border-radius:6px;padding:4px 8px">
               <div class="ov-kpi-val" id="bkpi-stp" style="color:var(--bpml-dark)">—</div>
               <div class="ov-kpi-lbl" style="font-weight:700;color:var(--bpml-dark)">STP Total</div>
             </div>
             <div class="ov-kpi-div"></div>
             <div class="ov-kpi-cell"><div class="ov-kpi-val" id="bkpi-stp-l3" style="color:var(--bpml-color)">—</div><div class="ov-kpi-lbl">STP L3</div></div>
-            <div class="ov-kpi-div"></div>
-            <div class="ov-kpi-cell"><div class="ov-kpi-val" id="bkpi-stp-l4" style="color:var(--bpml-color)">—</div><div class="ov-kpi-lbl">STP L4</div></div>
             <div class="ov-kpi-div"></div>
             <div class="ov-kpi-cell" style="background:#ecfdf5;border-radius:6px;padding:4px 8px">
               <div class="ov-kpi-val" id="bkpi-itd" style="color:#0e7490">—</div>
@@ -2358,9 +2357,75 @@
             <div class="ov-kpi-div"></div>
             <div class="ov-kpi-cell"><div class="ov-kpi-val" id="bkpi-itd-l3" style="color:#0891b2">—</div><div class="ov-kpi-lbl">ITD L3</div></div>
             <div class="ov-kpi-div"></div>
-            <div class="ov-kpi-cell"><div class="ov-kpi-val" id="bkpi-itd-l4" style="color:#0891b2">—</div><div class="ov-kpi-lbl">ITD L4</div></div>
-            <div class="ov-kpi-div"></div>
             <div class="ov-kpi-cell"><div class="ov-kpi-val" id="bkpi-due" style="color:#d97706">—</div><div class="ov-kpi-lbl">With Due Date</div></div>
+          </div>
+
+          <!-- Row 2: RICEFW by type -->
+          <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;padding-bottom:2px;border-bottom:1px solid var(--grey100)">RICEFW by Type</div>
+          <div id="bkpi-ricefw-row" style="display:flex;flex-wrap:wrap;gap:0;margin-bottom:10px">
+            <div class="ov-kpi-cell"><div class="ov-kpi-val" id="bkpi-rf-total" style="color:var(--bpml-color)">—</div><div class="ov-kpi-lbl">Total RICEFW</div></div>
+            <div class="ov-kpi-div"></div>
+            <div class="ov-kpi-cell"><div class="ov-kpi-val" id="bkpi-rf-Interface" style="color:#0369a1">—</div><div class="ov-kpi-lbl">Interface</div></div>
+            <div class="ov-kpi-div"></div>
+            <div class="ov-kpi-cell"><div class="ov-kpi-val" id="bkpi-rf-Report" style="color:#166534">—</div><div class="ov-kpi-lbl">Report</div></div>
+            <div class="ov-kpi-div"></div>
+            <div class="ov-kpi-cell"><div class="ov-kpi-val" id="bkpi-rf-Conversion" style="color:#7c2d12">—</div><div class="ov-kpi-lbl">Conversion</div></div>
+            <div class="ov-kpi-div"></div>
+            <div class="ov-kpi-cell"><div class="ov-kpi-val" id="bkpi-rf-Enhancement" style="color:#7c3aed">—</div><div class="ov-kpi-lbl">Enhancement</div></div>
+            <div class="ov-kpi-div"></div>
+            <div class="ov-kpi-cell"><div class="ov-kpi-val" id="bkpi-rf-Form" style="color:#b45309">—</div><div class="ov-kpi-lbl">Form</div></div>
+            <div class="ov-kpi-div"></div>
+            <div class="ov-kpi-cell"><div class="ov-kpi-val" id="bkpi-rf-Workflow" style="color:#0f766e">—</div><div class="ov-kpi-lbl">Workflow</div></div>
+            <div class="ov-kpi-div"></div>
+            <div class="ov-kpi-cell"><div class="ov-kpi-val" id="bkpi-rf-other" style="color:var(--text2)">—</div><div class="ov-kpi-lbl">Other</div></div>
+          </div>
+
+          <!-- Row 3: Requirements + FSD by Status + FUT by Status -->
+          <div style="display:flex;gap:16px;flex-wrap:wrap">
+            <!-- Requirements -->
+            <div style="flex:1;min-width:160px">
+              <div style="font-size:9px;font-weight:700;color:#6366f1;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;padding-bottom:2px;border-bottom:1px solid #e0e7ff">Requirements</div>
+              <div style="display:flex;flex-wrap:wrap;gap:0">
+                <div class="ov-kpi-cell"><div class="ov-kpi-val" id="bkpi-req-total" style="color:#6366f1">—</div><div class="ov-kpi-lbl">Total</div></div>
+                <div id="bkpi-req-statuses" style="display:contents"></div>
+              </div>
+            </div>
+            <!-- FSD by Status -->
+            <div style="flex:1;min-width:160px">
+              <div style="font-size:9px;font-weight:700;color:#0369a1;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;padding-bottom:2px;border-bottom:1px solid #e0f2fe">FSD by Status</div>
+              <div style="display:flex;flex-wrap:wrap;gap:0">
+                <div class="ov-kpi-cell"><div class="ov-kpi-val" id="bkpi-fsd-total" style="color:#0369a1">—</div><div class="ov-kpi-lbl">Total</div></div>
+                <div id="bkpi-fsd-statuses" style="display:contents"></div>
+              </div>
+            </div>
+            <!-- FUT by Status -->
+            <div style="flex:1;min-width:160px">
+              <div style="font-size:9px;font-weight:700;color:#7c2d12;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;padding-bottom:2px;border-bottom:1px solid #ffedd5">FUT by Status</div>
+              <div style="display:flex;flex-wrap:wrap;gap:0">
+                <div class="ov-kpi-cell"><div class="ov-kpi-val" id="bkpi-fut-total" style="color:#7c2d12">—</div><div class="ov-kpi-lbl">Total</div></div>
+                <div id="bkpi-fut-statuses" style="display:contents"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Insights Panel (moved directly below BPML Summary) -->
+        <div class="insights-panel" id="bpml-insights-panel" style="display:none;margin-bottom:14px;border-left:3px solid var(--bpml-color);background:linear-gradient(135deg,#faf5ff 0%,#ede9fe 100%)">
+          <div class="insights-header" style="background:linear-gradient(135deg,#faf5ff 0%,#ede9fe 100%)">
+            <div class="insights-icon" style="background:rgba(124,58,237,0.12);color:var(--bpml-color)">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2a8 8 0 100 16A8 8 0 0010 2z"/><path d="M10 6v4l3 3"/></svg>
+            </div>
+            <div>
+              <div class="insights-title" style="color:var(--bpml-dark)">BPML — AI Insights &amp; Analysis</div>
+              <div class="insights-sub" id="bpml-ins-meta">Powered by Claude · Auto-generated on load</div>
+            </div>
+            <button onclick="_bpmlGenerateInsights()" id="bpml-ins-btn" style="margin-left:auto;background:var(--bpml-color);color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:6px" title="Re-generate insights">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px"><path d="M13.5 8a5.5 5.5 0 11-1.1-3.3"/><path d="M13.5 2v3h-3"/></svg>
+              Refresh
+            </button>
+          </div>
+          <div class="insights-body" id="bpml-insights-body">
+            <div style="color:var(--text3);font-size:12px;font-family:var(--mono);padding:8px 0">Generating insights…</div>
           </div>
         </div>
 
@@ -2386,46 +2451,57 @@
                 <option value="">All</option>
               </select>
             </div>
-            <div class="bl-filter-group" style="flex:1;min-width:240px">
+            <div class="bl-filter-group">
+              <label class="bl-filter-label">RICEFW Type</label>
+              <select id="bpml-filter-rftype" class="bl-select" onchange="_bpmlRender()">
+                <option value="">All</option>
+              </select>
+            </div>
+            <div class="bl-filter-group">
+              <label class="bl-filter-label">Story Category</label>
+              <select id="bpml-filter-cat" class="bl-select" onchange="_bpmlRender()">
+                <option value="">All</option>
+              </select>
+            </div>
+            <div class="bl-filter-group" style="flex:1;min-width:200px">
               <label class="bl-filter-label">Search (ID / Summary)</label>
               <input id="bpml-search-q" type="text" class="bl-select" style="width:100%" placeholder="Type to filter…" oninput="_bpmlRender()">
             </div>
-            <div style="display:flex;gap:6px;align-items:flex-end">
-              <button onclick="_bpmlExpandAll()" style="background:var(--bpml-color);color:#fff;border:none;border-radius:7px;padding:7px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font)">Expand All</button>
-              <button onclick="_bpmlCollapseAll()" style="background:var(--grey200);color:var(--text2);border:none;border-radius:7px;padding:7px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font)">Collapse All</button>
+            <!-- Levelled Expand / Collapse -->
+            <div style="display:flex;gap:0;align-items:flex-end;border:1px solid var(--border);border-radius:8px;overflow:hidden;flex-shrink:0">
+              <div style="display:flex;flex-direction:column;background:var(--grey100);border-right:1px solid var(--border)">
+                <div style="font-size:8px;font-weight:700;color:var(--text3);text-align:center;padding:3px 8px 0;text-transform:uppercase;letter-spacing:0.05em">Level</div>
+                <select id="bpml-expand-level" style="border:none;background:transparent;font-size:11px;font-weight:600;color:var(--text);padding:2px 6px 4px;cursor:pointer;font-family:var(--font);outline:none">
+                  <option value="1">L1 only</option>
+                  <option value="2">L1 → L2</option>
+                  <option value="3" selected>L1 → L3</option>
+                  <option value="req">L3 → Req</option>
+                  <option value="rf">Req → RICEFW</option>
+                  <option value="all">Full (all)</option>
+                </select>
+              </div>
+              <button onclick="_bpmlExpandToLevel()" style="background:var(--bpml-color);color:#fff;border:none;padding:0 11px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);height:100%;display:flex;align-items:center;gap:5px;border-right:1px solid rgba(255,255,255,0.2)">
+                <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" style="width:11px;height:11px"><path d="M2 4h10M2 7h7M2 10h4"/><path d="M10 7l3 3-3 3"/></svg>
+                Expand
+              </button>
+              <button onclick="_bpmlCollapseToLevel()" style="background:var(--grey200);color:var(--text2);border:none;padding:0 11px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);height:100%;display:flex;align-items:center;gap:5px">
+                <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" style="width:11px;height:11px"><path d="M2 4h10M2 7h10M2 10h10"/><path d="M12 4l-3 3 3 3"/></svg>
+                Collapse
+              </button>
             </div>
           </div>
         </div>
-
-        <!-- AI Insights Panel -->
-        <div class="insights-panel" id="bpml-insights-panel" style="display:none;margin-bottom:14px;border-left:3px solid var(--bpml-color);background:linear-gradient(135deg,#faf5ff 0%,#ede9fe 100%)">
-          <div class="insights-header" style="background:linear-gradient(135deg,#faf5ff 0%,#ede9fe 100%)">
-            <div class="insights-icon" style="background:rgba(124,58,237,0.12);color:var(--bpml-color)">
-              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2a8 8 0 100 16A8 8 0 0010 2z"/><path d="M10 6v4l3 3"/></svg>
-            </div>
-            <div>
-              <div class="insights-title" style="color:var(--bpml-dark)">BPML — AI Insights &amp; Analysis</div>
-              <div class="insights-sub" id="bpml-ins-meta">Powered by Claude · Auto-generated on load</div>
-            </div>
-            <button onclick="_bpmlGenerateInsights()" id="bpml-ins-btn" style="margin-left:auto;background:var(--bpml-color);color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:6px" title="Re-generate insights">
-              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px"><path d="M13.5 8a5.5 5.5 0 11-1.1-3.3"/><path d="M13.5 2v3h-3"/></svg>
-              Refresh
-            </button>
-          </div>
-          <div class="insights-body" id="bpml-insights-body">
-            <div style="color:var(--text3);font-size:12px;font-family:var(--mono);padding:8px 0">Generating insights…</div>
-          </div>
-        </div>
+        
 
         <!-- No data state -->
         <div id="bpml-no-data-state">
           <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:72px 24px;text-align:center;color:var(--text3)">
             <svg width="60" height="60" viewBox="0 0 60 60" fill="none" stroke="var(--bpml-color)" stroke-width="1.2" style="opacity:0.3;margin-bottom:20px"><rect x="4" y="8" width="52" height="44" rx="6"/><path d="M14 24h32M14 32h22M14 40h18"/><circle cx="44" cy="22" r="6" stroke="var(--bpml-color)" fill="none"/></svg>
             <div style="font-size:15px;font-weight:700;color:var(--text2);margin-bottom:8px">No BPML data loaded</div>
-            <div style="font-size:12px;font-family:var(--mono);margin-bottom:22px;max-width:420px;line-height:1.7">Upload a Jira BPML CSV export to view the 4-tier Business Process Master List hierarchy — Level 1 → 2 → 3 → 4.</div>
-            <button onclick="document.getElementById('csv-bpml-input').click()" style="background:var(--bpml-color);color:#fff;border:none;border-radius:8px;padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:8px">
+            <div style="font-size:12px;font-family:var(--mono);margin-bottom:22px;max-width:420px;line-height:1.7">Upload 3 Jira CSV exports to build the full hierarchy: BPML (L1→L2→L3) → RICEFW → Requirements → FSD/FUT.</div>
+            <button onclick="showSection('upload')" style="background:var(--bpml-color);color:#fff;border:none;border-radius:8px;padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:8px">
               <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:13px;height:13px"><path d="M8 10V3m0 0L5.5 5.5M8 3l2.5 2.5M3 11v1.5A1.5 1.5 0 004.5 14h7a1.5 1.5 0 001.5-1.5V11"/></svg>
-              Upload BPML CSV
+              Upload BPML Files
             </button>
           </div>
         </div>
@@ -3171,27 +3247,101 @@
               </div>
               <div>
                 <div class="upload-card-title" style="color:#fff">BPML Structure</div>
-                <div class="upload-card-sub" style="color:rgba(255,255,255,0.65)">Business Process Master List — 4-tier hierarchy</div>
+                <div class="upload-card-sub" style="color:rgba(255,255,255,0.65)">Business Process Master List — BPML → RICEFW → Requirements → FSD/FUT</div>
               </div>
               <div class="upload-status-chip" id="bpml-status-chip">
-                <span class="usc-dot" style="background:var(--grey400)"></span>No file
+                <span class="usc-dot" style="background:var(--grey400)"></span>No files
               </div>
             </div>
-            <div class="upload-zone" id="bpml-drop-zone" onclick="document.getElementById('csv-bpml-input').click()" style="border-color:#ddd6fe">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16V8m0 0l-4 4m4-4l4 4"/><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1"/></svg>
-              <div class="upload-zone-title">Drop BPML CSV here</div>
-              <div class="upload-zone-sub">Updates: BPML Structure tab — Level 1 → 2 → 3 → 4 hierarchy</div>
+            <!-- Three upload slots -->
+            <div style="display:flex;flex-direction:column;gap:8px;padding:12px 16px 8px">
+              <!-- Slot 1: BPML Hierarchy -->
+              <div style="border:1.5px dashed #ddd6fe;border-radius:8px;padding:10px 14px;cursor:pointer;transition:background 0.12s;background:#faf5ff"
+                   id="bpml-drop-zone-1"
+                   onclick="document.getElementById('csv-bpml-input-1').click()"
+                   ondragover="event.preventDefault();this.style.background='#f0e6ff'"
+                   ondragleave="this.style.background='#faf5ff'"
+                   ondrop="_bpmlDropHandler(event,1)">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div style="width:28px;height:28px;background:var(--bpml-lt);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="var(--bpml-color)" stroke-width="1.5" style="width:13px;height:13px"><rect x="1" y="2" width="14" height="12" rx="2"/><path d="M4 6h8M4 9h5"/></svg>
+                  </div>
+                  <div style="flex:1;min-width:0">
+                    <div style="font-size:11px;font-weight:700;color:var(--bpml-dark)">File 1 — BPML Hierarchy</div>
+                    <div style="font-size:10px;color:var(--text3);font-family:var(--mono)" id="bpml-file1-name">Issue Type: Level 1 / Level 2 / Level 3 · Outward issue link (Parent-Child)</div>
+                  </div>
+                  <span id="bpml-file1-dot" style="width:8px;height:8px;border-radius:50%;background:var(--grey300);flex-shrink:0"></span>
+                </div>
+              </div>
+              <!-- Slot 2: RICEFW / Story (Requirement) -->
+              <div style="border:1.5px dashed #c4b5fd;border-radius:8px;padding:10px 14px;cursor:pointer;transition:background 0.12s;background:#fdf4ff"
+                   id="bpml-drop-zone-2"
+                   onclick="document.getElementById('csv-bpml-input-2').click()"
+                   ondragover="event.preventDefault();this.style.background='#f3e8ff'"
+                   ondragleave="this.style.background='#fdf4ff'"
+                   ondrop="_bpmlDropHandler(event,2)">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div style="width:28px;height:28px;background:#ede9fe;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="var(--bpml-color)" stroke-width="1.5" style="width:13px;height:13px"><rect x="1" y="2" width="14" height="12" rx="2"/><path d="M4 6h8M4 9h8M4 12h5"/></svg>
+                  </div>
+                  <div style="flex:1;min-width:0">
+                    <div style="font-size:11px;font-weight:700;color:var(--bpml-dark)">File 2 — RICEFW</div>
+                    <div style="font-size:10px;color:var(--text3);font-family:var(--mono)" id="bpml-file2-name">Issue Type: Report / Interface / Conversion / Enhancement / Form / Workflow</div>
+                  </div>
+                  <span id="bpml-file2-dot" style="width:8px;height:8px;border-radius:50%;background:var(--grey300);flex-shrink:0"></span>
+                </div>
+              </div>
+              <!-- Slot 3: FSD / FUT -->
+              <div style="border:1.5px dashed #a5b4fc;border-radius:8px;padding:10px 14px;cursor:pointer;transition:background 0.12s;background:#f5f3ff"
+                   id="bpml-drop-zone-3"
+                   onclick="document.getElementById('csv-bpml-input-3').click()"
+                   ondragover="event.preventDefault();this.style.background='#ede9fe'"
+                   ondragleave="this.style.background='#f5f3ff'"
+                   ondrop="_bpmlDropHandler(event,3)">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div style="width:28px;height:28px;background:#e0e7ff;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="#4f46e5" stroke-width="1.5" style="width:13px;height:13px"><path d="M3 2h7l4 4v8H3V2z"/><path d="M10 2v4h4"/><path d="M5 9h6M5 12h4"/></svg>
+                  </div>
+                  <div style="flex:1;min-width:0">
+                    <div style="font-size:11px;font-weight:700;color:#4338ca">File 3 — Requirement, FSD / FUT</div>
+                    <div style="font-size:10px;color:var(--text3);font-family:var(--mono)" id="bpml-file3-name">Issue Type: Story · Story Category: Requirement / FSD / FUT</div>
+                  </div>
+                  <span id="bpml-file3-dot" style="width:8px;height:8px;border-radius:50%;background:var(--grey300);flex-shrink:0"></span>
+                </div>
+              </div>
+              <!-- Build button -->
+              <button id="bpml-build-btn" onclick="_bpmlBuildFromFiles()" disabled
+                style="margin-top:4px;width:100%;background:var(--bpml-color);color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);opacity:0.4;transition:opacity 0.2s"
+                title="Upload all 3 files then click to build hierarchy">
+                Build BPML Hierarchy
+              </button>
             </div>
-            <div class="upload-field-guide">
-              <div class="ufg-title">Expected fields</div>
+            <div class="upload-field-guide" style="border-top:1px solid var(--grey100);padding-top:10px">
+              <div class="ufg-title">Key columns across all 3 files</div>
               <div class="ufg-tags">
-                <span class="ufg-tag">Issue key</span><span class="ufg-tag">Summary</span><span class="ufg-tag">Issue Type</span>
-                <span class="ufg-tag">Status</span><span class="ufg-tag">Reporter</span><span class="ufg-tag">Due Date</span>
-                <span class="ufg-tag">Custom field (ID#)</span><span class="ufg-tag">Custom field (Sub-Workstream)</span>
-                <span class="ufg-tag">Inward issue link (Parent-Child)</span>
+                <span class="ufg-tag" style="background:#ede9fe;color:#5b21b6;font-weight:700">File 1</span>
+                <span class="ufg-tag">Issue key</span><span class="ufg-tag">Issue Type (Level 1–4)</span>
+                <span class="ufg-tag">Summary</span><span class="ufg-tag">Status</span>
                 <span class="ufg-tag">Outward issue link (Parent-Child)</span>
+                <span class="ufg-tag">Custom field (Sub-Workstream)</span>
                 <span class="ufg-tag">Custom field (Phase (Multi))</span>
-                <span class="ufg-tag">Custom field (Actual Complete Date)</span>
+                <span class="ufg-tag">Custom field (ID#)</span>
+              </div>
+              <div class="ufg-tags" style="margin-top:6px">
+                <span class="ufg-tag" style="background:#7c3aed;color:#fff;font-weight:700">File 2</span>
+                <span class="ufg-tag">Issue key</span><span class="ufg-tag">Issue Type (RICEFW type)</span>
+                <span class="ufg-tag">Summary</span><span class="ufg-tag">Status</span>
+                <span class="ufg-tag">Inward issue link (Parent-Child) → L3</span>
+                <span class="ufg-tag">Inward issue link (Requirement) → Req</span>
+                <span class="ufg-tag">Outward issue link (Parent-Child) → FSD/FUT</span>
+              </div>
+              <div class="ufg-tags" style="margin-top:6px">
+                <span class="ufg-tag" style="background:#6366f1;color:#fff;font-weight:700">File 3</span>
+                <span class="ufg-tag">Issue key</span><span class="ufg-tag">Issue Type (Story)</span>
+                <span class="ufg-tag">Summary</span><span class="ufg-tag">Status</span>
+                <span class="ufg-tag">Custom field (Story Category)</span>
+                <span class="ufg-tag">Inward issue link (Parent-Child) → L3 or RICEFW</span>
+                <span class="ufg-tag">Outward issue link (Requirement) → RICEFW (Req rows)</span>
               </div>
             </div>
             <div id="upload-lock-bpml" style="display:none;align-items:center;gap:6px;font-size:10px;font-family:var(--mono);padding:5px 10px;border-radius:6px;margin-top:4px;flex-wrap:wrap"></div>
@@ -3383,6 +3533,9 @@
 <input type="file" id="csv-raid-input" accept=".csv" style="display:none">
 <input type="file" id="csv-cf-input" accept=".csv" style="display:none">
 <input type="file" id="csv-bpml-input" accept=".csv" style="display:none">
+<input type="file" id="csv-bpml-input-1" accept=".csv" style="display:none">
+<input type="file" id="csv-bpml-input-2" accept=".csv" style="display:none">
+<input type="file" id="csv-bpml-input-3" accept=".csv" style="display:none">
 <input type="file" id="csv-sprintplan-input" accept=".csv" style="display:none">
 <input type="file" id="csv-testplan-input" accept=".csv" style="display:none">
 <script>
@@ -7200,8 +7353,11 @@ function resetAllData() {
   window._data     = null;
   window._raidData = null;
   window._cfData   = null;
-  window._bpmlData = null;
-  window._bpmlMap  = null;
+  window._bpmlData      = null;
+  window._bpmlMap       = null;
+  window._bpmlOrphans   = null;
+  window._bpmlWithdrawn = null;
+  window._bpmlFiles     = { f1: null, f2: null, f3: null };
   window._spData   = null;
   window._spPlanned= [];
   window._spPlannedOverrides = {};
@@ -7544,8 +7700,43 @@ function _drillRenderPage() {
         <td style="padding:8px 12px;border-bottom:1px solid var(--grey200);font-family:var(--mono);font-size:11px;white-space:nowrap;color:${item.isOverdue?'var(--red)':'var(--text2)'};font-weight:${item.isOverdue?'600':'400'}">${item.due||'—'}${item.isOverdue?' ⚠':''}</td>
       </tr>`;
     }).join('');
+  } else if (mode === 'bpml') {
+    // BPML items (RICEFW / Req / FSD / FUT)
+    const statBg = s => s&&s.toLowerCase().includes('progress')?'#dbeafe':s&&(s.toLowerCase().includes('complet')||s.toLowerCase().includes('approv'))?'#dcfce7':s&&s.toLowerCase().includes('hold')?'#ffedd5':s&&s.toLowerCase().includes('withdrawn')?'#f1f5f9':'#f8fafc';
+    const statFg = s => s&&s.toLowerCase().includes('progress')?'#1e40af':s&&(s.toLowerCase().includes('complet')||s.toLowerCase().includes('approv'))?'#166534':s&&s.toLowerCase().includes('hold')?'#9a3412':s&&s.toLowerCase().includes('withdrawn')?'#6b7280':'#475569';
+    thead.innerHTML = `<tr>
+      <th style="${thS};width:145px">Issue Key</th>
+      <th style="${thS}">Summary</th>
+      <th style="${thS};width:90px">Type / Category</th>
+      <th style="${thS};width:95px;text-align:center">Status</th>
+      <th style="${thS};width:120px">Workstream</th>
+      <th style="${thS};width:110px">Owner</th>
+      <th style="${thS};width:90px">Due Date</th>
+    </tr>`;
+    tbody.innerHTML = pageItems.map((item, ri) => {
+      const rowBg = ri%2===0?'#fff':'#f8fafc';
+      const idHtml = item.id
+        ? `<a href="${JIRA_BASE}${encodeURIComponent(item.id)}" target="_blank" rel="noopener"
+            style="color:var(--blue);font-family:var(--mono);font-size:11px;font-weight:600;
+                   text-decoration:none;border-bottom:1px dashed #93c5fd;white-space:nowrap"
+            title="Open ${item.id} in Jira">${item.id}</a>`
+        : `<span style="color:var(--text3);font-size:11px;font-family:var(--mono)">—</span>`;
+      const sumText = item.summary||'';
+      const sumDisp = sumText.length>110 ? sumText.slice(0,109)+'…' : sumText;
+      const typeDisp = item.type||'—';
+      const ow = item.owner ? item.owner.split('@')[0].split('.').map(p=>p.charAt(0).toUpperCase()+p.slice(1)).join(' ') : '—';
+      const sBg = statBg(item.status), sFg = statFg(item.status);
+      return `<tr style="background:${rowBg}">
+        <td style="padding:8px 12px;border-bottom:1px solid var(--grey200);white-space:nowrap">${idHtml}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--grey200);font-size:11px" title="${sumText}">${sumDisp}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--grey200);font-size:10px;font-family:var(--mono);color:var(--text2);white-space:nowrap">${typeDisp}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--grey200);text-align:center"><span style="background:${sBg};color:${sFg};border-radius:4px;padding:2px 7px;font-size:9px;font-weight:600;font-family:var(--mono);white-space:nowrap">${item.status||'—'}</span></td>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--grey200);font-size:11px;color:var(--text2);white-space:nowrap">${item.ws||'—'}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--grey200);font-size:11px;white-space:nowrap">${ow}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--grey200);font-family:var(--mono);font-size:11px;white-space:nowrap;color:var(--text2)">${item.due||'—'}</td>
+      </tr>`;
+    }).join('');
   } else {
-    // Sprint mode (ws / team)
     const statusColors = {Completed:'#dcfce7','In Review':'#dbeafe','In Progress':'#dbeafe','Not Started':'#f8fafc','On Hold':'#ffedd5'};
     const statusFgs    = {Completed:'#166534','In Review':'#1e40af','In Progress':'#1e40af','Not Started':'#475569','On Hold':'#9a3412'};
     thead.innerHTML = `<tr>
@@ -7650,11 +7841,35 @@ AND Workstream = "Supply Chain"`,
 AND status not in (Withdrawn)
 AND "Story Category" in ("Cross Functional Integration")`,
 
-  bpml: `project = "PG&E - Propel (CONAMER1000364)"
+  bpml: [
+    {
+      label: 'File 1 — BPML Structure (Level 1–4)',
+      color: 'var(--bpml-color)',
+      query: `project = "PG&E - Propel (CONAMER1000364)"
 AND Workstream = "Supply Chain"
 AND issuetype IN ("Level 1","Level 2","Level 3","Level 4")
-AND "Phase (Multi)" in ("Release 1")
-AND Status in ("Process Disposition Approved")`,
+AND "Phase (Multi)" in ("Release 1","Enterprise Design")
+AND Status in ("Process Disposition Approved")`
+    },
+    {
+      label: 'File 2 — RICEFW',
+      color: '#7c3aed',
+      query: `project = "PG&E - Propel (CONAMER1000364)"
+AND Workstream = "Supply Chain"
+AND issuetype IN (Report,Interface,Conversion,Enhancement,Form,Workflow)
+AND "Phase (Multi)" in ("Release 1","Enterprise Design")`
+    },
+    {
+      label: 'File 3 — Requirement, FSD, FUT',
+      color: '#6366f1',
+      query: `project = "PG&E - Propel (CONAMER1000364)"
+AND Workstream = "Supply Chain"
+AND issuetype IN (Story)
+AND "Story Category" is not EMPTY
+AND "Story Category" in (Requirement, FUT, FSD)
+AND "Phase (Multi)" in ("Release 1","Enterprise Design")`
+    }
+  ],
 
   sprintplan: `project = "PG&E - Propel (CONAMER1000364)"
 AND issuetype = story
@@ -7678,7 +7893,6 @@ function _showJQL(type) {
   const box      = document.getElementById('jql-query-box');
   const copyLbl  = document.getElementById('jql-copy-label');
 
-  // Theme accent per type
   const accents = {
     sprint:     {border:'var(--navy)',       title:'var(--navy)'},
     raid:       {border:'#6366f1',           title:'#4f46e5'},
@@ -7688,12 +7902,43 @@ function _showJQL(type) {
   };
   const ac = accents[type] || accents.sprint;
 
-  title.textContent         = _JQL_TITLES[type] + ' — JQL Query';
+  title.textContent         = _JQL_TITLES[type] + ' — JQL Queries';
   title.style.color         = ac.title;
-  box.textContent           = _JQL[type];
-  box.dataset.jql           = _JQL[type];
-  box.style.borderLeftColor = ac.border;
   copyLbl.textContent       = 'Copy to clipboard';
+
+  const jqlData = _JQL[type];
+  // Hide/show the main copy button depending on single vs multi-query
+  const mainCopyBtn = copyLbl ? copyLbl.closest('button') : null;
+  if (mainCopyBtn) mainCopyBtn.style.display = Array.isArray(jqlData) ? 'none' : '';
+
+  // Multi-query format (BPML has array of {label, color, query})
+  if (Array.isArray(jqlData)) {
+    // Store queries so named copy function can access them by index
+    window._jqlMultiItems = jqlData;
+
+    box.innerHTML = jqlData.map((item, idx) => {
+      const safeLabel = item.label.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      const safeQuery = item.query.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      return '<div style="margin-bottom:' + (idx < jqlData.length-1 ? '16px' : '0') + '">'
+        + '<div style="font-size:10px;font-weight:700;color:' + item.color + ';text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;display:flex;align-items:center;gap:6px">'
+        + '<span style="width:8px;height:8px;border-radius:50%;background:' + item.color + ';display:inline-block;flex-shrink:0"></span>'
+        + safeLabel + '</div>'
+        + '<div style="background:#f8fafc;border:1px solid var(--border);border-radius:9px;padding:12px 14px;font-family:var(--mono);font-size:12px;line-height:1.7;color:var(--navy);word-break:break-word;white-space:pre-wrap;border-left:3px solid ' + item.color + '">' + safeQuery + '</div>'
+        + '<button onclick="_copyJQLItem(' + idx + ')" style="margin-top:6px;display:flex;align-items:center;gap:6px;border:1px solid ' + item.color + ';background:#fff;color:' + item.color + ';border-radius:7px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font)">'
+        + '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px"><rect x="4" y="4" width="9" height="10" rx="1.5"/><path d="M3 10H2.5A1.5 1.5 0 011 8.5v-6A1.5 1.5 0 012.5 1h6A1.5 1.5 0 0110 2.5V3"/></svg>'
+        + '<span id="jql-copy-label-' + idx + '">Copy</span>'
+        + '</button></div>';
+    }).join('');
+
+    box.dataset.jql = jqlData.map(function(i){ return '-- ' + i.label + ' --\n' + i.query; }).join('\n\n');
+    box.style.borderLeftColor = ac.border;
+  } else {
+    // Single query (original behaviour)
+    box.textContent           = jqlData;
+    box.dataset.jql           = jqlData;
+    box.style.borderLeftColor = ac.border;
+  }
+
   overlay.style.display     = 'flex';
   document.body.style.overflow = 'hidden';
 }
@@ -7711,7 +7956,6 @@ function _copyJQL() {
       setTimeout(() => { document.getElementById('jql-copy-label').textContent = 'Copy to clipboard'; }, 2000);
     });
   } else {
-    // Fallback
     const ta = document.createElement('textarea');
     ta.value = jql;
     document.body.appendChild(ta);
@@ -7720,6 +7964,30 @@ function _copyJQL() {
     document.body.removeChild(ta);
     document.getElementById('jql-copy-label').textContent = '✓ Copied!';
     setTimeout(() => { document.getElementById('jql-copy-label').textContent = 'Copy to clipboard'; }, 2000);
+  }
+}
+
+// ── Copy individual JQL item by index (used by multi-query BPML modal) ──
+function _copyJQLItem(idx) {
+  const items = window._jqlMultiItems;
+  if (!items || !items[idx]) return;
+  const txt = items[idx].query;
+  const lbl = document.getElementById('jql-copy-label-' + idx);
+  function done() {
+    if (lbl) { lbl.textContent = '✓ Copied!'; setTimeout(() => { lbl.textContent = 'Copy'; }, 2000); }
+  }
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(txt).then(done).catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = txt; document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+      done();
+    });
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = txt; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    done();
   }
 }
 
@@ -8406,8 +8674,20 @@ function _raidSearchClear() {
    BPML STRUCTURE — parse, build hierarchy, render, AI insights
 ═══════════════════════════════════════════════════════════════ */
 
-window._bpmlData = null;   // raw parsed items array
-window._bpmlMap  = null;   // key → item map
+// ══════════════════════════════════════════════════════════
+//  BPML MULTI-FILE DATA MODEL
+//  File 1 → BPML hierarchy (Level 1/2/3, linked via Outward issue link Parent-Child)
+//  File 2 → RICEFW / Story rows where Issue Type=Story & Story Category=Requirement
+//           Link: row's "Inward issue link (Parent-Child)" → L3 key
+//                 row's "Outward Issue Link (Requirement)" → RICEFW key
+//  File 3 → FSD / FUT rows
+//           Link: row's "Inward Issue Link (Parent-Child)" → Requirement key
+// ══════════════════════════════════════════════════════════
+window._bpmlData      = null;   // raw BPML items array (levels 1-3)
+window._bpmlMap       = null;   // key → item map (all items)
+window._bpmlFiles     = { f1: null, f2: null, f3: null };  // raw parsed file texts
+window._bpmlOrphans   = null;   // { ricefw:[], req:[], docs:[] }
+window._bpmlWithdrawn = null;   // { ricefw:[], req:[], docs:[] }
 const _bpml = { filteredRoots: [] };
 
 // ── helpers ──
@@ -8453,37 +8733,32 @@ function _bpmlParseCSV(src) {
   return rows;
 }
 
-// ── Main parser ──
+// ── Parse File 1: BPML hierarchy (Level 1 / Level 2 / Level 3) ──
+// ── Parse File 1: BPML hierarchy (Level 1 / Level 2 / Level 3)
+// L1 Outward PC → L2 keys
+// L2 Outward PC → L3 keys
+// L3 Outward PC → Requirement keys (File 3) ← KEY INSIGHT from data
 function parseBPMLCsv(text) {
   const rows = _bpmlParseCSV(text);
   if (rows.length < 2) return null;
   const headers = rows[0].map(h => h.trim());
-  const col = name => headers.indexOf(name);
+  const col  = name => headers.indexOf(name);
+  const gcol = name => headers.reduce((a,h,i) => { if (h===name) a.push(i); return a; }, []);
 
   const iKey    = col('Issue key');
   const iSum    = col('Summary');
   const iType   = col('Issue Type');
   const iStatus = col('Status');
   const iRep    = col('Reporter');
+  const iAssign = col('Assignee');
   const iDue    = col('Due Date');
   const iIdNum  = col('Custom field (ID#)');
   const iWs     = col('Custom field (Sub-Workstream)');
   const iPhase  = col('Custom field (Phase (Multi))');
   const iActDt  = col('Custom field (Actual Complete Date)');
-  const iUpdated= col('Updated');
-  const iCreated= col('Created');
 
-  // All inward parent-child cols
-  const inwardCols = headers.reduce((a,h,i) => {
-    if (h === 'Inward issue link (Parent-Child)' || /^Inward issue link \(Parent-Child\)\.\d+$/.test(h)) a.push(i);
-    return a;
-  }, []);
-
-  // All outward child cols
-  const outwardCols = headers.reduce((a,h,i) => {
-    if (h === 'Outward issue link (Parent-Child)' || /^Outward issue link \(Parent-Child\)\.\d+$/.test(h)) a.push(i);
-    return a;
-  }, []);
+  const inwardPCcols  = gcol('Inward issue link (Parent-Child)');
+  const outwardPCcols = gcol('Outward issue link (Parent-Child)');
 
   const g = (r,i) => (i>=0 && i<r.length) ? r[i].trim() : '';
 
@@ -8493,42 +8768,259 @@ function parseBPMLCsv(text) {
     const key = g(r, iKey);
     if (!key) continue;
 
-    const parents = [...new Set(inwardCols.map(ci => g(r,ci)).filter(Boolean))];
-    const children = [...new Set(outwardCols.map(ci => g(r,ci)).filter(Boolean))];
+    const level    = parseInt((g(r,iType)||'').replace(/level /i,'')) || 0;
+    const parents  = [...new Set(inwardPCcols.map(ci => g(r,ci)).filter(Boolean))];
+    const outwardPC = [...new Set(outwardPCcols.map(ci => g(r,ci)).filter(Boolean))];
 
     items.push({
       key,
       summary:  g(r, iSum),
-      type:     g(r, iType),       // 'Level 1' .. 'Level 4'
+      type:     g(r, iType),
       status:   g(r, iStatus),
       reporter: g(r, iRep),
+      assignee: g(r, iAssign),
       due:      _bpmlFmtDate(g(r, iDue)),
       idNum:    g(r, iIdNum),
       ws:       g(r, iWs),
       phase:    g(r, iPhase),
       actDate:  _bpmlFmtDate(g(r, iActDt)),
-      updated:  g(r, iUpdated),
       parents,
-      children,
-      // level number for quick comparison
-      level: parseInt((g(r, iType)||'').replace('Level ','')) || 0,
+      children:     outwardPC,  // L1/L2: child BPML keys; L3: Requirement keys
+      reqChildren:  [],          // filled by merge: Requirement keys confirmed under this L3
+      ricefwChildren: [],        // unused in new model
+      level,
     });
   }
   return items.length ? items : null;
 }
 
-// ── Build key map + resolve hierarchy ──
-function _bpmlBuildMap(items) {
+// ── Parse File 2: RICEFW items (Interface/Conversion/Report/Enhancement/Form)
+// Key link: Inward issue link (Requirement) → the Requirement key that points to this RICEFW
+// (The RICEFW's Inward PC points to a key NOT in File 1 L3 — ignore for hierarchy)
+function parseRicefwCsv(text) {
+  const rows = _bpmlParseCSV(text);
+  if (rows.length < 2) return null;
+  const headers = rows[0].map(h => h.trim());
+  const col  = name => headers.indexOf(name);
+  const gcol = name => headers.reduce((a,h,i) => { if (h===name) a.push(i); return a; }, []);
+
+  const iKey    = col('Issue key');
+  const iSum    = col('Summary');
+  const iType   = col('Issue Type');
+  const iStatus = col('Status');
+  const iRep    = col('Reporter');
+  const iAssign = col('Assignee');
+  const iDue    = col('Due Date');
+  const iWs     = col('Custom field (Sub-Workstream)');
+  const iSP     = col('Custom field (Story Points)');
+  const iSprint = col('Sprint');
+  const iIdNum  = col('Custom field (ID#)');
+
+  // Inward issue link (Requirement) → the Requirement that owns this RICEFW
+  const inwardReqCols  = gcol('Inward issue link (Requirement)');
+  // Outward PC → FSD/FUT child keys (those rows also confirm via their Inward PC)
+  const outwardPCcols  = gcol('Outward issue link (Parent-Child)');
+  // Inward PC kept for fallback / orphan detection
+  const inwardPCcols   = gcol('Inward issue link (Parent-Child)');
+
+  const g = (r,i) => (i>=0 && i<r.length) ? r[i].trim() : '';
+
+  const items = [];
+  for (let i = 1; i < rows.length; i++) {
+    const r = rows[i];
+    const key = g(r, iKey);
+    if (!key) continue;
+
+    // parentReqKeys: Requirement keys that link TO this RICEFW
+    const parentReqKeys   = [...new Set(inwardReqCols.map(ci => g(r,ci)).filter(Boolean))];
+    const outwardChildren = [...new Set(outwardPCcols.map(ci => g(r,ci)).filter(Boolean))];
+    const inwardPCvals    = [...new Set(inwardPCcols.map(ci => g(r,ci)).filter(Boolean))];
+
+    items.push({
+      key,
+      summary:       g(r, iSum),
+      type:          g(r, iType),
+      status:        g(r, iStatus),
+      reporter:      g(r, iRep),
+      assignee:      g(r, iAssign),
+      due:           _bpmlFmtDate(g(r, iDue)),
+      ws:            g(r, iWs),
+      sp:            g(r, iSP),
+      sprint:        g(r, iSprint),
+      idNum:         g(r, iIdNum),
+      parentReqKeys,    // Requirement keys that own this RICEFW
+      outwardChildren,  // FSD/FUT keys (outward PC)
+      inwardPCvals,     // fallback parent (orphan detection)
+      docChildren:   [], // filled by merge: confirmed FSD/FUT
+      _fileRole:     'ricefw',
+    });
+  }
+  return items.length ? items : null;
+}
+
+// ── Parse File 3: Requirement / FSD / FUT (all Issue Type=Story)
+// Requirement: Inward PC → L3 key + Outward issue link (Requirement) → RICEFW key
+// FSD/FUT:     Inward PC → RICEFW key
+function parseFsdFutCsv(text) {
+  const rows = _bpmlParseCSV(text);
+  if (rows.length < 2) return null;
+  const headers = rows[0].map(h => h.trim());
+  const col  = name => headers.indexOf(name);
+  const gcol = name => headers.reduce((a,h,i) => { if (h===name) a.push(i); return a; }, []);
+
+  const iKey    = col('Issue key');
+  const iSum    = col('Summary');
+  const iType   = col('Issue Type');
+  const iStatus = col('Status');
+  const iRep    = col('Reporter');
+  const iAssign = col('Assignee');
+  const iDue    = col('Due Date');
+  const iWs     = col('Custom field (Sub-Workstream)');
+  const iCat    = col('Custom field (Story Category)');
+  const iSP     = col('Custom field (Story Points)');
+  const iIdNum  = col('Custom field (ID#)');
+
+  const inwardPCcols      = gcol('Inward issue link (Parent-Child)');
+  const outwardReqCols    = gcol('Outward issue link (Requirement)');  // Req → RICEFW key
+
+  const g = (r,i) => (i>=0 && i<r.length) ? r[i].trim() : '';
+
+  const items = [];
+  for (let i = 1; i < rows.length; i++) {
+    const r = rows[i];
+    const key = g(r, iKey);
+    if (!key) continue;
+
+    const cat        = g(r, iCat);
+    const parentKeys = [...new Set(inwardPCcols.map(ci => g(r,ci)).filter(Boolean))];
+    // Only on Requirement rows: points to the RICEFW key
+    const ricefwKeys = [...new Set(outwardReqCols.map(ci => g(r,ci)).filter(Boolean))];
+
+    items.push({
+      key,
+      summary:    g(r, iSum),
+      type:       g(r, iType),
+      status:     g(r, iStatus),
+      reporter:   g(r, iRep),
+      assignee:   g(r, iAssign),
+      due:        _bpmlFmtDate(g(r, iDue)),
+      ws:         g(r, iWs),
+      cat,
+      sp:         g(r, iSP),
+      idNum:      g(r, iIdNum),
+      parentKeys,   // Req: L3 key | FSD/FUT: RICEFW key
+      ricefwKeys,   // Req only: RICEFW keys linked via Outward issue link (Requirement)
+      docChildren:  [],
+      _fileRole:  cat === 'Requirement' ? 'requirement' : 'fsd_fut',
+    });
+  }
+  return items.length ? items : null;
+}
+
+// ── Merge all 3 files into unified map ──
+// TRUE hierarchy (from data analysis):
+//   L1 → L2 → L3   (File 1 Outward PC)
+//   L3 → Requirement (File 1 L3 Outward PC contains Req keys; confirmed by Req's Inward PC = L3)
+//   Requirement → RICEFW (Req's Outward issue link (Requirement) = RICEFW key)
+//   RICEFW → FSD/FUT (FSD/FUT's Inward PC = RICEFW key)
+function _bpmlMergeData(bpmlItems, ricefwItems, f3Items) {
   const map = {};
-  items.forEach(it => { map[it.key] = it; });
-  // For items with no parent in the data but with children pointing back — fill gaps
-  items.forEach(it => {
-    it.children.forEach(ck => {
-      if (map[ck] && !map[ck].parents.includes(it.key)) {
-        map[ck].parents.push(it.key);
+  const isWithdrawn = s => (s||'').trim().toLowerCase() === 'withdrawn';
+
+  // 1. Seed map with BPML items
+  bpmlItems.forEach(it => {
+    it.reqChildren    = [];
+    it.ricefwChildren = [];
+    map[it.key] = it;
+  });
+
+  // 2. Wire BPML L1→L2→L3 via Outward PC
+  const l3Keys = new Set(bpmlItems.filter(i=>i.level===3).map(i=>i.key));
+  bpmlItems.forEach(it => {
+    if (it.level < 3) {
+      it.children.forEach(ck => {
+        if (map[ck] && !map[ck].parents.includes(it.key)) map[ck].parents.push(it.key);
+      });
+    }
+  });
+
+  // 3. Add RICEFW to map — flag withdrawn
+  if (ricefwItems) {
+    ricefwItems.forEach(rf => {
+      rf.docChildren  = [];
+      rf._orphaned    = false;
+      rf._wiredToReq  = false;
+      rf._withdrawn   = isWithdrawn(rf.status);
+      map[rf.key] = rf;
+    });
+  }
+
+  // 4. Add File 3 items — flag withdrawn — then wire
+  if (f3Items) {
+    f3Items.forEach(item => {
+      item.docChildren = [];
+      item._orphaned   = false;
+      item._withdrawn  = isWithdrawn(item.status);
+      item.ricefwChild = null;
+      map[item.key] = item;
+    });
+    f3Items.forEach(item => {
+      let wired = false;
+      if (item._fileRole === 'requirement') {
+        item.parentKeys.forEach(pKey => {
+          if (l3Keys.has(pKey)) {
+            const l3 = map[pKey];
+            if (l3 && !l3.reqChildren.includes(item.key)) { l3.reqChildren.push(item.key); wired = true; }
+          }
+        });
+        (item.ricefwKeys||[]).forEach(rfKey => {
+          const rf = map[rfKey];
+          if (rf && rf._fileRole === 'ricefw') {
+            item.ricefwChild = rfKey;
+            rf._wiredToReq   = true;
+          }
+        });
+        if (!wired) item._orphaned = true;
+      } else {
+        item.parentKeys.forEach(pKey => {
+          const rf = map[pKey];
+          if (rf && rf._fileRole === 'ricefw') {
+            if (!rf.docChildren.includes(item.key)) { rf.docChildren.push(item.key); wired = true; }
+          }
+        });
+        if (!wired) item._orphaned = true;
       }
     });
-  });
+  }
+
+  // 5. Mark RICEFW as orphaned if not reachable from any Req
+  if (ricefwItems) {
+    ricefwItems.forEach(rf => {
+      if (!rf._wiredToReq) {
+        let rescued = false;
+        (rf.parentReqKeys||[]).forEach(rk => {
+          const req = map[rk];
+          if (req && req._fileRole === 'requirement') {
+            req.ricefwChild = rf.key; rf._wiredToReq = true; rescued = true;
+          }
+        });
+        if (!rescued) rf._orphaned = true;
+      }
+    });
+  }
+
+  // 6. Orphan groups (exclude withdrawn from orphans — they go to withdrawn section)
+  const orphanRicefw = ricefwItems ? ricefwItems.filter(i=>i._orphaned && !i._withdrawn) : [];
+  const orphanReq    = f3Items ? f3Items.filter(i=>i._fileRole==='requirement' && i._orphaned && !i._withdrawn) : [];
+  const orphanDocs   = f3Items ? f3Items.filter(i=>i._fileRole!=='requirement' && i._orphaned && !i._withdrawn) : [];
+  window._bpmlOrphans = { ricefw: orphanRicefw, req: orphanReq, docs: orphanDocs };
+
+  // 7. Withdrawn groups — all withdrawn items regardless of wired status
+  const wdRicefw = ricefwItems ? ricefwItems.filter(i=>i._withdrawn) : [];
+  const wdReq    = f3Items ? f3Items.filter(i=>i._fileRole==='requirement' && i._withdrawn) : [];
+  const wdDocs   = f3Items ? f3Items.filter(i=>i._fileRole!=='requirement' && i._withdrawn) : [];
+  window._bpmlWithdrawn = { ricefw: wdRicefw, req: wdReq, docs: wdDocs };
+
   return map;
 }
 
@@ -8547,19 +9039,105 @@ function _bpmlBuildKPIs(items) {
     else if (it.level===4) kpis.l4++;
     const isStp = /source.to.pay/i.test(it.ws);
     const isItd = /inventory.to.deliver/i.test(it.ws);
-    if (isStp) {
-      kpis.stp++;
-      if (it.level===3) kpis.stpL3++;
-      if (it.level===4) kpis.stpL4++;
-    }
-    if (isItd) {
-      kpis.itd++;
-      if (it.level===3) kpis.itdL3++;
-      if (it.level===4) kpis.itdL4++;
-    }
+    if (isStp) { kpis.stp++; if (it.level===3) kpis.stpL3++; if (it.level===4) kpis.stpL4++; }
+    if (isItd) { kpis.itd++; if (it.level===3) kpis.itdL3++; if (it.level===4) kpis.itdL4++; }
     if (it.due) kpis.due++;
   });
   return kpis;
+}
+
+// ── Open drill-down for BPML items ──
+function _bpmlOpenDrill(title, items) {
+  if (!items || !items.length) { showToast('No items to show'); return; }
+  // Build drill-compatible objects
+  const rows = items.map(it => ({
+    id:      it.key,
+    summary: it.summary || '',
+    status:  it.status  || '',
+    type:    it.type    || it.cat || '',
+    owner:   it.assignee || it.reporter || '',
+    due:     it.due     || '',
+    ws:      it.ws      || '',
+  }));
+  _openDrillDown('BPML — ' + title, title + ' · ' + rows.length + ' items', rows, 'bpml');
+}
+
+// ── Build extended KPIs from all items (RICEFW + File3) and push to DOM ──
+function _bpmlBuildExtendedKPIs(ricefwItems, f3Items) {
+  const knownTypes = ['Interface','Report','Conversion','Enhancement','Form','Workflow'];
+  const rf = ricefwItems || [];
+  const f3 = f3Items || [];
+
+  // ── Helper: make a KPI cell clickable ──
+  function makeClickable(id, items, title) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const cell = el.closest('.ov-kpi-cell');
+    if (!cell) return;
+    if (!items || !items.length) return;
+    cell.style.cursor = 'pointer';
+    cell.title = 'Click to view ' + items.length + ' items';
+    cell.onclick = () => _bpmlOpenDrill(title, items);
+    cell.onmouseover = () => { cell.style.background='#f5f3ff'; };
+    cell.onmouseout  = () => { cell.style.background=''; };
+  }
+
+  // ── RICEFW by type ──
+  const rfByType = {};
+  rf.forEach(item => { const t=item.type||'Other'; rfByType[t]=(rfByType[t]||0)+1; });
+  const rfTotal = rf.length;
+  const rfOther = rfTotal - knownTypes.reduce((s,t)=>s+(rfByType[t]||0), 0);
+
+  const setEl = (id, val) => { const el=document.getElementById(id); if(el) el.textContent=val||0; };
+  setEl('bkpi-rf-total', rfTotal);
+  knownTypes.forEach(t => setEl('bkpi-rf-'+t, rfByType[t]||0));
+  setEl('bkpi-rf-other', rfOther>0 ? rfOther : 0);
+
+  // Wire RICEFW drill-downs
+  makeClickable('bkpi-rf-total', rf, 'All RICEFW');
+  knownTypes.forEach(t => {
+    const subset = rf.filter(i=>i.type===t);
+    makeClickable('bkpi-rf-'+t, subset, 'RICEFW — '+t);
+  });
+  const otherRf = rf.filter(i=>!knownTypes.includes(i.type));
+  makeClickable('bkpi-rf-other', otherRf, 'RICEFW — Other');
+
+  // ── Status breakdown helper — builds cells + wires drill-downs ──
+  function statusBreakdown(items, cat, containerId, totalId) {
+    const filtered = items.filter(i=>i.cat===cat && !i._withdrawn);
+    setEl(totalId, filtered.length);
+    makeClickable(totalId, filtered, cat+' — All');
+
+    const statuses = {};
+    filtered.forEach(i => { const s=i.status||'Unknown'; statuses[s]=(statuses[s]||0)+1; });
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const sCol = s => {
+      const sl=s.toLowerCase();
+      return sl.includes('complet')||sl.includes('done') ? '#16a34a'
+           : sl.includes('progress') ? '#d97706'
+           : sl.includes('hold') ? '#b45309'
+           : sl.includes('review') ? '#0891b2'
+           : '#6b7280';
+    };
+
+    container.innerHTML = Object.entries(statuses)
+      .sort((a,b)=>b[1]-a[1])
+      .map(([st,cnt], idx) => `
+        <div class="ov-kpi-div"></div>
+        <div class="ov-kpi-cell" id="${containerId}-cell-${idx}"
+             style="cursor:pointer" title="Click to view ${cnt} ${cat} items with status: ${st}"
+             onclick="_bpmlOpenDrill('${cat} — ${st}', (window._bpmlAllItems||[]).filter(i=>i.cat==='${cat}'&&i.status==='${st}'&&!i._withdrawn))"
+             onmouseover="this.style.background='#f5f3ff'" onmouseout="this.style.background=''">
+          <div class="ov-kpi-val" style="color:${sCol(st)}">${cnt}</div>
+          <div class="ov-kpi-lbl">${st}</div>
+        </div>`).join('');
+  }
+
+  statusBreakdown(f3, 'Requirement', 'bkpi-req-statuses', 'bkpi-req-total');
+  statusBreakdown(f3, 'FSD',         'bkpi-fsd-statuses', 'bkpi-fsd-total');
+  statusBreakdown(f3, 'FUT',         'bkpi-fut-statuses', 'bkpi-fut-total');
 }
 
 // ── Populate filter dropdowns ──
@@ -8570,9 +9148,31 @@ function _bpmlInitFilters(items) {
   const phEl = document.getElementById('bpml-filter-phase');
   if (wsEl) wsEl.innerHTML = '<option value="">All</option>' + wsSet.map(v=>`<option>${v}</option>`).join('');
   if (phEl) phEl.innerHTML = '<option value="">All</option>' + phaseSet.map(v=>`<option>${v}</option>`).join('');
+
+  // RICEFW Type filter — built from File 2 items
+  const allItems = window._bpmlAllItems || [];
+  const rfTypes  = [...new Set(allItems.filter(i=>i._fileRole==='ricefw').map(i=>i.type).filter(Boolean))].sort();
+  const rfEl = document.getElementById('bpml-filter-rftype');
+  if (rfEl) rfEl.innerHTML = '<option value="">All</option>' + rfTypes.map(v=>`<option>${v}</option>`).join('');
+
+  // Story Category filter (Requirement / FSD / FUT)
+  const cats  = [...new Set(allItems.filter(i=>i.cat).map(i=>i.cat).filter(Boolean))].sort();
+  const catEl = document.getElementById('bpml-filter-cat');
+  if (catEl) catEl.innerHTML = '<option value="">All</option>' + cats.map(v=>`<option>${v}</option>`).join('');
 }
 
 // ── Main render function ──
+// ── Status badge helper ──
+function _bpmlStatusBadge(status) {
+  if (!status) return '';
+  const s = status.toLowerCase();
+  const col = s.includes('done') || s.includes('complete') || s.includes('approved') ? '#16a34a'
+    : s.includes('progress') || s.includes('review') ? '#d97706'
+    : s.includes('block') || s.includes('cancel') ? '#dc2626'
+    : '#6b7280';
+  return `<span style="font-size:9px;font-weight:700;font-family:var(--mono);color:#fff;background:${col};padding:1px 6px;border-radius:10px;white-space:nowrap;flex-shrink:0">${_escH(status)}</span>`;
+}
+
 function _bpmlRender() {
   const items = window._bpmlData;
   const map   = window._bpmlMap;
@@ -8581,14 +9181,26 @@ function _bpmlRender() {
   const wsF    = (document.getElementById('bpml-filter-ws')||{}).value||'';
   const lvlF   = (document.getElementById('bpml-filter-level')||{}).value||'';
   const phF    = (document.getElementById('bpml-filter-phase')||{}).value||'';
+  const rfTypeF = (document.getElementById('bpml-filter-rftype')||{}).value||'';
+  const catF   = (document.getElementById('bpml-filter-cat')||{}).value||'';
   const qRaw   = (document.getElementById('bpml-search-q')||{}).value.trim().toLowerCase();
   const qWords = qRaw ? qRaw.split(/\s+/) : [];
 
-  // Determine which keys pass the leaf-level filter
   function itemMatches(it) {
-    if (wsF  && it.ws    !== wsF)  return false;
-    if (phF  && it.phase !== phF)  return false;
-    if (lvlF && it.type  !== lvlF) return false;
+    if (!it) return false;
+    if (it._withdrawn) return false;          // never show withdrawn in hierarchy
+    if (wsF && it.ws !== wsF) return false;
+    if (phF && it.phase !== phF) return false;
+    if (lvlF && it.type !== lvlF) return false;
+    // RICEFW Type filter — applies to ricefw items
+    if (rfTypeF && it._fileRole === 'ricefw' && it.type !== rfTypeF) return false;
+    // Story Category filter — applies to req/fsd/fut items
+    if (catF && it.cat && it.cat !== catF) return false;
+    // If catF is set, hide RICEFW that have no matching docs
+    if (catF && it._fileRole === 'ricefw') {
+      const hasCat = (it.docChildren||[]).some(k => { const d=map[k]; return d && d.cat===catF && !d._withdrawn; });
+      if (!hasCat) return false;
+    }
     if (qWords.length) {
       const hay = ((it.idNum||'')+' '+(it.summary||'')+' '+(it.key||'')).toLowerCase();
       if (!qWords.every(w => hay.includes(w))) return false;
@@ -8596,7 +9208,6 @@ function _bpmlRender() {
     return true;
   }
 
-  // A node is visible if it or any descendant matches
   function subtreeVisible(key, visited) {
     if (!visited) visited = new Set();
     if (visited.has(key)) return false;
@@ -8604,16 +9215,77 @@ function _bpmlRender() {
     const it = map[key];
     if (!it) return false;
     if (itemMatches(it)) return true;
-    return it.children.some(ck => subtreeVisible(ck, visited));
+    const kids = [
+      ...(it.children||[]),
+      ...(it.reqChildren||[]),
+      ...(it.ricefwChild ? [it.ricefwChild] : []),
+      ...(it.docChildren||[]),
+    ];
+    return kids.some(k => subtreeVisible(k, new Set(visited)));
   }
 
-  // Get root nodes (Level 1 with no parents)
-  const roots = items.filter(it => it.level === 1);
+  // ── RICEFW type colours ──
+  function rfColor(type) {
+    return type==='Interface'?'#0369a1':type==='Conversion'?'#7c2d12':type==='Report'?'#166534':type==='Enhancement'?'#7c3aed':type==='Form'?'#b45309':type==='Workflow'?'#0f766e':'#4b5563';
+  }
+  function rfBg(type) {
+    return type==='Interface'?'#e0f2fe':type==='Conversion'?'#ffedd5':type==='Report'?'#dcfce7':type==='Enhancement'?'#ede9fe':type==='Form'?'#fef3c7':type==='Workflow'?'#ccfbf1':'#f3f4f6';
+  }
 
+  // ── Render a RICEFW row + its FSD/FUT children ──
+  function renderRICEFW(rf, indent) {
+    if (!rf) return '';
+    // Filter out withdrawn docs; sort FSD before FUT
+    const allDocs = (rf.docChildren||[])
+      .map(k=>map[k]).filter(it => it && !it._withdrawn)
+      .filter(it => !catF || it.cat === catF)
+      .sort((a,b) => {
+        const order = {FSD:0, FUT:1};
+        return (order[a.cat]??2) - (order[b.cat]??2);
+      });
+    const fsdItems = allDocs.filter(d=>d.cat==='FSD');
+    const futItems = allDocs.filter(d=>d.cat==='FUT');
+    const dc = rfColor(rf.type), db = rfBg(rf.type);
+    let h = `<div style="border-top:1px solid var(--grey100)">
+      <div style="padding:8px 18px 8px ${indent}px;display:flex;align-items:center;gap:8px;cursor:pointer;background:#f8f7ff;user-select:none;transition:background 0.12s"
+           onclick="_bpmlToggle('rf','${rf.key}')" onmouseover="this.style.background='#f0eeff'" onmouseout="this.style.background='#f8f7ff'">
+        <div style="width:15px;height:15px;background:rgba(124,58,237,0.15);border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;color:var(--bpml-color);transition:transform 0.2s" id="bpml-t-${rf.key}">&#9654;</div>
+        <span style="font-size:9px;font-weight:700;font-family:var(--mono);color:${dc};background:${db};padding:1px 7px;border-radius:4px;white-space:nowrap;flex-shrink:0">${_escH(rf.type||'RICEFW')}</span>
+        <span style="font-size:11px;font-weight:700;color:var(--text);flex:1;min-width:0">${_escH(rf.summary)}</span>
+        ${_bpmlStatusBadge(rf.status)}
+        ${fsdItems.length?`<span style="font-size:9px;font-family:var(--mono);color:#0369a1;background:#e0f2fe;padding:1px 6px;border-radius:4px;white-space:nowrap">${fsdItems.length} FSD</span>`:''}
+        ${futItems.length?`<span style="font-size:9px;font-family:var(--mono);color:#7c2d12;background:#ffedd5;padding:1px 6px;border-radius:4px;white-space:nowrap">${futItems.length} FUT</span>`:''}
+        ${rf.due?`<span style="font-size:9px;font-family:var(--mono);color:#b45309;white-space:nowrap">${rf.due}</span>`:''}
+        ${_bpmlKeyLink(rf.key,'bpml-l3-key')}
+      </div>
+      <div id="bpml-body-${rf.key}">`;
+
+    allDocs.forEach(doc => {
+      if (!doc) return;
+      const isFsd=doc.cat==='FSD', isFut=doc.cat==='FUT';
+      const fc=isFsd?'#0369a1':isFut?'#7c2d12':'#4b5563';
+      const fb=isFsd?'#e0f2fe':isFut?'#ffedd5':'#f3f4f6';
+      const who = doc.assignee?_bpmlFmtEmail(doc.assignee):doc.reporter?_bpmlFmtEmail(doc.reporter):'';
+      h += `<div style="padding:6px 18px 6px ${indent+24}px;display:flex;align-items:flex-start;gap:8px;border-top:1px solid #f1f5f9;font-size:11px;background:#fafafa;transition:background 0.1s"
+               onmouseover="this.style.background='#f0f4ff'" onmouseout="this.style.background='#fafafa'">
+        <div style="width:5px;height:5px;border-radius:50%;background:${fc};flex-shrink:0;margin-top:5px"></div>
+        <span style="font-size:9px;font-weight:700;font-family:var(--mono);color:${fc};background:${fb};padding:1px 6px;border-radius:4px;white-space:nowrap;flex-shrink:0">${_escH(doc.cat||'DOC')}</span>
+        <span style="flex:1;color:var(--text);line-height:1.5;min-width:0">${_escH(doc.summary)}</span>
+        ${_bpmlStatusBadge(doc.status)}
+        ${who?`<span style="font-size:9px;color:var(--text2);font-family:var(--mono);white-space:nowrap">${who}</span>`:''}
+        <span style="font-size:9px;font-family:var(--mono);color:${doc.due?'#b45309':'var(--text3)'};white-space:nowrap">${doc.due||'—'}</span>
+        ${_bpmlKeyLink(doc.key,'bpml-l4-key')}
+      </div>`;
+    });
+
+    h += `</div></div>`;
+    return h;
+  }
+
+  const roots = items.filter(it => it.level === 1);
   const container = document.getElementById('bpml-tree-container');
   if (!container) return;
 
-  // Build HTML
   let html = '';
   let visibleCount = 0;
 
@@ -8621,11 +9293,10 @@ function _bpmlRender() {
     if (!subtreeVisible(l1.key)) return;
     visibleCount++;
 
-    // Count visible L2s
-    const l2s = l1.children.map(ck => map[ck]).filter(Boolean).filter(it => it && it.level===2 && subtreeVisible(it.key));
-    const l4count = l2s.reduce((s, l2) => {
-      const l3s = l2.children.map(ck=>map[ck]).filter(Boolean).filter(it=>it&&it.level===3);
-      return s + l3s.reduce((s2,l3) => s2 + l3.children.map(ck=>map[ck]).filter(Boolean).filter(it=>it&&it.level===4).length, 0);
+    const l2s = l1.children.map(k=>map[k]).filter(Boolean).filter(it=>it.level===2 && subtreeVisible(it.key));
+    const reqCount = l2s.reduce((s,l2) => {
+      const l3s = l2.children.map(k=>map[k]).filter(Boolean).filter(it=>it.level===3);
+      return s + l3s.reduce((s2,l3) => s2+(l3.reqChildren||[]).length, 0);
     }, 0);
 
     const wsChip = /source.to.pay/i.test(l1.ws)
@@ -8636,78 +9307,302 @@ function _bpmlRender() {
     html += `<div class="bpml-l1-block" id="bpml-b-${l1.key}">
       <div class="bpml-l1-header" onclick="_bpmlToggle('l1','${l1.key}')">
         <div class="bpml-l1-toggle open" id="bpml-t-${l1.key}">&#9654;</div>
-        <div class="bpml-l1-id">${l1.idNum||''}</div>
+        <div class="bpml-l1-id">${_escH(l1.idNum||'')}</div>
         <div class="bpml-l1-title">${_escH(l1.summary)}</div>
         ${wsChip}
-        <div class="bpml-l1-badge">${l2s.length} L2 &nbsp;·&nbsp; ${l4count} steps</div>
+        <div class="bpml-l1-badge">${l2s.length} L2${reqCount?' &nbsp;·&nbsp; '+reqCount+' Req':''}</div>
         ${_bpmlKeyLink(l1.key,'bpml-l1-key')}
       </div>
       <div class="bpml-l1-body" id="bpml-body-${l1.key}">`;
 
     l2s.forEach(l2 => {
       if (!subtreeVisible(l2.key)) return;
-      const l3s = l2.children.map(ck=>map[ck]).filter(Boolean).filter(it=>it&&it.level===3&&subtreeVisible(it.key));
-      const l4total = l3s.reduce((s,l3)=>s+l3.children.map(ck=>map[ck]).filter(Boolean).filter(it=>it&&it.level===4).length,0);
+      const l3s = l2.children.map(k=>map[k]).filter(Boolean).filter(it=>it.level===3 && subtreeVisible(it.key));
+      const reqTot = l3s.reduce((s,l3)=>s+(l3.reqChildren||[]).length, 0);
 
       html += `<div class="bpml-l2-block">
         <div class="bpml-l2-header" onclick="_bpmlToggle('l2','${l2.key}')">
           <div class="bpml-l2-toggle open" id="bpml-t-${l2.key}">&#9654;</div>
-          <div class="bpml-l2-id">${l2.idNum||l2.key}</div>
+          <div class="bpml-l2-id">${_escH(l2.idNum||l2.key)}</div>
           <div class="bpml-l2-title">${_escH(l2.summary)}</div>
-          <div class="bpml-l2-badge">${l3s.length} L3 &nbsp;·&nbsp; ${l4total} steps</div>
+          <div class="bpml-l2-badge">${l3s.length} L3${reqTot?' &nbsp;·&nbsp; '+reqTot+' Req':''}</div>
           ${_bpmlKeyLink(l2.key,'bpml-l2-key')}
         </div>
         <div class="bpml-l2-body" id="bpml-body-${l2.key}">`;
 
       l3s.forEach(l3 => {
         if (!subtreeVisible(l3.key)) return;
-        const l4s = l3.children.map(ck=>map[ck]).filter(Boolean).filter(it=>it&&it.level===4&&itemMatches(it));
+        const reqItems = (l3.reqChildren||[]).map(k=>map[k]).filter(Boolean);
         const metaParts = [];
         if (l3.reporter) metaParts.push(_bpmlFmtEmail(l3.reporter));
         if (l3.due) metaParts.push('Due: '+l3.due);
 
+        // Count RICEFW and docs under this L3 for badge
+        let rfCount=0, fsdCount=0, futCount=0;
+        reqItems.forEach(req => {
+          if (req && req.ricefwChild) {
+            rfCount++;
+            const rf = map[req.ricefwChild];
+            if (rf) { fsdCount += (rf.docChildren||[]).filter(k=>map[k]&&map[k].cat==='FSD').length; futCount += (rf.docChildren||[]).filter(k=>map[k]&&map[k].cat==='FUT').length; }
+          }
+        });
+
         html += `<div class="bpml-l3-block">
           <div class="bpml-l3-header" onclick="_bpmlToggle('l3','${l3.key}')">
             <div class="bpml-l3-toggle open" id="bpml-t-${l3.key}">&#9654;</div>
-            <div class="bpml-l3-id">${l3.idNum||l3.key}</div>
+            <div class="bpml-l3-id">${_escH(l3.idNum||l3.key)}</div>
             <div class="bpml-l3-title">${_escH(l3.summary)}</div>
-            <div class="bpml-l3-badge">${l4s.length} steps</div>
+            <div class="bpml-l3-badge">${reqItems.length} Req${rfCount?' &nbsp;·&nbsp; '+rfCount+' RICEFW':''}${fsdCount?' &nbsp;·&nbsp; '+fsdCount+' FSD':''}${futCount?' &nbsp;·&nbsp; '+futCount+' FUT':''}</div>
             ${metaParts.length?`<div class="bpml-l3-meta">${metaParts.join(' · ')}</div>`:''}
             ${_bpmlKeyLink(l3.key,'bpml-l3-key')}
           </div>
           <div class="bpml-l3-body" id="bpml-body-${l3.key}">`;
 
-        l4s.forEach(l4 => {
-          const repDisp  = l4.reporter ? _bpmlFmtEmail(l4.reporter) : '';
-          const dueColor = l4.due ? 'color:#b45309' : 'color:var(--text3)';
-          const phaseHtml = l4.phase ? `<span class="bpml-l4-phase">${_escH(l4.phase)}</span>` : '';
+        // ── Requirements under L3, each with optional RICEFW→FSD/FUT ──
+        reqItems.forEach(req => {
+          if (!req) return;
+          const rf      = req.ricefwChild ? map[req.ricefwChild] : null;
+          const fsdC    = rf ? (rf.docChildren||[]).filter(k=>map[k]&&map[k].cat==='FSD').length : 0;
+          const futC    = rf ? (rf.docChildren||[]).filter(k=>map[k]&&map[k].cat==='FUT').length : 0;
+          const who     = req.assignee?_bpmlFmtEmail(req.assignee):req.reporter?_bpmlFmtEmail(req.reporter):'';
+          const dueCol  = req.due?'color:#b45309':'color:var(--text3)';
+          const hasChildren = !!rf;
 
-          html += `<div class="bpml-l4-row">
-            <div class="bpml-l4-bullet"></div>
-            <div class="bpml-l4-id">${_escH(l4.idNum||'')}</div>
-            <div class="bpml-l4-title">${_escH(l4.summary)}</div>
-            ${phaseHtml}
-            ${repDisp ? `<div class="bpml-l4-reporter">${repDisp}</div>` : ''}
-            <div class="bpml-l4-due" style="${dueColor}">${l4.due||'—'}</div>
-            ${_bpmlKeyLink(l4.key,'bpml-l4-key')}
-          </div>`;
+          html += `<div style="border-top:1px solid var(--grey100)">
+            <div style="padding:8px 18px 8px 80px;display:flex;align-items:center;gap:8px;${hasChildren?'cursor:pointer;':''}background:#f5f7ff;user-select:none;transition:background 0.12s"
+                 ${hasChildren?`onclick="_bpmlToggle('req','${req.key}')" onmouseover="this.style.background='#ebe9ff'" onmouseout="this.style.background='#f5f7ff'"`:''}>
+              ${hasChildren?`<div style="width:15px;height:15px;background:rgba(99,102,241,0.15);border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;color:#6366f1;transition:transform 0.2s" id="bpml-t-${req.key}">&#9654;</div>`:'<div style="width:15px;height:15px;flex-shrink:0"></div>'}
+              <span style="font-size:9px;font-weight:700;font-family:var(--mono);color:#fff;background:#6366f1;padding:1px 6px;border-radius:4px;white-space:nowrap;flex-shrink:0">REQ</span>
+              <span style="font-size:11px;font-weight:600;color:var(--text);flex:1;min-width:0">${_escH(req.summary)}</span>
+              ${_bpmlStatusBadge(req.status)}
+              ${rf?`<span style="font-size:9px;font-family:var(--mono);color:${rfColor(rf.type)};background:${rfBg(rf.type)};padding:1px 6px;border-radius:4px;white-space:nowrap;flex-shrink:0">${_escH(rf.type||'RICEFW')}</span>`:''}
+              ${fsdC?`<span style="font-size:9px;font-family:var(--mono);color:#0369a1;background:#e0f2fe;padding:1px 6px;border-radius:4px;white-space:nowrap">${fsdC} FSD</span>`:''}
+              ${futC?`<span style="font-size:9px;font-family:var(--mono);color:#7c2d12;background:#ffedd5;padding:1px 6px;border-radius:4px;white-space:nowrap">${futC} FUT</span>`:''}
+              ${who?`<span style="font-size:9px;color:var(--text2);font-family:var(--mono);white-space:nowrap">${who}</span>`:''}
+              <span style="font-size:9px;font-family:var(--mono);${dueCol};white-space:nowrap">${req.due||'—'}</span>
+              ${_bpmlKeyLink(req.key,'bpml-l4-key')}
+            </div>`;
+
+          // ── RICEFW row + its FSD/FUT children ──
+          if (rf) {
+            html += `<div id="bpml-body-${req.key}">`;
+            html += renderRICEFW(rf, 96);
+            html += `</div>`;
+          }
+
+          html += `</div>`;  // req row wrapper
         });
 
-        html += `</div></div>`; // l3-body + l3-block
+        html += `</div></div>`;  // l3-body + l3-block
       });
 
-      html += `</div></div>`; // l2-body + l2-block
+      html += `</div></div>`;  // l2-body + l2-block
     });
 
-    html += `</div></div>`; // l1-body + l1-block
+    html += `</div></div>`;  // l1-body + l1-block
   });
 
   if (!visibleCount) {
     html = `<div style="padding:48px;text-align:center;color:var(--text3);font-size:12px;font-family:var(--mono)">No items match the current filters.</div>`;
   }
 
+  // ── Orphaned Items section ──
+  const orph = window._bpmlOrphans;
+  // Apply active filters to orphan/withdrawn sections too
+  function sectionItemVisible(it) {
+    if (!it) return false;
+    if (rfTypeF && it._fileRole==='ricefw' && it.type !== rfTypeF) return false;
+    if (catF && it.cat && it.cat !== catF) return false;
+    if (catF && it._fileRole==='ricefw') {
+      const hasCat=(it.docChildren||[]).some(k=>{const d=map[k];return d&&d.cat===catF;});
+      if (!hasCat) return false;
+    }
+    if (qWords.length) {
+      const hay=((it.idNum||'')+' '+(it.summary||'')+' '+(it.key||'')).toLowerCase();
+      if (!qWords.every(w=>hay.includes(w))) return false;
+    }
+    return true;
+  }
+  if (orph && (orph.ricefw.length || orph.req.length || orph.docs.length)) {
+    const visOrphRF  = orph.ricefw.filter(sectionItemVisible);
+    const visOrphReq = orph.req.filter(sectionItemVisible);
+    const visOrphDoc = orph.docs.filter(sectionItemVisible);
+    const totalOrphans = visOrphRF.length + visOrphReq.length + visOrphDoc.length;
+    if (totalOrphans > 0) {
+    const orphId = 'bpml-orphan-block';
+
+    html += `<div style="margin-top:24px;border:2px dashed #fca5a5;border-radius:var(--radius);overflow:hidden" id="${orphId}">
+      <div style="background:linear-gradient(135deg,#7f1d1d,#dc2626);padding:14px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none"
+           onclick="_bpmlToggle('orphan','${orphId}')">
+        <div style="width:22px;height:22px;background:rgba(255,255,255,0.2);border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;color:#fff;transition:transform 0.2s" id="bpml-t-${orphId}">&#9654;</div>
+        <svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="1.5" style="width:16px;height:16px;flex-shrink:0"><circle cx="8" cy="8" r="6.5"/><path d="M8 5v3.5M8 11h.01"/></svg>
+        <div style="font-size:14px;font-weight:800;color:#fff;flex:1">Orphaned Items — Missing Hierarchy Links</div>
+        <span style="font-size:10px;font-weight:700;font-family:var(--mono);color:#fff;background:rgba(255,255,255,0.2);padding:3px 10px;border-radius:10px">${totalOrphans} items</span>
+      </div>
+      <div id="bpml-body-${orphId}" style="background:#fff9f9">
+        <div style="padding:10px 18px 6px;font-size:10px;color:#b91c1c;font-family:var(--mono);border-bottom:1px solid #fecaca">
+          These items could not be placed in the main hierarchy. Their internal links are preserved where possible.
+        </div>`;
+
+    // Orphaned RICEFW with FSD/FUT children
+    if (visOrphRF.length) {
+      html += `<div style="padding:10px 18px 4px">
+        <div style="font-size:10px;font-weight:700;color:#dc2626;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">RICEFW without Requirement parent (${orph.ricefw.length})</div>`;
+      visOrphRF.forEach(rf => {
+        html += `<div style="border:1px solid #fecaca;border-radius:8px;margin-bottom:6px;overflow:hidden">`;
+        html += renderRICEFW(rf, 14).replace('border-top:1px solid var(--grey100)', 'border:none');
+        html += `</div>`;
+      });
+      html += `</div>`;
+    }
+
+    // Orphaned Requirements
+    if (visOrphReq.length) {
+      html += `<div style="padding:6px 18px 4px;border-top:1px solid #fecaca">
+        <div style="font-size:10px;font-weight:700;color:#dc2626;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">Requirements without L3 parent (${visOrphReq.length})</div>`;
+      visOrphReq.forEach(req => {
+        const rf = req.ricefwChild ? map[req.ricefwChild] : null;
+        const who = req.assignee?_bpmlFmtEmail(req.assignee):req.reporter?_bpmlFmtEmail(req.reporter):'';
+        html += `<div style="border:1px solid #e0e7ff;border-radius:6px;margin-bottom:4px;overflow:hidden">
+          <div style="padding:7px 14px;display:flex;align-items:center;gap:8px;background:#f5f7ff;font-size:11px">
+            <span style="font-size:9px;font-weight:700;font-family:var(--mono);color:#fff;background:#6366f1;padding:1px 6px;border-radius:4px;white-space:nowrap;flex-shrink:0">REQ</span>
+            <span style="flex:1;color:var(--text);min-width:0">${_escH(req.summary)}</span>
+            ${_bpmlStatusBadge(req.status)}
+            ${req.parentKeys.length?`<span style="font-size:9px;font-family:var(--mono);color:#dc2626">⚠ ${_escH(req.parentKeys[0])}</span>`:''}
+            ${_bpmlKeyLink(req.key,'bpml-l4-key')}
+          </div>
+          ${rf ? renderRICEFW(rf, 28).replace('border-top:1px solid var(--grey100)','border-top:1px solid #e0e7ff') : ''}
+        </div>`;
+      });
+      html += `</div>`;
+    }
+
+    // Orphaned FSD / FUT
+    if (visOrphDoc.length) {
+      const fsdO = orph.docs.filter(d=>d.cat==='FSD'), futO = orph.docs.filter(d=>d.cat==='FUT');
+      html += `<div style="padding:6px 18px 10px;border-top:1px solid #fecaca">
+        <div style="font-size:10px;font-weight:700;color:#dc2626;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">FSD / FUT without RICEFW parent (${visOrphDoc.length})
+          ${fsdO.length?`<span style="font-size:9px;font-family:var(--mono);color:#0369a1;background:#e0f2fe;padding:1px 8px;border-radius:4px;font-weight:700;text-transform:none">${fsdO.length} FSD</span>`:''}
+          ${futO.length?`<span style="font-size:9px;font-family:var(--mono);color:#7c2d12;background:#ffedd5;padding:1px 8px;border-radius:4px;font-weight:700;text-transform:none;margin-left:4px">${futO.length} FUT</span>`:''}
+        </div>`;
+      visOrphDoc.forEach(doc => {
+        const isFsd=doc.cat==='FSD';
+        const dc=isFsd?'#0369a1':'#7c2d12', db=isFsd?'#e0f2fe':'#ffedd5';
+        const who = doc.assignee?_bpmlFmtEmail(doc.assignee):doc.reporter?_bpmlFmtEmail(doc.reporter):'';
+        html += `<div style="padding:6px 14px;display:flex;align-items:flex-start;gap:8px;border:1px solid #fecaca;border-radius:6px;margin-bottom:4px;background:#fffafa;font-size:11px">
+          <span style="font-size:9px;font-weight:700;font-family:var(--mono);color:${dc};background:${db};padding:1px 6px;border-radius:4px;white-space:nowrap;flex-shrink:0">${_escH(doc.cat||'DOC')}</span>
+          <span style="flex:1;color:var(--text);line-height:1.5;min-width:0">${_escH(doc.summary)}</span>
+          ${_bpmlStatusBadge(doc.status)}
+          ${who?`<span style="font-size:9px;color:var(--text2);font-family:var(--mono);white-space:nowrap">${who}</span>`:''}
+          ${doc.parentKeys.length?`<span style="font-size:9px;font-family:var(--mono);color:#dc2626">⚠ ${_escH(doc.parentKeys[0])}</span>`:''}
+          ${_bpmlKeyLink(doc.key,'bpml-l4-key')}
+        </div>`;
+      });
+      html += `</div>`;
+    }
+
+    html += `</div></div>`;  // orphan body + outer block
+    } // end totalOrphans > 0
+  }
+
+  // ── Withdrawn Items section ──
+  const wd = window._bpmlWithdrawn;
+  if (wd && (wd.ricefw.length || wd.req.length || wd.docs.length)) {
+    const visWdRF  = wd.ricefw.filter(sectionItemVisible);
+    const visWdReq = wd.req.filter(sectionItemVisible);
+    const visWdDoc = wd.docs.filter(sectionItemVisible);
+    const totalWd = visWdRF.length + visWdReq.length + visWdDoc.length;
+    if (totalWd > 0) {
+    const wdId    = 'bpml-withdrawn-block';
+    const fsdWd   = visWdDoc.filter(d=>d.cat==='FSD');
+    const futWd   = visWdDoc.filter(d=>d.cat==='FUT');
+
+    html += `<div style="margin-top:16px;border:2px dashed #d1d5db;border-radius:var(--radius);overflow:hidden" id="${wdId}">
+      <div style="background:linear-gradient(135deg,#374151,#6b7280);padding:14px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none"
+           onclick="_bpmlToggle('wd','${wdId}')">
+        <div style="width:22px;height:22px;background:rgba(255,255,255,0.2);border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;color:#fff;transition:transform 0.2s" id="bpml-t-${wdId}">&#9654;</div>
+        <svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="1.5" style="width:16px;height:16px;flex-shrink:0"><path d="M2 4h12M5 4V2h6v2M6 7v5M10 7v5M3 4l1 10h8l1-10"/></svg>
+        <div style="font-size:14px;font-weight:800;color:#fff;flex:1">Withdrawn Items</div>
+        <div style="display:flex;gap:6px;align-items:center">
+          ${wd.ricefw.length?`<span style="font-size:9px;font-weight:700;font-family:var(--mono);color:#fff;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:10px">${wd.ricefw.length} RICEFW</span>`:''}
+          ${wd.req.length?`<span style="font-size:9px;font-weight:700;font-family:var(--mono);color:#fff;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:10px">${wd.req.length} Req</span>`:''}
+          ${fsdWd.length?`<span style="font-size:9px;font-weight:700;font-family:var(--mono);color:#fff;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:10px">${fsdWd.length} FSD</span>`:''}
+          ${futWd.length?`<span style="font-size:9px;font-weight:700;font-family:var(--mono);color:#fff;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:10px">${futWd.length} FUT</span>`:''}
+        </div>
+      </div>
+      <div id="bpml-body-${wdId}" style="background:#f9fafb">
+        <div style="padding:10px 18px 6px;font-size:10px;color:#6b7280;font-family:var(--mono);border-bottom:1px solid #e5e7eb">
+          These items have Status = <strong>Withdrawn</strong> and are excluded from the main hierarchy.
+        </div>`;
+
+    // ── Withdrawn RICEFW ──
+    if (visWdRF.length) {
+      html += `<div style="padding:10px 18px 4px">
+        <div style="font-size:10px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">RICEFW (${visWdRF.length})</div>`;
+      visWdRF.forEach(rf => {
+        const dc=rfColor(rf.type), db=rfBg(rf.type);
+        const fsdC=(rf.docChildren||[]).filter(k=>map[k]&&map[k].cat==='FSD').length;
+        const futC=(rf.docChildren||[]).filter(k=>map[k]&&map[k].cat==='FUT').length;
+        html += `<div style="padding:7px 14px;display:flex;align-items:center;gap:8px;border:1px solid #e5e7eb;border-radius:6px;margin-bottom:4px;background:#fff;font-size:11px">
+          <span style="font-size:9px;font-weight:700;font-family:var(--mono);color:${dc};background:${db};padding:1px 7px;border-radius:4px;white-space:nowrap;flex-shrink:0">${_escH(rf.type||'RICEFW')}</span>
+          <span style="flex:1;color:var(--text2);min-width:0;text-decoration:line-through;opacity:0.7">${_escH(rf.summary)}</span>
+          <span style="font-size:9px;font-weight:700;font-family:var(--mono);color:#6b7280;background:#f3f4f6;padding:1px 6px;border-radius:10px;white-space:nowrap">Withdrawn</span>
+          ${fsdC?`<span style="font-size:9px;font-family:var(--mono);color:#6b7280;background:#f3f4f6;padding:1px 6px;border-radius:4px">${fsdC} FSD</span>`:''}
+          ${futC?`<span style="font-size:9px;font-family:var(--mono);color:#6b7280;background:#f3f4f6;padding:1px 6px;border-radius:4px">${futC} FUT</span>`:''}
+          ${_bpmlKeyLink(rf.key,'bpml-l4-key')}
+        </div>`;
+      });
+      html += `</div>`;
+    }
+
+    // ── Withdrawn Requirements ──
+    if (visWdReq.length) {
+      html += `<div style="padding:6px 18px 4px;border-top:1px solid #e5e7eb">
+        <div style="font-size:10px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">Requirements (${visWdReq.length})</div>`;
+      visWdReq.forEach(req => {
+        const who = req.assignee?_bpmlFmtEmail(req.assignee):req.reporter?_bpmlFmtEmail(req.reporter):'';
+        html += `<div style="padding:7px 14px;display:flex;align-items:center;gap:8px;border:1px solid #e5e7eb;border-radius:6px;margin-bottom:4px;background:#fff;font-size:11px">
+          <span style="font-size:9px;font-weight:700;font-family:var(--mono);color:#fff;background:#9ca3af;padding:1px 6px;border-radius:4px;white-space:nowrap;flex-shrink:0">REQ</span>
+          <span style="flex:1;color:var(--text2);min-width:0;text-decoration:line-through;opacity:0.7">${_escH(req.summary)}</span>
+          <span style="font-size:9px;font-weight:700;font-family:var(--mono);color:#6b7280;background:#f3f4f6;padding:1px 6px;border-radius:10px;white-space:nowrap">Withdrawn</span>
+          ${who?`<span style="font-size:9px;color:var(--text3);font-family:var(--mono);white-space:nowrap">${who}</span>`:''}
+          ${_bpmlKeyLink(req.key,'bpml-l4-key')}
+        </div>`;
+      });
+      html += `</div>`;
+    }
+
+    // ── Withdrawn FSD / FUT (sorted FSD first) ──
+    if (visWdDoc.length) {
+      const sortedDocs = [...visWdDoc].sort((a,b)=>(a.cat==='FSD'?0:1)-(b.cat==='FSD'?0:1));
+      html += `<div style="padding:6px 18px 10px;border-top:1px solid #e5e7eb">
+        <div style="font-size:10px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">
+          FSD / FUT (${visWdDoc.length})
+          ${fsdWd.length?`<span style="font-size:9px;font-family:var(--mono);color:#6b7280;background:#f3f4f6;padding:1px 8px;border-radius:4px;text-transform:none;font-weight:700;margin-left:4px">${fsdWd.length} FSD</span>`:''}
+          ${futWd.length?`<span style="font-size:9px;font-family:var(--mono);color:#6b7280;background:#f3f4f6;padding:1px 8px;border-radius:4px;text-transform:none;font-weight:700;margin-left:4px">${futWd.length} FUT</span>`:''}
+        </div>`;
+      sortedDocs.forEach(doc => {
+        const isFsd=doc.cat==='FSD';
+        const dc=isFsd?'#9ca3af':'#9ca3af', db=isFsd?'#f3f4f6':'#f3f4f6';
+        const who = doc.assignee?_bpmlFmtEmail(doc.assignee):doc.reporter?_bpmlFmtEmail(doc.reporter):'';
+        html += `<div style="padding:6px 14px;display:flex;align-items:flex-start;gap:8px;border:1px solid #e5e7eb;border-radius:6px;margin-bottom:4px;background:#fff;font-size:11px">
+          <span style="font-size:9px;font-weight:700;font-family:var(--mono);color:${dc};background:${db};padding:1px 6px;border-radius:4px;white-space:nowrap;flex-shrink:0">${_escH(doc.cat||'DOC')}</span>
+          <span style="flex:1;color:var(--text2);line-height:1.5;min-width:0;text-decoration:line-through;opacity:0.7">${_escH(doc.summary)}</span>
+          <span style="font-size:9px;font-weight:700;font-family:var(--mono);color:#6b7280;background:#f3f4f6;padding:1px 6px;border-radius:10px;white-space:nowrap">Withdrawn</span>
+          ${who?`<span style="font-size:9px;color:var(--text3);font-family:var(--mono);white-space:nowrap">${who}</span>`:''}
+          ${_bpmlKeyLink(doc.key,'bpml-l4-key')}
+        </div>`;
+      });
+      html += `</div>`;
+    }
+
+    html += `</div></div>`;  // withdrawn body + outer block
+    } // end totalWd > 0
+  }
+
   container.innerHTML = html;
 }
+
 
 function _escH(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -8718,116 +9613,260 @@ function _bpmlToggle(level, key) {
   const body = document.getElementById('bpml-body-'+key);
   const tog  = document.getElementById('bpml-t-'+key);
   if (!body) return;
-  const isOpen = body.style.display !== 'none';
-  body.style.display = isOpen ? 'none' : '';
-  if (tog) tog.classList.toggle('open', !isOpen);
+  const isOpen = body.style.display === 'none';
+  body.style.display = isOpen ? '' : 'none';
+  if (tog) {
+    // CSS-class-based toggle (L1/L2/L3)
+    if (tog.classList.contains('open') !== undefined && ['l1','l2','l3'].includes(level)) {
+      tog.classList.toggle('open', isOpen);
+    } else {
+      // inline-style rotate (RICEFW / REQ nodes)
+      tog.style.transform = isOpen ? 'rotate(90deg)' : '';
+    }
+  }
 }
 
 function _bpmlExpandAll() {
   document.querySelectorAll('[id^="bpml-body-"]').forEach(el => { el.style.display = ''; });
-  document.querySelectorAll('[id^="bpml-t-"]').forEach(el => el.classList.add('open'));
+  document.querySelectorAll('[id^="bpml-t-"]').forEach(el => { el.classList.add('open'); el.style.transform='rotate(90deg)'; });
 }
 
 function _bpmlCollapseAll() {
-  // Collapse L2, L3 bodies (keep L1 visible)
   document.querySelectorAll('[id^="bpml-body-"]').forEach(el => {
     const key = el.id.replace('bpml-body-','');
     const map = window._bpmlMap;
-    if (map && map[key] && map[key].level > 1) {
+    if (map && map[key] && map[key].level === 1) return;
+    el.style.display = 'none';
+    const tog = document.getElementById('bpml-t-'+key);
+    if (tog) { tog.classList.remove('open'); tog.style.transform=''; }
+  });
+}
+
+// ── Levelled expand: collapse everything then open down to chosen depth ──
+function _bpmlExpandToLevel() {
+  const lvl = (document.getElementById('bpml-expand-level')||{}).value || 'all';
+  const map = window._bpmlMap || {};
+
+  // Step 1: collapse everything
+  document.querySelectorAll('[id^="bpml-body-"]').forEach(el => {
+    el.style.display = 'none';
+    const tog = document.getElementById('bpml-t-'+el.id.replace('bpml-body-',''));
+    if (tog) { tog.classList.remove('open'); tog.style.transform=''; }
+  });
+
+  function open(key) {
+    const el  = document.getElementById('bpml-body-'+key);
+    const tog = document.getElementById('bpml-t-'+key);
+    if (el)  el.style.display = '';
+    if (tog) { tog.classList.add('open'); tog.style.transform='rotate(90deg)'; }
+  }
+
+  // Flags for each level
+  const openL2  = ['2','3','req','rf','all'].includes(lvl);
+  const openL3  = ['3','req','rf','all'].includes(lvl);
+  const openReq = ['req','rf','all'].includes(lvl);
+  const openRF  = ['rf','all'].includes(lvl);
+  const openDoc = lvl === 'all';
+
+  // Step 2: open BPML level bodies (L1 always open — it's the root)
+  Object.values(map).forEach(it => {
+    if (!it || !it.level) return;
+    if (it.level === 1)                  open(it.key);
+    if (it.level === 2 && openL2)        open(it.key);
+    if (it.level === 3 && openL3)        open(it.key);
+  });
+
+  // Step 3: open Req / RICEFW / doc bodies using _fileRole
+  if (openReq || openRF || openDoc) {
+    Object.values(map).forEach(it => {
+      if (!it || it.level) return; // skip BPML level items (handled above)
+      const role = it._fileRole;
+      if (role === 'requirement' && openReq) open(it.key);
+      if (role === 'ricefw'      && openRF)  open(it.key);
+      if (role === 'fsd_fut'     && openDoc) open(it.key);
+    });
+  }
+
+  // Step 4: always expand orphan/withdrawn header blocks
+  ['bpml-orphan-block','bpml-withdrawn-block'].forEach(id => {
+    open(id);
+  });
+}
+
+// ── Levelled collapse: collapse from chosen depth down ──
+function _bpmlCollapseToLevel() {
+  const lvl = (document.getElementById('bpml-expand-level')||{}).value || '3';
+  const map = window._bpmlMap || {};
+
+  // Keep open: everything above the selected level; collapse everything at or below
+  const keepL1  = true;
+  const keepL2  = ['2','3','req','rf','all'].includes(lvl);
+  const keepL3  = ['3','req','rf','all'].includes(lvl);
+
+  document.querySelectorAll('[id^="bpml-body-"]').forEach(el => {
+    const key = el.id.replace('bpml-body-','');
+    const it  = map[key];
+    let keep = false;
+    if (it) {
+      if (it.level === 1) keep = keepL1;
+      else if (it.level === 2) keep = keepL2;
+      else if (it.level === 3) keep = keepL3;
+    }
+    if (!keep) {
       el.style.display = 'none';
       const tog = document.getElementById('bpml-t-'+key);
-      if (tog) tog.classList.remove('open');
+      if (tog) { tog.classList.remove('open'); tog.style.transform=''; }
     }
   });
 }
 
-// ── Handle file upload ──
-function handleBPMLFile(file) {
-  if (typeof _uploadCheckConflict === 'function' && !_uploadCheckConflict('bpml', 'BPML Structure')) return;
-  const chip = document.getElementById('bpml-status-chip');
-  if (chip) chip.innerHTML = '<span class="usc-dot" style="background:var(--amber)"></span>Parsing…';
+// ── Update dot indicator for a file slot ──
+function _bpmlSetSlotStatus(slot, ok, label) {
+  const dot = document.getElementById('bpml-file'+slot+'-dot');
+  const lbl = document.getElementById('bpml-file'+slot+'-name');
+  if (dot) dot.style.background = ok ? 'var(--green)' : 'var(--red)';
+  if (lbl && label) lbl.textContent = label;
+  // Enable build button when at least file 1 is loaded
+  const btn = document.getElementById('bpml-build-btn');
+  if (btn) {
+    const hasFile1 = window._bpmlFiles.f1 !== null;
+    btn.disabled = !hasFile1;
+    btn.style.opacity = hasFile1 ? '1' : '0.4';
+    btn.style.cursor  = hasFile1 ? 'pointer' : 'default';
+  }
+}
 
+// ── Drop handler for upload zones ──
+function _bpmlDropHandler(event, slot) {
+  event.preventDefault();
+  const zone = document.getElementById('bpml-drop-zone-'+slot);
+  if (zone) zone.style.background = '';
+  const f = event.dataTransfer.files[0];
+  if (!f) return;
+  if (!f.name.endsWith('.csv')) { showToast('⚠ Please drop a .csv file'); return; }
+  _bpmlReadFile(f, slot);
+}
+
+// ── Read a file into the appropriate slot ──
+function _bpmlReadFile(file, slot) {
   const reader = new FileReader();
   reader.onload = e => {
-    try {
-      const items = parseBPMLCsv(e.target.result);
-      if (!items) {
-        if (chip) chip.innerHTML = '<span class="usc-dot" style="background:var(--red)"></span>Parse error';
-        showToast('⚠ BPML CSV parse failed — check file format');
-        return;
-      }
-
-      window._bpmlData = items;
-      window._bpmlMap  = _bpmlBuildMap(items);
-
-      // KPIs
-      const kpis = _bpmlBuildKPIs(items);
-      ['total','l1','l2','l3','l4','stp','itd','due'].forEach(k => {
-        const el = document.getElementById('bkpi-'+k);
-        if (el) el.textContent = kpis[k];
-      });
-      // New L3/L4 STP/ITD breakdown cells
-      const bkpiMap = {
-        'bkpi-stp-l3': kpis.stpL3,
-        'bkpi-stp-l4': kpis.stpL4,
-        'bkpi-itd-l3': kpis.itdL3,
-        'bkpi-itd-l4': kpis.itdL4,
-      };
-      Object.entries(bkpiMap).forEach(([id, val]) => {
-        const el = document.getElementById(id);
-        if (el) el.textContent = val;
-      });
-
-      // Chip + header chip
-      if (chip) chip.innerHTML = `<span class="usc-dot" style="background:var(--green)"></span>${items.length} items`;
-      const hChip = document.getElementById('bpml-header-chip');
-      if (hChip) { hChip.textContent = items.length + ' items · ' + file.name; hChip.style.display=''; }
-
-      // Show UI
-      document.getElementById('bpml-no-data-state').style.display = 'none';
-      document.getElementById('bpml-data-state').style.display = 'block';
-      document.getElementById('bpml-kpi-strip').style.display = 'block';
-      document.getElementById('bpml-filter-bar').style.display = 'block';
-      document.getElementById('bpml-insights-panel').style.display = 'block';
-
-      _bpmlInitFilters(items);
-      _bpmlRender();
-      _bpmlGenerateInsights(); // auto-generate on load
-
-      showToast('✓ BPML loaded — ' + items.length + ' items across 4 levels');
-      if (typeof _uploadSetLock === 'function') _uploadSetLock('bpml');
-      _updateOvBpml(items);
-      // Update sidebar query badge and view badge
-      const sbBpml = document.getElementById('sb-bpml-count');
-      if (sbBpml) sbBpml.textContent = items.length;
-      const sbBpmlView = document.getElementById('sb-bpml-view-badge');
-      if (sbBpmlView) sbBpmlView.textContent = items.length;
-    } catch(err) {
-      console.error('BPML parse error', err);
-      if (chip) chip.innerHTML = '<span class="usc-dot" style="background:var(--red)"></span>Error';
-      showToast('⚠ Error loading BPML: ' + err.message);
-    }
+    window._bpmlFiles['f'+slot] = e.target.result;
+    const rows = _bpmlParseCSV(e.target.result);
+    const count = rows.length > 1 ? (rows.length - 1) + ' rows' : 'empty';
+    _bpmlSetSlotStatus(slot, true, '✓ ' + file.name + ' — ' + count);
+    showToast('✓ File ' + slot + ' loaded — ' + count);
   };
   reader.readAsText(file);
 }
 
+// ── Build & render hierarchy from all loaded files ──
+function _bpmlBuildFromFiles() {
+  const f1 = window._bpmlFiles.f1;
+  if (!f1) { showToast('⚠ File 1 (BPML Hierarchy) is required'); return; }
+
+  const chip = document.getElementById('bpml-status-chip');
+  if (chip) chip.innerHTML = '<span class="usc-dot" style="background:var(--amber)"></span>Building…';
+
+  try {
+    // Parse each file
+    const bpmlItems = parseBPMLCsv(f1);
+    if (!bpmlItems) {
+      if (chip) chip.innerHTML = '<span class="usc-dot" style="background:var(--red)"></span>Parse error (File 1)';
+      showToast('⚠ BPML File 1 parse failed — check file format'); return;
+    }
+
+    const ricefwItems = window._bpmlFiles.f2 ? parseRicefwCsv(window._bpmlFiles.f2) : null;
+    const f3Items     = window._bpmlFiles.f3 ? parseFsdFutCsv(window._bpmlFiles.f3) : null;
+
+    // Merge into unified map
+    const mergedMap = _bpmlMergeData(bpmlItems, ricefwItems, f3Items);
+
+    window._bpmlData = bpmlItems;
+    window._bpmlMap  = mergedMap;
+    window._bpmlAllItems = [
+      ...bpmlItems,
+      ...(ricefwItems||[]),
+      ...(f3Items||[]),
+    ];
+
+    // KPIs
+    const kpis = _bpmlBuildKPIs(bpmlItems);
+    const rCount   = ricefwItems ? ricefwItems.length : 0;
+    const reqCount = f3Items ? f3Items.filter(i=>i._fileRole==='requirement').length : 0;
+    const fsdCount = f3Items ? f3Items.filter(i=>i.cat==='FSD').length : 0;
+    const futCount = f3Items ? f3Items.filter(i=>i.cat==='FUT').length : 0;
+
+    ['total','l1','l2','l3','l4','stp','itd','due'].forEach(k => {
+      const el = document.getElementById('bkpi-'+k);
+      if (el) el.textContent = kpis[k];
+    });
+    const bkpiMap = {
+      'bkpi-stp-l3': kpis.stpL3, 'bkpi-stp-l4': kpis.stpL4,
+      'bkpi-itd-l3': kpis.itdL3, 'bkpi-itd-l4': kpis.itdL4,
+    };
+    Object.entries(bkpiMap).forEach(([id, val]) => {
+      const el = document.getElementById(id); if (el) el.textContent = val;
+    });
+
+    const totalLoaded = bpmlItems.length + rCount + (f3Items ? f3Items.length : 0);
+    if (chip) chip.innerHTML = `<span class="usc-dot" style="background:var(--green)"></span>${totalLoaded} items`;
+    const hChip = document.getElementById('bpml-header-chip');
+    if (hChip) {
+      hChip.textContent = bpmlItems.length + ' BPML · ' + rCount + ' RICEFW · ' + reqCount + ' Req · ' + fsdCount + ' FSD · ' + futCount + ' FUT';
+      hChip.style.display = '';
+    }
+
+    // Show UI
+    document.getElementById('bpml-no-data-state').style.display = 'none';
+    document.getElementById('bpml-data-state').style.display = 'block';
+    document.getElementById('bpml-kpi-strip').style.display = 'block';
+    document.getElementById('bpml-filter-bar').style.display = 'block';
+    document.getElementById('bpml-insights-panel').style.display = 'block';
+
+    _bpmlInitFilters(bpmlItems);
+    _bpmlBuildExtendedKPIs(ricefwItems, f3Items);
+    _bpmlRender();
+    _bpmlGenerateInsights();
+
+    showToast('✓ BPML hierarchy built — ' + bpmlItems.length + ' BPML · ' + rCount + ' RICEFW · ' + reqCount + ' Req · ' + fsdCount + ' FSD · ' + futCount + ' FUT');
+    if (typeof _uploadSetLock === 'function') _uploadSetLock('bpml');
+    _updateOvBpml(bpmlItems);
+    const sbBpml = document.getElementById('sb-bpml-count');
+    if (sbBpml) sbBpml.textContent = totalLoaded;
+    const sbBpmlView = document.getElementById('sb-bpml-view-badge');
+    if (sbBpmlView) sbBpmlView.textContent = bpmlItems.length;
+
+  } catch(err) {
+    console.error('BPML build error', err);
+    if (chip) chip.innerHTML = '<span class="usc-dot" style="background:var(--red)"></span>Error';
+    showToast('⚠ Error building BPML: ' + err.message);
+  }
+}
+
+// Legacy single-file handler (still used by old csv-bpml-input)
+function handleBPMLFile(file) {
+  window._bpmlFiles.f1 = null;
+  const reader = new FileReader();
+  reader.onload = e => {
+    window._bpmlFiles.f1 = e.target.result;
+    _bpmlSetSlotStatus(1, true, '✓ ' + file.name);
+    _bpmlBuildFromFiles();
+  };
+  reader.readAsText(file);
+}
+
+// ── File input change events ──
 document.getElementById('csv-bpml-input').addEventListener('change', e => {
   if (e.target.files[0]) handleBPMLFile(e.target.files[0]);
 });
-
-// ── Drag-and-drop on BPML drop zone ──
-(function() {
-  const zone = document.getElementById('bpml-drop-zone');
-  if (!zone) return;
-  zone.addEventListener('dragover', e => { e.preventDefault(); zone.style.background='#f5f3ff'; });
-  zone.addEventListener('dragleave', () => { zone.style.background=''; });
-  zone.addEventListener('drop', e => {
-    e.preventDefault(); zone.style.background='';
-    const f = e.dataTransfer.files[0];
-    if (f && f.name.endsWith('.csv')) handleBPMLFile(f);
-    else showToast('⚠ Please drop a .csv file');
+['1','2','3'].forEach(slot => {
+  const el = document.getElementById('csv-bpml-input-'+slot);
+  if (el) el.addEventListener('change', e => {
+    if (e.target.files[0]) _bpmlReadFile(e.target.files[0], parseInt(slot));
+    e.target.value = ''; // reset so same file can be re-selected
   });
-})();
+});
 
 // ── Shared Claude API helper — works in claude.ai; falls back locally ──
 async function _callClaudeAPI(prompt) {
@@ -8866,139 +9905,167 @@ function _insCard(title, content, bg, border) {
 //  BPML LOCAL FALLBACK INSIGHTS
 // ══════════════════════════════════════════════
 function _bpmlLocalInsights() {
-  const items = window._bpmlData;
-  const map   = window._bpmlMap;
+  const items    = window._bpmlData;
+  const map      = window._bpmlMap;
+  const allItems = window._bpmlAllItems || [];
   if (!items || !map) return '<p>No data available.</p>';
 
-  const kpis  = _bpmlBuildKPIs(items);
-  const l1s   = items.filter(i=>i.level===1);
-  const l2s   = items.filter(i=>i.level===2);
-  const l3s   = items.filter(i=>i.level===3);
-  const l4s   = items.filter(i=>i.level===4);
+  const kpis = _bpmlBuildKPIs(items);
+  const l1s  = items.filter(i=>i.level===1);
+  const l2s  = items.filter(i=>i.level===2);
+  const l3s  = items.filter(i=>i.level===3);
 
-  // Hierarchy coverage per L1
-  const l1Stats = l1s.map(l1 => {
+  // RICEFW stats
+  const rfItems  = allItems.filter(i=>i._fileRole==='ricefw');
+  const rfTypes  = {};
+  rfItems.forEach(i=>{ rfTypes[i.type||'Other']=(rfTypes[i.type||'Other']||0)+1; });
+  const rfTypeStr = Object.entries(rfTypes).sort((a,b)=>b[1]-a[1])
+    .map(([t,c])=>`<strong>${t}: ${c}</strong>`).join(' · ');
+
+  // Req / FSD / FUT stats
+  const reqItems  = allItems.filter(i=>i._fileRole==='requirement' && !i._withdrawn);
+  const fsdItems  = allItems.filter(i=>i.cat==='FSD' && !i._withdrawn);
+  const futItems  = allItems.filter(i=>i.cat==='FUT' && !i._withdrawn);
+
+  const statusCount = arr => {
+    const s={}; arr.forEach(i=>{ s[i.status||'Unknown']=(s[i.status||'Unknown']||0)+1; }); return s;
+  };
+  const topStatus = arr => {
+    const s = statusCount(arr);
+    return Object.entries(s).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([st,c])=>`${st}: <strong>${c}</strong>`).join(' · ');
+  };
+
+  // RICEFW coverage: how many L3s have at least one RICEFW
+  const l3WithRicefw = l3s.filter(l3 => (l3.reqChildren||[]).some(rk => {
+    const req = map[rk]; return req && req.ricefwChild;
+  })).length;
+
+  // L1 hierarchy summary
+  const l1Lines = l1s.map(l1 => {
     const myL2 = l1.children.map(k=>map[k]).filter(Boolean).filter(i=>i&&i.level===2);
     const myL3 = myL2.flatMap(l2=>l2.children.map(k=>map[k]).filter(Boolean).filter(i=>i&&i.level===3));
-    const myL4 = myL3.flatMap(l3=>l3.children.map(k=>map[k]).filter(Boolean).filter(i=>i&&i.level===4));
-    return { name: l1.summary.slice(0,40), l2:myL2.length, l3:myL3.length, l4:myL4.length };
+    return { name: l1.summary.slice(0,40), l2:myL2.length, l3:myL3.length };
   });
-
-  // Due date risk
-  const withDue = items.filter(i=>i.due).sort((a,b)=>a.due>b.due?1:-1);
-  const today = new Date().toISOString().slice(0,10).replace(/-/g,'-');
-  const overdue = withDue.filter(i=>i.due < today.replace(/(\d{4})-(\d{2})-(\d{2})/,'$3-$2-$1'));
-
-  // Ownership
-  const repCount = {};
-  items.forEach(i=>{ if(i.reporter) repCount[i.reporter]=(repCount[i.reporter]||0)+1; });
-  const topRep = Object.entries(repCount).sort((a,b)=>b[1]-a[1])[0];
-  const ownedBySingle = topRep ? Math.round(topRep[1]/items.length*100) : 0;
-
-  // WS balance
-  const wsCount = {};
-  l4s.forEach(i=>{ wsCount[i.ws||'Unknown']=(wsCount[i.ws||'Unknown']||0)+1; });
-  const wsArr = Object.entries(wsCount).sort((a,b)=>b[1]-a[1]);
 
   let html = '';
 
-  // Card 1: Hierarchy Health
-  const avgL4perL3 = l3s.length>0 ? (l4s.length/l3s.length).toFixed(1) : 'n/a';
-  const avgL3perL2 = l2s.length>0 ? (l3s.length/l2s.length).toFixed(1) : 'n/a';
-  const l1CovTxt = l1Stats.map(s=>`<strong>${s.name}</strong>: ${s.l2} L2 → ${s.l3} L3 → ${s.l4} L4 steps`).join('; ');
-  html += _insCard('📐 Hierarchy Health',
-    `BPML spans <strong>${kpis.total} items</strong> across 4 levels: <strong>${kpis.l1} L1 → ${kpis.l2} L2 → ${kpis.l3} L3 → ${kpis.l4} L4</strong>. ` +
-    `Average depth: <strong>${avgL3perL2} L3 per L2</strong>, <strong>${avgL4perL3} L4 steps per L3</strong>. ${l1CovTxt}.`,
+  // Card 1: BPML Hierarchy Health
+  html += _insCard('📐 BPML Hierarchy Health',
+    `Structure spans <strong>${kpis.total} BPML items</strong>: ${kpis.l1} L1 → ${kpis.l2} L2 → ${kpis.l3} L3. ` +
+    `<strong>${l3WithRicefw} of ${l3s.length} L3</strong> processes are linked to at least one RICEFW item. ` +
+    l1Lines.map(s=>`<strong>${s.name}</strong>: ${s.l2} L2 / ${s.l3} L3`).join('; ') + '.',
     '#faf5ff','#7c3aed');
 
-  // Card 2: Coverage Balance
-  const maxWs = wsArr[0], minWs = wsArr[wsArr.length-1];
-  const wsBalTxt = wsArr.slice(0,3).map(([w,c])=>`${w}: <strong>${c}</strong>`).join(' · ');
-  html += _insCard('⚖️ Coverage Balance',
-    `L4 process steps by workstream — ${wsBalTxt}. ` +
-    (maxWs && minWs && maxWs[0]!==minWs[0] ?
-      `<strong>${maxWs[0]}</strong> has the highest step coverage (${maxWs[1]}), while <strong>${minWs[0]}</strong> has the lowest (${minWs[1]}) — verify this reflects actual process scope.` :
-      'Coverage appears evenly distributed across workstreams.'),
+  // Card 2: RICEFW Coverage
+  html += _insCard('⚙️ RICEFW Coverage',
+    `<strong>${rfItems.length} RICEFW items</strong> loaded — ${rfTypeStr}. ` +
+    (rfItems.length > 0
+      ? `${Math.round(l3WithRicefw/Math.max(l3s.length,1)*100)}% of L3 processes have RICEFW coverage. ` +
+        (l3WithRicefw < l3s.length ? `<strong style="color:#d97706">⚠ ${l3s.length - l3WithRicefw} L3 processes have no linked RICEFW</strong> — verify scope or add items.` : '✅ All L3 processes have RICEFW coverage.')
+      : 'Upload File 2 (RICEFW) to analyse technical coverage.'),
     '#f5f3ff','#7c3aed');
 
-  // Card 3: Ownership Risk
-  html += _insCard('👤 Ownership Concentration',
-    topRep ?
-      `Top contributor <strong>${_bpmlFmtEmail(topRep[0])}</strong> reported <strong>${topRep[1]} of ${items.length} items (${ownedBySingle}%)</strong>. ` +
-      `${ownedBySingle > 40 ? '⚠ High concentration — single point of failure risk. Distribute ownership across workstreams.' : 'Ownership appears reasonably distributed across the team.'}` :
-      'No reporter data found — assign owners to all BPML items.',
-    '#faf5ff','#7c3aed');
+  // Card 3: Requirements Status
+  const reqNS  = reqItems.filter(i=>/not started/i.test(i.status||'')).length;
+  const reqIP  = reqItems.filter(i=>/progress/i.test(i.status||'')).length;
+  const reqDone= reqItems.filter(i=>/complet|approv|done/i.test(i.status||'')).length;
+  html += _insCard('📋 Requirements Status',
+    `<strong>${reqItems.length} Requirements</strong> in scope. Status: ${topStatus(reqItems)}. ` +
+    (reqDone > 0 ? `<strong>${Math.round(reqDone/Math.max(reqItems.length,1)*100)}% completed/approved</strong>. ` : '') +
+    (reqNS > 0 ? `<strong style="color:#d97706">⚠ ${reqNS} still Not Started</strong> — prioritise to avoid FSD/FUT delays.` : reqIP > 0 ? `${reqIP} in progress.` : ''),
+    '#f5f7ff','#6366f1');
 
-  // Card 4: Due Date Risk
-  html += _insCard('📅 Due Date Coverage',
-    withDue.length > 0 ?
-      `<strong>${withDue.length} of ${items.length} items</strong> have due dates assigned (${Math.round(withDue.length/items.length*100)}%). ` +
-      (overdue.length > 0 ? `<strong style="color:#dc2626">⚠ ${overdue.length} items may be overdue</strong> — review and update dates. ` : 'No items appear overdue based on current dates. ') +
-      `Earliest due: <strong>${withDue[0]?.due||'—'}</strong> (${withDue[0]?.idNum||withDue[0]?.key||''}).` :
-      `<strong>No due dates assigned</strong> across ${items.length} items. Add target dates for all L2/L3 items to enable timeline tracking.`,
-    '#fffbeb','#b45309');
+  // Card 4: FSD / FUT Readiness
+  const fsdDone = fsdItems.filter(i=>/complet|approv|done/i.test(i.status||'')).length;
+  const futDone = futItems.filter(i=>/complet|approv|done/i.test(i.status||'')).length;
+  html += _insCard('🧪 FSD / FUT Readiness',
+    `<strong>${fsdItems.length} FSD</strong> (${Math.round(fsdDone/Math.max(fsdItems.length,1)*100)}% complete) · ` +
+    `<strong>${futItems.length} FUT</strong> (${Math.round(futDone/Math.max(futItems.length,1)*100)}% complete). ` +
+    `FSD status: ${topStatus(fsdItems)}. FUT status: ${topStatus(futItems)}. ` +
+    (fsdItems.length > 0 && fsdDone/fsdItems.length < 0.5
+      ? `<strong style="color:#d97706">⚠ Less than 50% of FSD documents are complete</strong> — test readiness may be at risk.`
+      : fsdItems.length === 0 ? 'Upload File 3 to track FSD/FUT readiness.' : ''),
+    '#f0f9ff','#0369a1');
 
   // Card 5: Recommendations
   const recs = [];
-  if (kpis.due / kpis.total < 0.3) recs.push('Assign due dates to all L2 and L3 items — currently only ' + Math.round(kpis.due/kpis.total*100) + '% have dates.');
-  if (ownedBySingle > 40) recs.push('Redistribute BPML ownership — ' + _bpmlFmtEmail(topRep[0]) + ' owns ' + ownedBySingle + '% of items, creating a key-person dependency.');
-  if (wsArr.length > 1 && wsArr[wsArr.length-1][1] < 5) recs.push('Review low-coverage workstream <strong>' + (wsArr[wsArr.length-1][0]) + '</strong> (' + wsArr[wsArr.length-1][1] + ' L4 steps) — confirm scope is intentional.');
-  recs.push('Validate all L3 → L4 parent-child links are complete — orphaned steps break the hierarchy drill-down.');
+  if (l3WithRicefw < l3s.length) recs.push(`${l3s.length - l3WithRicefw} L3 processes lack RICEFW — review scope and link or remove.`);
+  if (reqNS > 0) recs.push(`${reqNS} Requirements are Not Started — begin drafting to unblock FSD/FUT authoring.`);
+  if (fsdItems.length > 0 && fsdDone/fsdItems.length < 0.5) recs.push('Accelerate FSD completion — less than 50% done, UAT readiness is at risk.');
+  if (futItems.length > 0 && futDone/futItems.length < 0.3) recs.push('FUT completion is below 30% — assign owners and set target dates immediately.');
+  recs.push('Validate Withdrawn items in the hierarchy — confirm none are incorrectly excluded from scope.');
   html += _insCard('✅ Key Recommendations',
-    recs.slice(0,3).map((r,i)=>`<div style="margin:4px 0"><strong>${i+1}.</strong> ${r}</div>`).join(''),
+    recs.slice(0,4).map((r,i)=>`<div style="margin:4px 0"><strong>${i+1}.</strong> ${r}</div>`).join(''),
     '#f0fdf4','#16a34a');
 
   return html;
 }
 
+
 // ── AI Insights ──
 async function _bpmlGenerateInsights() {
-  const items = window._bpmlData;
+  const items    = window._bpmlData;
+  const allItems = window._bpmlAllItems || [];
   if (!items) { showToast('Upload BPML data first'); return; }
 
   const btn  = document.getElementById('bpml-ins-btn');
   const body = document.getElementById('bpml-insights-body');
   const meta = document.getElementById('bpml-ins-meta');
   if (btn) { btn.disabled = true; btn.innerHTML = '⏳ Generating…'; }
-  if (body) body.innerHTML = '<div style="color:var(--text3);font-size:12px;font-family:var(--mono);padding:8px 0;display:flex;align-items:center;gap:8px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>Analysing BPML structure…</div>';
+  if (body) body.innerHTML = '<div style="color:var(--text3);font-size:12px;font-family:var(--mono);padding:8px 0;display:flex;align-items:center;gap:8px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>Analysing BPML, RICEFW &amp; Requirements…</div>';
 
   const kpis = _bpmlBuildKPIs(items);
-  const map  = window._bpmlMap;
-  const l1s  = items.filter(i=>i.level===1);
-  const l1Lines = l1s.map(l1 => {
+  const map  = window._bpmlMap || {};
+  const l3s  = items.filter(i=>i.level===3);
+
+  const rfItems  = allItems.filter(i=>i._fileRole==='ricefw');
+  const rfTypes  = {};
+  rfItems.forEach(i=>{ rfTypes[i.type||'Other']=(rfTypes[i.type||'Other']||0)+1; });
+  const rfTypeStr = Object.entries(rfTypes).sort((a,b)=>b[1]-a[1]).map(([t,c])=>t+':'+c).join(', ');
+
+  const reqItems = allItems.filter(i=>i._fileRole==='requirement'&&!i._withdrawn);
+  const fsdItems = allItems.filter(i=>i.cat==='FSD'&&!i._withdrawn);
+  const futItems = allItems.filter(i=>i.cat==='FUT'&&!i._withdrawn);
+
+  const statusSummary = arr => {
+    const s={};
+    arr.forEach(i=>{ s[i.status||'Unknown']=(s[i.status||'Unknown']||0)+1; });
+    return Object.entries(s).sort((a,b)=>b[1]-a[1]).slice(0,4).map(([st,c])=>st+':'+c).join(', ');
+  };
+
+  const l3WithRF = l3s.filter(l3=>(l3.reqChildren||[]).some(rk=>{ const r=map[rk]; return r&&r.ricefwChild; })).length;
+
+  const l1Lines = items.filter(i=>i.level===1).map(l1 => {
     const myL2 = l1.children.map(k=>map[k]).filter(Boolean).filter(i=>i&&i.level===2);
     const myL3 = myL2.flatMap(l2=>l2.children.map(k=>map[k]).filter(Boolean).filter(i=>i&&i.level===3));
-    const myL4 = myL3.flatMap(l3=>l3.children.map(k=>map[k]).filter(Boolean).filter(i=>i&&i.level===4));
-    return `- ${l1.idNum||l1.key}: "${l1.summary}" | L2:${myL2.length} L3:${myL3.length} L4:${myL4.length} | WS:${l1.ws}`;
+    return '- ' + (l1.idNum||l1.key) + ': "' + l1.summary.slice(0,40) + '" | L2:' + myL2.length + ' L3:' + myL3.length + ' | WS:' + (l1.ws||'—');
   }).join('\n');
-  const repCount={};
-  items.filter(i=>i.reporter).forEach(i=>{ repCount[i.reporter]=(repCount[i.reporter]||0)+1; });
-  const l2byWs={};
-  items.filter(i=>i.level===2).forEach(i=>{ l2byWs[i.ws]=(l2byWs[i.ws]||0)+1; });
 
-  const prompt = `You are a senior SAP Activate PMO analyst for PG&E Propel Supply Chain.
-Analyse this BPML structure and give 5 concise actionable insights as HTML <div> blocks.
-
-BPML: ${kpis.total} items | L1:${kpis.l1} L2:${kpis.l2} L3:${kpis.l3} L4:${kpis.l4} | STP:${kpis.stp} ITD:${kpis.itd} | With due dates:${kpis.due}
-L1 areas:\n${l1Lines}
-WS (L2): ${Object.entries(l2byWs).map(([w,c])=>w+':'+c).join(', ')}
-Top owners: ${Object.entries(repCount).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([e,c])=>_bpmlFmtEmail(e)+':'+c).join(', ')}
-
-Write 5 insights covering: hierarchy health, coverage balance, ownership risk, due date gaps, and top 3 PMO recommendations.
-Use <strong> for numbers. Each insight 2-3 sentences. Return only the insight HTML, no preamble.`;
+  const prompt = 'You are a senior SAP Activate PMO analyst for PG&E Propel Supply Chain.\n'
+    + 'Analyse this full BPML hierarchy with RICEFW, Requirements, FSD and FUT data. Give 5 concise actionable insights as HTML.\n\n'
+    + 'BPML: ' + kpis.total + ' items | L1:' + kpis.l1 + ' L2:' + kpis.l2 + ' L3:' + kpis.l3 + ' | STP:' + kpis.stp + ' ITD:' + kpis.itd + '\n'
+    + 'L3 with RICEFW coverage: ' + l3WithRF + '/' + l3s.length + ' (' + Math.round(l3WithRF/Math.max(l3s.length,1)*100) + '%)\n'
+    + 'L1 areas:\n' + l1Lines + '\n\n'
+    + 'RICEFW (' + rfItems.length + ' total): ' + rfTypeStr + '\n'
+    + 'Requirements (' + reqItems.length + '): ' + statusSummary(reqItems) + '\n'
+    + 'FSD (' + fsdItems.length + '): ' + statusSummary(fsdItems) + '\n'
+    + 'FUT (' + futItems.length + '): ' + statusSummary(futItems) + '\n'
+    + 'Withdrawn: ' + allItems.filter(i=>i._withdrawn).length + ' | '
+    + 'Orphaned: ' + (window._bpmlOrphans ? (window._bpmlOrphans.ricefw||[]).length+(window._bpmlOrphans.req||[]).length+(window._bpmlOrphans.docs||[]).length : 0) + '\n\n'
+    + 'Write 5 insights: (1) BPML hierarchy health & L3 coverage, (2) RICEFW type distribution & gaps, (3) Requirements completeness, (4) FSD/FUT readiness & test risk, (5) top 3 PMO actions.\n'
+    + 'Use <strong> for key numbers. Each insight 2-3 sentences. Return only HTML <div> blocks, no preamble.';
 
   try {
     const text = await _callClaudeAPI(prompt);
-    if (body) body.innerHTML = `<div style="font-size:12px;line-height:1.8">${text}</div>`;
+    if (body) body.innerHTML = '<div style="font-size:12px;line-height:1.8">' + text + '</div>';
     if (meta) meta.textContent = 'Generated by Claude AI · ' + new Date().toLocaleTimeString();
     showToast('✓ BPML AI insights generated');
   } catch(err) {
-    // Rich local fallback — always works offline
     if (body) body.innerHTML = _bpmlLocalInsights();
     if (meta) meta.textContent = 'Locally generated · ' + new Date().toLocaleTimeString();
     showToast('✓ BPML insights generated (local analysis)');
   } finally {
-    if (btn) { btn.disabled = false; btn.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px"><path d="M8 1v14M1 8h14"/></svg> Generate Insights'; }
+    if (btn) { btn.disabled = false; btn.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px"><path d="M13.5 8a5.5 5.5 0 11-1.1-3.3"/><path d="M13.5 2v3h-3"/></svg> Refresh'; }
   }
 }
 
