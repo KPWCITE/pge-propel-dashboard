@@ -66,7 +66,7 @@
     background: #f0f4fa;
     color: var(--text);
     height: 100%;
-    overflow-x: hidden;
+    overflow-x: auto;
     font-size: 14px;
     line-height: 1.5;
   }
@@ -107,6 +107,11 @@
   .sb-logo-sub { font-size: 10px; color: rgba(255,255,255,0.45); font-family: var(--mono); margin-top: 2px; }
 
   .sb-section { padding: 14px 10px 4px; }
+  .sb-section-query { padding: 14px 10px 4px; flex-shrink: 0; display: flex; flex-direction: column; min-height: 0; }
+  .sb-query-items { overflow-y: auto; max-height: calc(3 * 72px); scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.15) transparent; }
+  .sb-query-items::-webkit-scrollbar { width: 4px; }
+  .sb-query-items::-webkit-scrollbar-track { background: transparent; }
+  .sb-query-items::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
   .sb-label { font-size: 9px; font-weight: 600; letter-spacing: 0.1em; color: rgba(255,255,255,0.3); padding: 0 8px 6px; text-transform: uppercase; }
   .sb-item {
     display: flex; align-items: center; gap: 9px;
@@ -125,8 +130,10 @@
   .sb-badge.tp    { background: var(--tp-color); }
 
   .sb-footer {
-    margin-top: auto; padding: 14px 10px;
+    flex-shrink: 0;
+    padding: 14px 10px;
     border-top: 1px solid rgba(255,255,255,0.06);
+    margin-top: auto;
   }
   .sb-sprint-chip {
     background: rgba(255,255,255,0.06);
@@ -137,7 +144,7 @@
   .sb-sprint-name { font-size: 11px; color: #fff; font-weight: 600; }
   .sb-sprint-dates { font-size: 10px; color: rgba(255,255,255,0.4); font-family: var(--mono); margin-top: 2px; }
 
-  .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+  .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; min-width: 0; overflow-x: auto; }
 
   /* ── TOPBAR ── */
   .topbar {
@@ -209,7 +216,7 @@
   .report-date { font-size: 11px; color: var(--text3); font-family: var(--mono); }
 
   /* ── CONTENT ── */
-  .content { padding: 20px 24px; flex: 1; }
+  .content { padding: 20px 24px; flex: 1; min-width: 700px; }
 
   /* ── ALERT BANNER ── */
   .alert-banner {
@@ -1160,8 +1167,9 @@
       </div>
     </div>
 
-    <div class="sb-section">
+    <div class="sb-section-query">
       <div class="sb-label">Query</div>
+      <div class="sb-query-items">
       <!-- Sprint & Stories query item -->
       <div class="sb-item" onclick="_showJQL('sprint')" style="flex-direction:column;align-items:flex-start;gap:4px;padding:10px 12px;height:auto">
         <div style="display:flex;align-items:center;gap:8px;width:100%">
@@ -1207,6 +1215,7 @@
         </div>
         <div style="font-size:9px;color:rgba(255,255,255,0.35);font-family:var(--mono);line-height:1.4;padding-left:23px;word-break:break-word">Click to view JQL query</div>
       </div>
+      </div><!-- /sb-query-items -->
     </div>
 
     <div class="sb-footer">
@@ -1716,6 +1725,12 @@
           </div>
         </div>
 
+        <!-- Workstream velocity -->
+        <div class="card" style="margin-bottom:14px">
+          <div class="card-title">Workstream velocity</div>
+          <div class="chart-wrap" style="height:260px"><canvas id="ws-chart"></canvas></div>
+        </div>
+
         <!-- RAID by workstream -->
         <div class="card" style="margin-bottom:14px">
           <div class="card-title">
@@ -1823,7 +1838,6 @@
 
       <!-- SPRINT UPDATE SECTION -->
       <div class="section-panel" id="sec-risks">
-        <div id="su-health-alert"></div>
 
         <!-- NO DATA STATE - shown until sprint CSV is uploaded -->
         <div id="su-no-data-state">
@@ -1841,11 +1855,14 @@
         <!-- DATA STATE - shown only after sprint CSV is uploaded -->
         <div id="su-data-state" style="display:none">
 
+        <!-- Sprint selector bar — populated by _suShowSprintSelector() after CSV load -->
+        <div id="su-sprint-selector-wrap" style="margin-bottom:16px;display:none"></div>
+
         <div class="su-header">
           <div class="su-header-left">
-            <div class="su-title">Sprint Update</div>
+            <div class="su-title" id="su-title-sprint">Sprint Update</div>
             <div class="su-meta" id="su-meta-line"></div>
-          </div>
+            </div>
           <div class="su-header-right">
             <div class="su-rag-block" id="su-rag-block">
               <div class="su-rag-label">Overall Status</div>
@@ -1862,6 +1879,16 @@
             </div>
           </div>
         </div>
+
+        <!-- Sprint selector prompt — shown until a sprint is applied -->
+        <div id="su-sprint-prompt" style="display:none;background:var(--card);border:2px dashed var(--accent);border-radius:12px;padding:36px 24px;text-align:center;margin-bottom:16px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" style="width:36px;height:36px;opacity:0.5;margin-bottom:12px"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v3M15 3v3"/></svg>
+          <div style="font-size:14px;font-weight:700;color:var(--text2);margin-bottom:6px">Select a Sprint to view data</div>
+          <div style="font-size:12px;color:var(--text3);font-family:var(--mono)">Use the Sprint Filter above to choose a sprint, then click <strong style="color:var(--accent)">Apply Sprint Data</strong></div>
+        </div>
+
+        <!-- All Sprint Update content sections — hidden until a sprint is applied -->
+        <div id="su-sections-body" style="display:none">
 
         <!-- KPI strip — styled like CF tab -->
         <div class="ov-kpi-strip" style="margin-bottom:14px">
@@ -1997,24 +2024,6 @@
         <div id="su-team-snap" style="display:none"></div>
         <div id="su-critical"  style="display:none"></div>
 
-        <!-- Owner accountability -->
-        <div class="card" style="margin-bottom:14px">
-          <div class="card-title">Sprint owner accountability</div>
-          <div id="su-owners-table"></div>
-        </div>
-
-        <!-- Workstream status + Workstream velocity side by side -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
-          <div class="card">
-            <div class="card-title">Workstream status</div>
-            <div id="su-ws-list"></div>
-          </div>
-          <div class="card">
-            <div class="card-title">Workstream velocity</div>
-            <div class="chart-wrap" style="height:260px"><canvas id="ws-chart"></canvas></div>
-          </div>
-        </div>
-
         <!-- Full sprint backlog (moved from Full Backlog tab) -->
         <div class="card" style="margin-top:14px">
 
@@ -2106,6 +2115,8 @@
           </div>
 
         </div>
+
+        </div><!-- /su-sections-body -->
 
         </div><!-- /su-data-state -->
       </div>
@@ -3568,9 +3579,14 @@ function showSection(id){
   const sbMap = ['overview','risks','raid','cf','bpml','sprintplan','workstream','team','testplan','search'];
   const si = sbMap.indexOf(id);
   if(si>=0) sbItems[si].classList.add(themedCls[id]||'active');
-  if(id==='risks') setTimeout(()=>{ if(window._data) renderWsChart(window._data); }, 50);
+  if(id==='risks') setTimeout(()=>{
+    if(window._data) {
+      _suShowSprintSelector(window._data);
+      renderWsChart(window._data);
+    }
+  }, 50);
   if(id==='cf') setTimeout(()=>{ renderCFCharts(window._cfData); }, 50);
-  if(id==='workstream') setTimeout(()=>{ renderWSRaidTable(window._raidData); }, 50);
+  if(id==='workstream') setTimeout(()=>{ renderWSRaidTable(window._raidData); if(window._data) renderWsChart(window._data); }, 50);
   if(id==='team') setTimeout(()=>{ renderTeamSprintTable(window._data); renderTeamRaidTable(window._raidData); },50);
   if(id==='search') setTimeout(()=>{ _suSearchInit(); }, 50);
 }
@@ -3590,7 +3606,7 @@ function render(d){
   // Sidebar
   document.getElementById('sb-count').textContent = d.total;
   document.getElementById('sb-risk-count').textContent = d.total;
-  document.getElementById('sb-sprint-name').textContent = d.sprint.replace('NEW ','');
+  document.getElementById('sb-sprint-name').textContent = (d.sprintFilter || d.sprint || 'Sprint').replace('NEW ','');
   document.getElementById('sb-sprint-dates').textContent = d.sprintStart.slice(5)+' – '+d.sprintEnd.slice(5)+' '+d.sprintStart.slice(0,4);
 
   // Topbar
@@ -3601,20 +3617,7 @@ function render(d){
   // Topbar RAG pill
   const pctDone = d.done/d.total;
 
-  // Sprint Health alert — all items past due date, regardless of status, except Completed
-  const bl4 = d.backlog || [];
-  const _rp4=(d.reportDate||'').split('-'); const today4=_rp4.length===3?new Date(+_rp4[0],+_rp4[1]-1,+_rp4[2]):new Date();
-  today4.setHours(0,0,0,0);
-  const allOverdue = bl4.filter(b => b.due && b.due !== '—' && new Date(parseDue(b.due)) < today4 && b.status !== 'Completed');
-  const ov = allOverdue.length;
-  const bannerRag = (ov > 0 && pctDone < 0.5) ? 'RED' : (ov > 0 || pctDone < 0.7) ? 'AMBER' : 'GREEN';
-  const healthHtml = ov>0
-    ? '<div class="alert-banner" style="margin-bottom:16px"><div class="alert-icon"><span>!</span></div><div class="alert-text"><strong>Sprint Health: '+bannerRag+'.</strong> '+ov+' item'+(ov>1?'s':'')+' overdue · '+d.hold+' on hold · Only '+Math.round(pctDone*100)+'% complete with '+calcDaysLeft(d.reportDate,d.sprintEnd)+' days remaining. Escalation required.</div></div>'
-    : '';
-  const suAlert = document.getElementById('su-health-alert');
-  if(suAlert) suAlert.innerHTML = healthHtml;
-
-  // Overview alert area stays empty (health shown in overview banner)
+  // Overview alert area stays empty
   document.getElementById('alert-area').innerHTML = '';
 
   // Overview (stacked bar needs these IDs preserved)
@@ -3698,7 +3701,12 @@ function render(d){
   },60);
 }
 
-function calcDaysLeft(from,to){ return Math.max(0,Math.round((new Date(to)-new Date(from))/86400000)); }
+function calcDaysLeft(from, to) {
+  if (!from || !to) return 0;
+  const f = new Date(from), t = new Date(to);
+  if (isNaN(f) || isNaN(t)) return 0;
+  return Math.max(0, Math.round((t - f) / 86400000));
+}
 
 function renderCalendar(d){
   const cal = document.getElementById('cal-grid');
@@ -3727,8 +3735,6 @@ function renderCalendar(d){
 
 
 function renderSWTable(d){
-  // Clear drill registry entries for workstream (reset on each render)
-  _DRILL.length = 0;
   // Toggle sprint gates on workstream tab
   const wsSprintNo = document.getElementById('ws-sprint-no-data');
   const wsSprintDa = document.getElementById('ws-sprint-data');
@@ -3894,7 +3900,7 @@ function renderTeamList(d){ if(d) renderTeamSprintTable(d); }
 function renderSprintUpdate(d) {
   if (!d) return;
 
-  // Toggle data/no-data gates
+  // Toggle data/no-data gates — do this FIRST before anything else can throw
   const suNo = document.getElementById('su-no-data-state');
   const suDa = document.getElementById('su-data-state');
   if (suNo) suNo.style.display = 'none';
@@ -3905,8 +3911,9 @@ function renderSprintUpdate(d) {
   const sprintEnd=_se5.length===3?new Date(+_se5[0],+_se5[1]-1,+_se5[2]):new Date();
   const sprintStart=_ss5.length===3?new Date(+_ss5[0],+_ss5[1]-1,+_ss5[2]):new Date();
 
-  // Days remaining = sprintEnd - today (inclusive of today = ceil)
-  const daysLeft  = calcDaysLeft(d.reportDate, d.sprintEnd);
+  // Days remaining = sprintEnd - actual today (not reportDate)
+  const realToday = new Date().toISOString().slice(0,10);
+  const daysLeft  = calcDaysLeft(realToday, d.sprintEnd);
   // Total sprint duration
   const daysTotal = calcDaysLeft(d.sprintStart, d.sprintEnd);
   // Elapsed %
@@ -3929,14 +3936,21 @@ function renderSprintUpdate(d) {
 
   // Header
   document.getElementById('su-meta-line').textContent =
-    d.sprint + '  ·  Supply Chain  ·  ' +
-    d.sprintStart.slice(5) + ' – ' + d.sprintEnd.slice(5) + ' ' + d.sprintStart.slice(0,4);
+    'Supply Chain  ·  ' +
+    (d.sprintStart ? d.sprintStart.slice(5) + ' – ' + d.sprintEnd.slice(5) + ' ' + d.sprintStart.slice(0,4) : '');
+  // Sprint name in title
+  const suTitle = document.getElementById('su-title-sprint');
+  if (suTitle) suTitle.textContent = d.sprintFilter ? d.sprintFilter : (d.sprint || 'Sprint Update');
+
   // RAG: RED if overdue>0 AND <50% done, AMBER if overdue>0 OR <70% done, GREEN only if 0 overdue AND ≥70% done
   const ragCls = (overdueItems.length > 0 && pctDone < 50) ? 'red'
                : (overdueItems.length > 0 || pctDone < 70) ? 'amber'
                : 'green';
   document.getElementById('su-rag-pill').className = 'rag-pill ' + ragCls;
   document.getElementById('su-rag-text').textContent = ragCls.toUpperCase();
+
+  // Health capsule — inline sprint summary chips
+
   document.getElementById('su-pct').textContent = pctDone + '%';
   document.getElementById('su-days').textContent = daysLeft;
   // Show "X of Y days" context line
@@ -3974,7 +3988,7 @@ function renderSprintUpdate(d) {
   _kpiDrill('su-inprogress', 'In Progress', bl.filter(b=>b.status==='In Progress'));
   _kpiDrill('su-ns',         'Not Started', bl.filter(b=>b.status==='Not Started'));
   _kpiDrill('su-hold',       'On Hold',     bl.filter(b=>b.status==='On Hold'));
-  _kpiDrill('su-overdue',    'Overdue',     overdueRows2.length ? overdueRows2 : bl.filter(b=>b.status!=='Completed'&&b.due&&b.due!=='—'));
+  _kpiDrill('su-overdue',    'Overdue',     overdueRows2);
 
   // Burn-down bars — four segments
   document.getElementById('su-bar-pct').textContent          = pctDone + '%';
@@ -4039,7 +4053,7 @@ function renderSprintUpdate(d) {
 
   // Workstream status
   const wsList = document.getElementById('su-ws-list');
-  wsList.innerHTML = d.subworkstreams.map(sw => {
+  if (wsList) wsList.innerHTML = d.subworkstreams.map(sw => {
     const pct = Math.round(sw.done / sw.total * 100);
     const barColor = pct === 0 ? '#ef4444' : pct < 50 ? '#f59e0b' : '#16a34a';
     const pillCls = pct === 0 ? 'zero' : pct < 50 ? 'low' : pct < 80 ? 'mid' : 'hi';
@@ -4194,52 +4208,54 @@ function renderSprintUpdate(d) {
 
   // Owner accountability table
   const ownersEl = document.getElementById('su-owners-table');
-  const statusBg = {Completed:'#dcfce7', 'In Review':'#dbeafe', 'In Progress':'#dbeafe', 'Not Started':'#f8fafc', 'On Hold':'#ffedd5'};
-  const statusFg = {Completed:'#166534', 'In Review':'#1e40af', 'In Progress':'#1e40af', 'Not Started':'#475569', 'On Hold':'#9a3412'};
-  ownersEl.innerHTML = `<table class="su-owners-table-el">
-    <thead><tr>
-      <th>Assignee</th><th>Org</th><th style="text-align:center">Assigned</th>
-      <th style="text-align:center">Done</th><th style="text-align:center">In Review</th><th style="text-align:center">In Progress</th>
-      <th style="text-align:center">Not Started</th><th style="text-align:center">On Hold</th>
-      <th style="text-align:center">Completion</th><th style="text-align:center">Load</th><th>Status</th>
-    </tr></thead>
-    <tbody>
-    ${d.team.map((t,ri) => {
-      const rowBg = ri % 2 === 0 ? '#fff' : '#f8fafc';
-      const pct = Math.round(t.done / t.total * 100);
-      const grandTotal = d.team.reduce((s,x)=>s+x.total,0);
-      const loadPct = grandTotal > 0 ? Math.round(t.total / grandTotal * 100) : 0;
-      const loadColor = loadPct > 30 ? '#ef4444' : loadPct > 20 ? '#f59e0b' : '#16a34a';
-      const statusNote = t.warn ? '<span style="background:#fee2e2;color:#991b1b;border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700;font-family:var(--mono)">ACTION NEEDED</span>'
-        : t.done === t.total ? '<span style="background:#dcfce7;color:#166534;border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700;font-family:var(--mono)">COMPLETE</span>'
-        : (t.inprogress||0) > 0 ? '<span style="background:#dbeafe;color:#1e40af;border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700;font-family:var(--mono)">IN PROGRESS</span>' : t.review > 0 ? '<span style="background:#fef3c7;color:#92400e;border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700;font-family:var(--mono)">IN REVIEW</span>'
-        : '<span style="background:#f1f5f9;color:#64748b;border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700;font-family:var(--mono)">NOT STARTED</span>';
-      const displayName = t.name.split('.').map(p=>p.charAt(0).toUpperCase()+p.slice(1)).join(' ');
-      return `<tr style="background:${rowBg}">
-        <td style="padding:9px 10px;border-top:1px solid var(--grey200);font-weight:600;font-size:12px;color:${t.warn?'var(--red)':'var(--text)'}" title="${t.email||''}">${displayName}${t.warn?' ⚠':''}</td>
-        <td style="padding:9px 10px;border-top:1px solid var(--grey200);font-family:var(--mono);font-size:10px;color:var(--text3)">${t.org}</td>
-        <td style="padding:9px 10px;border-top:1px solid var(--grey200);text-align:center;font-family:var(--mono);font-size:11px;font-weight:600">${t.total}</td>
-        <td style="padding:9px 10px;border-top:1px solid var(--grey200);text-align:center;font-family:var(--mono);font-size:11px;color:var(--green);font-weight:600">${t.done}</td>
-        <td style="padding:9px 10px;border-top:1px solid var(--grey200);text-align:center;font-family:var(--mono);font-size:11px;color:var(--amber)">${t.review}</td>
-        <td style="padding:9px 10px;border-top:1px solid var(--grey200);text-align:center;font-family:var(--mono);font-size:11px;color:#3b82f6">${t.inprogress||0}</td>
-        <td style="padding:9px 10px;border-top:1px solid var(--grey200);text-align:center;font-family:var(--mono);font-size:11px;color:${t.ns>0?'var(--red)':'var(--text3)'}">${t.ns}</td>
-        <td style="padding:9px 10px;border-top:1px solid var(--grey200);text-align:center;font-family:var(--mono);font-size:11px;color:${t.hold>0?'#ea580c':'var(--text3)'}">${t.hold}</td>
-        <td style="padding:9px 10px;border-top:1px solid var(--grey200);text-align:center">
-          <span class="pct-pill ${pct===0?'zero':pct<50?'low':pct<80?'mid':'hi'}">${pct}%</span>
-        </td>
-        <td style="padding:9px 10px;border-top:1px solid var(--grey200);min-width:90px">
-          <div style="display:flex;align-items:center;gap:6px">
-            <div style="flex:1;height:6px;background:var(--grey200);border-radius:3px;overflow:hidden">
-              <div style="height:100%;background:${loadColor};width:${loadPct}%;border-radius:3px;transition:width 0.4s"></div>
+if (ownersEl) {
+    const statusBg = {Completed:'#dcfce7', 'In Review':'#dbeafe', 'In Progress':'#dbeafe', 'Not Started':'#f8fafc', 'On Hold':'#ffedd5'};
+    const statusFg = {Completed:'#166534', 'In Review':'#1e40af', 'In Progress':'#1e40af', 'Not Started':'#475569', 'On Hold':'#9a3412'};
+    if (ownersEl) ownersEl.innerHTML = `<table class="su-owners-table-el">
+      <thead><tr>
+        <th>Assignee</th><th>Org</th><th style="text-align:center">Assigned</th>
+        <th style="text-align:center">Done</th><th style="text-align:center">In Review</th><th style="text-align:center">In Progress</th>
+        <th style="text-align:center">Not Started</th><th style="text-align:center">On Hold</th>
+        <th style="text-align:center">Completion</th><th style="text-align:center">Load</th><th>Status</th>
+      </tr></thead>
+      <tbody>
+      ${d.team.map((t,ri) => {
+        const rowBg = ri % 2 === 0 ? '#fff' : '#f8fafc';
+        const pct = Math.round(t.done / t.total * 100);
+        const grandTotal = d.team.reduce((s,x)=>s+x.total,0);
+        const loadPct = grandTotal > 0 ? Math.round(t.total / grandTotal * 100) : 0;
+        const loadColor = loadPct > 30 ? '#ef4444' : loadPct > 20 ? '#f59e0b' : '#16a34a';
+        const statusNote = t.warn ? '<span style="background:#fee2e2;color:#991b1b;border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700;font-family:var(--mono)">ACTION NEEDED</span>'
+          : t.done === t.total ? '<span style="background:#dcfce7;color:#166534;border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700;font-family:var(--mono)">COMPLETE</span>'
+          : (t.inprogress||0) > 0 ? '<span style="background:#dbeafe;color:#1e40af;border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700;font-family:var(--mono)">IN PROGRESS</span>' : t.review > 0 ? '<span style="background:#fef3c7;color:#92400e;border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700;font-family:var(--mono)">IN REVIEW</span>'
+          : '<span style="background:#f1f5f9;color:#64748b;border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700;font-family:var(--mono)">NOT STARTED</span>';
+        const displayName = t.name.split('.').map(p=>p.charAt(0).toUpperCase()+p.slice(1)).join(' ');
+        return `<tr style="background:${rowBg}">
+          <td style="padding:9px 10px;border-top:1px solid var(--grey200);font-weight:600;font-size:12px;color:${t.warn?'var(--red)':'var(--text)'}" title="${t.email||''}">${displayName}${t.warn?' ⚠':''}</td>
+          <td style="padding:9px 10px;border-top:1px solid var(--grey200);font-family:var(--mono);font-size:10px;color:var(--text3)">${t.org}</td>
+          <td style="padding:9px 10px;border-top:1px solid var(--grey200);text-align:center;font-family:var(--mono);font-size:11px;font-weight:600">${t.total}</td>
+          <td style="padding:9px 10px;border-top:1px solid var(--grey200);text-align:center;font-family:var(--mono);font-size:11px;color:var(--green);font-weight:600">${t.done}</td>
+          <td style="padding:9px 10px;border-top:1px solid var(--grey200);text-align:center;font-family:var(--mono);font-size:11px;color:var(--amber)">${t.review}</td>
+          <td style="padding:9px 10px;border-top:1px solid var(--grey200);text-align:center;font-family:var(--mono);font-size:11px;color:#3b82f6">${t.inprogress||0}</td>
+          <td style="padding:9px 10px;border-top:1px solid var(--grey200);text-align:center;font-family:var(--mono);font-size:11px;color:${t.ns>0?'var(--red)':'var(--text3)'}">${t.ns}</td>
+          <td style="padding:9px 10px;border-top:1px solid var(--grey200);text-align:center;font-family:var(--mono);font-size:11px;color:${t.hold>0?'#ea580c':'var(--text3)'}">${t.hold}</td>
+          <td style="padding:9px 10px;border-top:1px solid var(--grey200);text-align:center">
+            <span class="pct-pill ${pct===0?'zero':pct<50?'low':pct<80?'mid':'hi'}">${pct}%</span>
+          </td>
+          <td style="padding:9px 10px;border-top:1px solid var(--grey200);min-width:90px">
+            <div style="display:flex;align-items:center;gap:6px">
+              <div style="flex:1;height:6px;background:var(--grey200);border-radius:3px;overflow:hidden">
+                <div style="height:100%;background:${loadColor};width:${loadPct}%;border-radius:3px;transition:width 0.4s"></div>
+              </div>
+              <span style="font-size:10px;font-family:var(--mono);color:var(--text3);min-width:28px;text-align:right">${loadPct}%</span>
             </div>
-            <span style="font-size:10px;font-family:var(--mono);color:var(--text3);min-width:28px;text-align:right">${loadPct}%</span>
-          </div>
-        </td>
-        <td style="padding:9px 10px;border-top:1px solid var(--grey200)">${statusNote}</td>
-      </tr>`;
-    }).join('')}
-    </tbody>
-  </table>`;
+          </td>
+          <td style="padding:9px 10px;border-top:1px solid var(--grey200)">${statusNote}</td>
+        </tr>`;
+      }).join('')}
+      </tbody>
+    </table>`;
+  }
 }
 
 /* ── RISK ROW EXPAND/COLLAPSE ── */
@@ -4361,7 +4377,7 @@ function _blRefresh(reportDate) {
   });
 
   // Always 20 per page (per-page selector removed)
-  _bl.pageSize = 20;
+  _bl.pageSize = 10;
 
   // Clamp current page
   const totalPages = Math.max(1, Math.ceil(_bl.filtered.length / _bl.pageSize));
@@ -4771,7 +4787,7 @@ function renderTeamChart(d){
 }
 
 /* ── CSV PARSE ── */
-function parseCSV(text){
+function parseCSV(text, sprintFilter){
   const r=Papa.parse(text,{header:true,skipEmptyLines:true});
   const rows=r.data;
   if(!rows.length) return null;
@@ -4784,10 +4800,21 @@ function parseCSV(text){
     const mons={Jan:'01',Feb:'02',Mar:'03',Apr:'04',May:'05',Jun:'06',Jul:'07',Aug:'08',Sep:'09',Oct:'10',Nov:'11',Dec:'12'};
     return `20${m[3]}-${mons[m[2]]}-${m[1]}`;
   }
+  // Collect all unique sprint values across all rows (Sprint, Sprint.1, etc.)
+  const sprintColKeys = Object.keys(rows[0]||{}).filter(k => k==='Sprint' || /^Sprint\.\d+$/.test(k));
+  const allSprintsSet = new Set();
+  rows.forEach(row => { sprintColKeys.forEach(k => { if(row[k]) allSprintsSet.add(row[k].split('(')[0].trim()); }); });
+  const allSprints = [...allSprintsSet].sort();
+
   // Recognise all five Jira sprint statuses separately
   const sc={'Completed':0,'In Review':0,'In Progress':0,'Not Started':0,'On Hold':0};
   // Only work with rows that have a recognised status — this ensures all counts add up
-  const recognisedRows = rows.filter(r => r['Status'] in sc);
+  // If a sprintFilter is provided, also filter to that sprint
+  const recognisedRows = rows.filter(r => {
+    if(!(r['Status'] in sc)) return false;
+    if(!sprintFilter) return true;
+    return sprintColKeys.some(k => r[k] && r[k].split('(')[0].trim() === sprintFilter);
+  });
   recognisedRows.forEach(r=>{const s=r['Status'];sc[s]++;});
 
   // Total = sum of all recognised statuses
@@ -4866,13 +4893,27 @@ function parseCSV(text){
   let sprintStart = '', sprintEnd = '';
   // Find the Sprint field — try all rows since some rows might have it blank
   const sprintField = (recognisedRows.find(r=>r['Sprint']) || rows[0] || {})['Sprint'] || '';
-  // Parse "(04/02-4/15)" — format is (MM/DD-MM/DD)
+  // Format 1: "(MM/DD-MM/DD)" e.g. "(04/02-4/15)"
   const sprintDateMatch = sprintField.match(/\((\d{1,2})\/(\d{1,2})[-–](\d{1,2})\/(\d{1,2})\)/);
+  // Format 2: "DD/Mon/YY" range e.g. "(14/Apr/26-28/Apr/26)"
+  const sprintDateMatch2 = sprintField.match(/\((\d{1,2})\/([A-Za-z]{3})\/(\d{2,4})[-–\s]+(\d{1,2})\/([A-Za-z]{3})\/(\d{2,4})\)/);
+  // Format 3: ISO range e.g. "(2026-04-14 to 2026-04-28)" or "(2026-04-14_2026-04-28)"
+  const sprintDateMatch3 = sprintField.match(/\((\d{4}-\d{2}-\d{2})[^\d]+(\d{4}-\d{2}-\d{2})\)/);
+  const monMap = {Jan:'01',Feb:'02',Mar:'03',Apr:'04',May:'05',Jun:'06',Jul:'07',Aug:'08',Sep:'09',Oct:'10',Nov:'11',Dec:'12'};
   if (sprintDateMatch) {
     const yr = today.slice(0,4);
-    // Groups: 1=startMonth, 2=startDay, 3=endMonth, 4=endDay
     sprintStart = yr+'-'+sprintDateMatch[1].padStart(2,'0')+'-'+sprintDateMatch[2].padStart(2,'0');
     sprintEnd   = yr+'-'+sprintDateMatch[3].padStart(2,'0')+'-'+sprintDateMatch[4].padStart(2,'0');
+  } else if (sprintDateMatch2) {
+    const yr1 = sprintDateMatch2[3].length===2 ? '20'+sprintDateMatch2[3] : sprintDateMatch2[3];
+    const yr2 = sprintDateMatch2[6].length===2 ? '20'+sprintDateMatch2[6] : sprintDateMatch2[6];
+    const m1 = monMap[sprintDateMatch2[2].charAt(0).toUpperCase()+sprintDateMatch2[2].slice(1,3).toLowerCase()] || '01';
+    const m2 = monMap[sprintDateMatch2[5].charAt(0).toUpperCase()+sprintDateMatch2[5].slice(1,3).toLowerCase()] || '01';
+    sprintStart = yr1+'-'+m1+'-'+sprintDateMatch2[1].padStart(2,'0');
+    sprintEnd   = yr2+'-'+m2+'-'+sprintDateMatch2[4].padStart(2,'0');
+  } else if (sprintDateMatch3) {
+    sprintStart = sprintDateMatch3[1];
+    sprintEnd   = sprintDateMatch3[2];
   }
   // 2. Fall back to due date range if Sprint field didn't parse
   if (!sprintStart || !sprintEnd) {
@@ -4976,7 +5017,8 @@ function parseCSV(text){
     team:Object.values(aMap).sort((a,b)=>b.total-a.total),
     critical:critical,  // full list — no cap, all overdue/hold/nodate items included
     risks:derivedRisks, actions:derivedActions,
-    backlog:bl
+    backlog:bl,
+    allSprints, sprintFilter: sprintFilter||null
   };
 }
 
@@ -5718,20 +5760,188 @@ function reloadAllData() {
 }
 
 /* ── FILE HANDLING ── */
+
+/* ── SPRINT SELECTOR ── */
+function _suShowSprintSelector(parsed) {
+  const sprints = (parsed.allSprints || []);
+  const wrap = document.getElementById('su-sprint-selector-wrap');
+  if (!wrap || !sprints.length) return;
+
+  const current = parsed.sprintFilter || '';
+  const opts = sprints.map(s =>
+    `<option value="${s}" ${s === current ? 'selected' : ''}>${s}</option>`
+  ).join('');
+
+  wrap.style.display = 'block';
+  wrap.innerHTML = `
+    <div style="background:linear-gradient(135deg,#0f2044 0%,#1a3a6b 100%);border:2px solid #3b82f6;border-radius:12px;padding:16px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;box-shadow:0 4px 18px rgba(15,32,68,0.25)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="#60a5fa" stroke-width="1.6" style="width:18px;height:18px;flex-shrink:0"><rect x="1" y="3" width="14" height="11" rx="2"/><path d="M1 7h14M5 1v4M11 1v4"/></svg>
+      <span style="font-size:11px;font-weight:800;color:#93c5fd;font-family:var(--mono);letter-spacing:.08em;white-space:nowrap;text-transform:uppercase">Sprint Filter</span>
+      <select id="su-sprint-select" style="flex:1;min-width:200px;max-width:420px;background:#1e3a5f;color:#e2e8f0;border:1.5px solid #3b82f6;border-radius:8px;padding:8px 12px;font-size:12px;font-family:var(--mono);cursor:pointer;outline:none;font-weight:600">
+        <option value="">— Select a Sprint —</option>
+        ${opts}
+      </select>
+      <span id="su-sprint-count-badge" style="font-size:10px;font-family:var(--mono);color:#93c5fd;background:rgba(59,130,246,0.2);border:1px solid rgba(96,165,250,0.4);border-radius:20px;padding:4px 12px;white-space:nowrap">${current ? (current + ' \u00b7 ' + parsed.total + ' stories') : (sprints.length + ' sprints available')}</span>
+      <button id="su-apply-btn" onclick="_suApplySprint()" style="background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;border:none;border-radius:8px;padding:10px 22px;font-size:12px;font-weight:800;cursor:pointer;font-family:var(--mono);letter-spacing:.06em;display:flex;align-items:center;gap:7px;white-space:nowrap;box-shadow:0 4px 14px rgba(37,99,235,0.5);transition:all 0.15s;flex-shrink:0" onmouseover="this.style.boxShadow='0 6px 20px rgba(37,99,235,0.7)';this.style.transform='translateY(-1px)'" onmouseout="this.style.boxShadow='0 4px 14px rgba(37,99,235,0.5)';this.style.transform=''">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2" style="width:12px;height:12px"><path d="M2 7h10M8 3l4 4-4 4"/></svg>
+        Apply Sprint Data
+      </button>
+    </div>
+  `;
+
+  const sel = document.getElementById('su-sprint-select');
+  if (sel) sel.addEventListener('change', () => {
+    const val = sel.value;
+    const badge = document.getElementById('su-sprint-count-badge');
+    if (!badge) return;
+    if (!val) {
+      badge.textContent = sprints.length + ' sprints available';
+    } else {
+      const preview = parseCSV(window._spRawCsvText, val);
+      badge.textContent = preview ? val + ' \u00b7 ' + preview.total + ' stories' : val;
+    }
+  });
+
+  const prompt = document.getElementById('su-sprint-prompt');
+  const body   = document.getElementById('su-sections-body');
+  if (current) {
+    if (prompt) prompt.style.display = 'none';
+    if (body)   body.style.display   = 'block';
+  } else {
+    if (prompt) prompt.style.display = 'block';
+    if (body)   body.style.display   = 'none';
+  }
+}
+
+function _suUpdateSelectorBadge(parsed) {
+  const badge = document.getElementById('su-sprint-count-badge');
+  if (!badge) return;
+  badge.textContent = parsed.sprintFilter
+    ? parsed.sprintFilter + ' \u00b7 ' + parsed.total + ' stories'
+    : ((parsed.allSprints || []).length + ' sprints available');
+}
+
+function _suApplySprint() {
+  const sel = document.getElementById('su-sprint-select');
+  if (!sel || !window._spRawCsvText) return;
+  const sprint = sel.value;
+  if (!sprint) {
+    showToast('\u26A0 Please select a sprint from the dropdown first');
+    sel.focus();
+    return;
+  }
+  const parsed = parseCSV(window._spRawCsvText, sprint);
+  if (!parsed) { showToast('\u26A0 Could not filter \u2014 parse error'); return; }
+  window._data = parsed;
+
+  const prompt = document.getElementById('su-sprint-prompt');
+  const body   = document.getElementById('su-sections-body');
+  if (prompt) prompt.style.display = 'none';
+  if (body)   body.style.display   = 'block';
+
+  _suUpdateSelectorBadge(parsed);
+
+  // Reset drill registry so category indices don't accumulate across re-renders
+  _DRILL.length = 0;
+
+  // Update sidebar Active Sprint
+  const sbName  = document.getElementById('sb-sprint-name');
+  const sbDates = document.getElementById('sb-sprint-dates');
+  if (sbName)  sbName.textContent  = sprint.replace('NEW ','');
+  if (sbDates) sbDates.textContent = parsed.sprintStart ? parsed.sprintStart.slice(5)+' \u2013 '+parsed.sprintEnd.slice(5)+' '+parsed.sprintStart.slice(0,4) : '';
+  const sbCount = document.getElementById('sb-count');
+  if (sbCount) sbCount.textContent = parsed.total;
+
+  // Update stacked bar + legend (these live in render() normally)
+  const t = parsed.total || 1;
+  const pctDone2   = Math.round(parsed.done / t * 100);
+  const pctReview2 = Math.round(parsed.review / t * 100);
+  const pctInProg2 = Math.round((parsed.inprogress||0) / t * 100);
+  const pctHold2   = Math.round(parsed.hold / t * 100);
+  const pctNS2     = Math.round(parsed.ns / t * 100);
+  const ss = document.getElementById('sprint-stacked');
+  if (ss) {
+    ss.innerHTML = [
+      `<div class="ss-done"    style="width:${parsed.done/t*100}%"></div>`,
+      `<div class="ss-review"  style="width:${parsed.review/t*100}%"></div>`,
+      `<div style="height:100%;background:#3b82f6;width:${(parsed.inprogress||0)/t*100}%;display:inline-block"></div>`,
+      `<div class="ss-hold"    style="width:${parsed.hold/t*100}%"></div>`,
+      `<div class="ss-ns"      style="width:${parsed.ns/t*100}%"></div>`,
+    ].join('');
+  }
+  const sl = document.getElementById('stack-legend');
+  if (sl) sl.innerHTML = [
+    ['#16a34a', 'Completed',   parsed.done,             pctDone2],
+    ['#f59e0b', 'In Review',   parsed.review,           pctReview2],
+    ['#3b82f6', 'In Progress', parsed.inprogress||0,    pctInProg2],
+    ['#ea580c', 'On Hold',     parsed.hold,             pctHold2],
+    ['#e2e8f0', 'Not Started', parsed.ns,               pctNS2],
+  ].map(([c,l,n,p]) => `<div class="stack-leg-item"><div class="stack-leg-dot" style="background:${c}"></div>${l} <strong style="color:var(--text)">${n}</strong> <span style="color:var(--text3)">(${p}%)</span></div>`).join('');
+
+  // Percentage label row — aligned to stacked bar segments
+  const ssLabels2 = document.getElementById('sprint-stacked-pcts');
+  if (ssLabels2) {
+    const segs2 = [
+      {pct:pctDone2,   color:'#16a34a'},
+      {pct:pctReview2, color:'#f59e0b'},
+      {pct:pctInProg2, color:'#3b82f6'},
+      {pct:pctHold2,   color:'#ea580c'},
+      {pct:pctNS2,     color:'#94a3b8'},
+    ];
+    ssLabels2.innerHTML = segs2.map(seg =>
+      seg.pct > 0
+        ? `<div style="width:${seg.pct}%;text-align:center;font-size:9px;font-weight:700;color:${seg.color};font-family:var(--mono);white-space:nowrap;overflow:hidden;min-width:0">${seg.pct > 4 ? seg.pct+'%' : ''}</div>`
+        : ''
+    ).join('');
+  }
+
+  // Render all Sprint Update sections
+  try { renderSprintUpdate(parsed); }    catch(err) { console.error('renderSprintUpdate:', err); }
+  try { renderCalendar(parsed); }        catch(err) { console.error('renderCalendar:', err); }
+  try { renderSWTable(parsed); }         catch(err) { console.error('renderSWTable:', err); }
+  try { renderWsChart(parsed); }         catch(err) { console.error('renderWsChart:', err); }
+  try { renderBacklog(parsed); }         catch(err) { console.error('renderBacklog:', err); }
+  try { renderTeamSprintTable(parsed); } catch(err) { console.error('renderTeamSprintTable:', err); }
+  try { renderSprintInsights(parsed); }  catch(err) { console.error('insights:', err); }
+  try { renderOverview(parsed, window._raidData || null); } catch(err) { console.error('overview:', err); }
+
+  // Charts need a short delay for DOM to settle
+  destroyCharts();
+  setTimeout(() => {
+    try { renderCatChart(parsed); }  catch(err) { console.error('renderCatChart:', err); }
+    try { renderDonut(parsed); }     catch(err) { console.error('renderDonut:', err); }
+    try { renderDueChart(parsed); }  catch(err) { console.error('renderDueChart:', err); }
+  }, 60);
+
+  showToast('\u2713 ' + sprint + ' \u2014 ' + parsed.total + ' stories loaded');
+}
+
 function handleSprintFile(file) {
   if (!file || !file.name.endsWith('.csv')) { showToast('Please upload a .csv Jira export'); return; }
   if (typeof _uploadCheckConflict === 'function' && !_uploadCheckConflict('sprint', 'Sprint Update')) return;
   spinRefresh(true);
   const rd = new FileReader();
-  rd.onload = e => {
+  rd.onload = ev => {
     spinRefresh(false);
-    const parsed = parseCSV(e.target.result);
+    const parsed = parseCSV(ev.target.result);
     if (!parsed) { showToast('Could not parse — check field names'); return; }
     _loaded.sprint = true;
-    try { render(parsed); } catch(e) { console.error('render error:', e); }
-    try { renderSprintInsights(parsed); } catch(e) { console.error('insights error:', e); }
+    window._spRawCsvText = ev.target.result;  // store for sprint re-filtering
+    window._data = parsed;
+    // Show su-data-state (header + selector) but NOT the content body yet
+    const suNo = document.getElementById('su-no-data-state');
+    const suDa = document.getElementById('su-data-state');
+    if (suNo) suNo.style.display = 'none';
+    if (suDa) suDa.style.display = 'block';
+    // Populate selector — no sprint applied yet, prompt shown
+    _suShowSprintSelector(parsed);
+    // Still run render so other tabs (Overview, Workstream, Team) update
+    try { render(parsed); } catch(err) { console.error('render error:', err); }
+    try { renderSprintInsights(parsed); } catch(err) { console.error('insights error:', err); }
+    // Navigate to Sprint Update tab
+    showSection('risks');
     updateRefreshBtn();
-    showToast('Sprint loaded: ' + parsed.total + ' stories from ' + file.name);
+    showToast('✓ Sprint CSV loaded — ' + parsed.total + ' stories across ' + (parsed.allSprints||[]).length + ' sprint(s). Select a sprint above to view data.');
     document.getElementById('footer-date').textContent = new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
     setUploadChip('sprint-status-chip', file.name, parsed.total + ' stories', '#16a34a');
     if (typeof _uploadSetLock === 'function') _uploadSetLock('sprint');
@@ -6002,7 +6212,7 @@ function renderOverview(sprintData, raidData) {
   _ovKpiDrill('ov-inprogress', 'In Progress', bl3.filter(b=>b.status==='In Progress'));
   _ovKpiDrill('ov-ns',         'Not Started', bl3.filter(b=>b.status==='Not Started'));
   _ovKpiDrill('ov-hold',       'On Hold',     bl3.filter(b=>b.status==='On Hold'));
-  _ovKpiDrill('ov-overdue',    'Overdue',     ovOvRows.length ? ovOvRows : bl3.filter(b=>b.status!=='Completed'&&b.due&&b.due!=='—'));
+  _ovKpiDrill('ov-overdue',    'Overdue',     ovOvRows);
 
   // KPI STRIP — RAID
   if (rd) {
@@ -7828,7 +8038,6 @@ AND status not in (Withdrawn)
 AND issuetype = story
 AND "Story Category" is not EMPTY
 AND "Story Category" not in (Requirement)
-AND Sprint = 13011
 AND Workstream = "Supply Chain"
 AND "Story Category" in (Config, FUT, "Data Cleanse", FSD, Other, "L3 Functional Design Closure")`,
 
@@ -12193,9 +12402,14 @@ function renderInitialEmptyState() {
   // Hide sprint insights panel and clear content
   const suIns = document.getElementById('su-insights-panel');
   if (suIns) { suIns.style.display = 'none'; const suB = document.getElementById('su-insights-body'); if (suB) suB.innerHTML = ''; }
-  // Clear sprint health alert so it doesn't persist after Reset All
-  const suAlert = document.getElementById('su-health-alert');
-  if (suAlert) suAlert.innerHTML = '';
+  // Hide sprint selector bar and content on reset
+  const suSelWrap = document.getElementById('su-sprint-selector-wrap');
+  if (suSelWrap) { suSelWrap.style.display = 'none'; suSelWrap.innerHTML = ''; }
+  const suPrompt = document.getElementById('su-sprint-prompt');
+  if (suPrompt) suPrompt.style.display = 'none';
+  const suBody = document.getElementById('su-sections-body');
+  if (suBody) suBody.style.display = 'none';
+  window._spRawCsvText = null;
 
   // Clear Sprint Update Summary in Overview (Executive Insights section)
   const ovSum = document.getElementById('ov-sprint-summary');
@@ -13109,5 +13323,64 @@ function _toTitleCase(str){
 _userLoadRoster();
 </script>
 
+
+
+<!-- Scroll-to-top floating bubble -->
+<style>
+  #scroll-top-btn {
+    position: fixed;
+    bottom: 28px;
+    right: 24px;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(15, 32, 68, 0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1.5px solid rgba(96, 165, 250, 0.35);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s, transform 0.2s, box-shadow 0.2s;
+    z-index: 9999;
+  }
+  #scroll-top-btn.visible { opacity: 1; pointer-events: auto; }
+  #scroll-top-btn:hover {
+    background: rgba(37, 99, 235, 0.7);
+    border-color: rgba(147, 197, 253, 0.6);
+    box-shadow: 0 6px 22px rgba(37,99,235,0.35);
+    transform: translateY(-2px);
+  }
+  #scroll-top-btn svg { width: 18px; height: 18px; }
+</style>
+<button id="scroll-top-btn" title="Back to top">
+  <svg viewBox="0 0 16 16" fill="none" stroke="rgba(191,219,254,0.9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M8 12V4M4 7l4-4 4 4"/>
+  </svg>
+</button>
+<script>
+(function() {
+  var btn = document.getElementById('scroll-top-btn');
+  if (!btn) return;
+  var main = document.querySelector('.main');
+  var scrollEl = (main && main.scrollHeight > main.clientHeight) ? main : window;
+  function getScroll() { return scrollEl === window ? window.scrollY : scrollEl.scrollTop; }
+  function toTop() { scrollEl === window ? window.scrollTo({top:0,behavior:'smooth'}) : scrollEl.scrollTo({top:0,behavior:'smooth'}); }
+  btn.onclick = toTop;
+  scrollEl.addEventListener('scroll', function() {
+    btn.classList.toggle('visible', getScroll() > 200);
+  }, {passive:true});
+  // Also listen on window in case main isn't the scroller
+  if (scrollEl !== window) {
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 200) btn.classList.add('visible');
+    }, {passive:true});
+  }
+})();
+</script>
 </body>
 </html>
