@@ -2486,6 +2486,7 @@
                   <option value="1">L1 only</option>
                   <option value="2">L1 → L2</option>
                   <option value="3" selected>L1 → L3</option>
+                  <option value="4">L1 → L4</option>
                   <option value="req">L3 → Req</option>
                   <option value="rf">Req → RICEFW</option>
                   <option value="all">Full (all)</option>
@@ -2836,6 +2837,74 @@
           </div>
         </div>
 
+        <!-- ═══════════════════════════════════════════════════════
+             E2E TEST SCENARIO GENERATOR — always visible, BPML-driven
+        ══════════════════════════════════════════════════════════ -->
+        <div class="card" id="tp-scenario-panel" style="margin-bottom:18px;border-top:3px solid #7c3aed">
+          <div class="card-title" style="flex-wrap:wrap;gap:10px">
+            <div style="display:flex;align-items:center;gap:9px">
+              <div style="width:28px;height:28px;background:#ede9fe;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <svg viewBox="0 0 16 16" fill="none" stroke="#7c3aed" stroke-width="1.5" style="width:14px;height:14px"><path d="M2 13l3-3 8-8-3-3-8 8-3 3z"/><path d="M11 2l3 3"/><circle cx="4" cy="12" r="1.5" fill="#7c3aed" stroke="none"/></svg>
+              </div>
+              <div>
+                <div style="font-size:13px;font-weight:800;color:#5b21b6;letter-spacing:-0.01em">E2E Test Scenario Generator</div>
+                <div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:1px">Power Generation · Fossil · Hydro · Solar — driven by BPML L2 → L3 → L4 + Requirements + FSD</div>
+              </div>
+            </div>
+            <div style="margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <div style="display:flex;gap:0;border:1px solid #ddd6fe;border-radius:8px;overflow:hidden;background:#faf5ff">
+                <div style="padding:4px 10px;font-size:10px;font-weight:700;color:#7c3aed;background:#ede9fe;display:flex;align-items:center;font-family:var(--mono);border-right:1px solid #ddd6fe">Sub-Business</div>
+                <select id="ts-filter-sub" style="border:none;background:transparent;font-size:11px;font-weight:600;color:var(--text);padding:4px 10px;cursor:pointer;font-family:var(--font);outline:none">
+                  <option value="all">All (Fossil + Hydro + Solar)</option>
+                  <option value="fossil">Fossil</option>
+                  <option value="hydro">Hydro</option>
+                  <option value="solar">Solar</option>
+                </select>
+              </div>
+              <div style="display:flex;gap:0;border:1px solid #ddd6fe;border-radius:8px;overflow:hidden;background:#faf5ff">
+                <div style="padding:4px 10px;font-size:10px;font-weight:700;color:#7c3aed;background:#ede9fe;display:flex;align-items:center;font-family:var(--mono);border-right:1px solid #ddd6fe">Detail</div>
+                <select id="ts-filter-depth" style="border:none;background:transparent;font-size:11px;font-weight:600;color:var(--text);padding:4px 10px;cursor:pointer;font-family:var(--font);outline:none">
+                  <option value="summary">Summary (L2 level)</option>
+                  <option value="detailed" selected>Detailed (L2→L3→L4)</option>
+                  <option value="comprehensive">Comprehensive (with Req &amp; FSD)</option>
+                </select>
+              </div>
+              <button id="ts-generate-btn" onclick="_tsGenerateScenarios()"
+                style="background:linear-gradient(135deg,#5b21b6,#7c3aed);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:7px;box-shadow:0 2px 8px rgba(124,58,237,0.35)">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:13px;height:13px"><path d="M3 8h10M8 3l5 5-5 5"/></svg>
+                Generate Test Scenarios
+              </button>
+            </div>
+          </div>
+
+          <!-- No BPML notice -->
+          <div id="ts-no-bpml" style="padding:24px;text-align:center;color:var(--text3);font-size:12px;font-family:var(--mono);background:#faf5ff;border-radius:8px;margin-top:4px;line-height:1.7">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#c4b5fd" stroke-width="1.5" style="width:32px;height:32px;margin-bottom:10px;display:block;margin-left:auto;margin-right:auto"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 9h6M9 12h6M9 15h4"/><circle cx="17" cy="17" r="4" fill="#ede9fe" stroke="#7c3aed"/><path d="M15.5 17h3M17 15.5v3"/></svg>
+            Load <strong style="color:#5b21b6">BPML Structure</strong> data first — go to the <strong>BPML Structure</strong> tab, upload Files 1–3 and click <strong>Build Hierarchy</strong>.<br>
+            Once loaded, return here and click <strong>Generate Test Scenarios</strong> to produce comprehensive SAP E2E test scenarios for Power Generation (Fossil · Hydro · Solar).
+          </div>
+
+          <!-- Loading state -->
+          <div id="ts-loading" style="display:none;padding:28px;text-align:center">
+            <div style="display:inline-flex;align-items:center;gap:10px;background:#faf5ff;border:1px solid #ddd6fe;border-radius:10px;padding:14px 24px">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" style="animation:spin 1s linear infinite"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+              <span style="font-size:12px;font-weight:600;color:#5b21b6" id="ts-loading-msg">Analysing BPML hierarchy…</span>
+            </div>
+          </div>
+
+          <!-- Results area -->
+          <div id="ts-results" style="display:none;margin-top:12px">
+            <div id="ts-summary-strip" style="background:#faf5ff;border:1px solid #ddd6fe;border-radius:8px;padding:10px 16px;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:16px;align-items:center"></div>
+            <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center">
+              <span style="font-size:10px;font-weight:700;color:#7c3aed;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.07em">Export:</span>
+              <button onclick="_tsExportMarkdown()" style="background:#fff;border:1px solid #ddd6fe;color:#5b21b6;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font)">📄 Markdown</button>
+              <button onclick="_tsExportCSV()" style="background:#fff;border:1px solid #ddd6fe;color:#5b21b6;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font)">📊 CSV</button>
+              <span id="ts-meta" style="margin-left:auto;font-size:10px;color:var(--text3);font-family:var(--mono)"></span>
+            </div>
+            <div id="ts-scenarios-body"></div>
+          </div>
+        </div>
+
         <!-- No-data state -->
         <div id="tp-no-data-state">
           <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:72px 24px;text-align:center;color:var(--text3)">
@@ -3132,6 +3201,12 @@
             <div class="us-step"><span class="us-n" style="background:var(--navy)">1</span>Open Jira for <strong>PG&amp;E Propel (<a href="https://pmohub.pwc.com/jira/secure/Dashboard.jspa#" target="_blank" style="color:var(--blue);text-decoration:underline">CONAMER1000364</a>)</strong>, run the relevant JQL query</div>
             <div class="us-step"><span class="us-n" style="background:var(--navy)">2</span>Click <strong>Export → Export CSV (all fields)</strong> in Jira</div>
             <div class="us-step"><span class="us-n" style="background:var(--navy)">3</span>Drop the file onto the matching card below — all fields are parsed dynamically, no default values</div>
+            <div class="us-step"><span class="us-n" style="background:var(--green)">4</span><strong>Live Jira (optional):</strong> in <code style="font-size:10px;font-family:var(--mono)">jira-proxy</code> set <code style="font-size:10px;font-family:var(--mono)">JIRA_BASE_URL</code>, <code style="font-size:10px;font-family:var(--mono)">JIRA_USER</code>, <code style="font-size:10px;font-family:var(--mono)">JIRA_API_TOKEN</code>, then run <code style="font-size:10px;font-family:var(--mono)">python server.py</code> (or edit and double‑click <code style="font-size:10px;font-family:var(--mono)">run-proxy.cmd</code>). Node/npm is optional (<code style="font-size:10px;font-family:var(--mono)">npm start</code> only if you use <code style="font-size:10px;font-family:var(--mono)">server.mjs</code>). Use <strong>Pull from Jira</strong> on each card. Serve this dashboard over <code style="font-size:10px">http://localhost</code> (not <code style="font-size:10px">file://</code>) so <code style="font-size:10px">fetch</code> to the proxy is allowed.</div>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px">
+              <label style="font-size:11px;font-weight:600;color:var(--text2)">Proxy URL</label>
+              <input id="pmo-jira-proxy-input" type="text" autocomplete="off" spellcheck="false" placeholder="http://127.0.0.1:8787" data-default="http://127.0.0.1:8787"
+                style="flex:1;min-width:220px;max-width:420px;border:1px solid var(--grey300);border-radius:8px;padding:7px 12px;font-size:12px;font-family:var(--mono)">
+            </div>
           </div>
           <div style="display:flex;flex-wrap:wrap;gap:8px;padding-top:10px;border-top:1px solid var(--grey200)">
             <div style="display:flex;align-items:center;gap:6px;background:#f0f4ff;border:1px solid #dbeafe;border-radius:8px;padding:6px 12px;font-size:11px;font-weight:600;color:var(--navy)">
@@ -3150,6 +3225,68 @@
           <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--grey200);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
             <div style="font-size:11px;color:var(--text3)">Upload locks track who last loaded each section to prevent concurrent overwrites.</div>
             <button onclick="if(typeof _uploadClearAllLocks==='function'){_uploadClearAllLocks();showToast('Upload locks cleared — all sections unlocked');}" style="background:#f1f5f9;border:1px solid var(--grey300);border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--font)" title="Clear all upload lock indicators — use if locks appear stale or blocking">Clear Upload Locks</button>
+          </div>
+        </div>
+
+        <!-- ── Claude API Key Configuration ── -->
+        <div class="card" id="api-key-card" style="margin-bottom:14px;border-left:4px solid #7c3aed">
+          <div class="card-title">
+            <svg viewBox="0 0 16 16" fill="none" stroke="#7c3aed" stroke-width="1.5" style="width:14px;height:14px"><path d="M11 1a4 4 0 014 4 4 4 0 01-4 4 4 4 0 01-1.56-.32L7 11H5v2H3v2H1v-2L6.32 7.56A4 4 0 0111 1z"/><circle cx="11.5" cy="4.5" r="1" fill="#7c3aed" stroke="none"/></svg>
+            <span style="font-weight:700;color:#5b21b6">Claude AI — API Key (for local / offline use)</span>
+            <span style="font-size:10px;font-family:var(--mono);color:var(--text3);margin-left:6px">Only needed when running the file locally — not needed on claude.ai</span>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:4px">
+            <input id="claude-api-key-input" type="password" placeholder="sk-ant-api03-…  (paste your Anthropic API key)"
+              style="flex:1;min-width:260px;border:1px solid #ddd6fe;border-radius:8px;padding:8px 14px;font-size:12px;font-family:var(--mono);color:var(--text);outline:none;background:#faf5ff"
+              oninput="_apiKeySave()" autocomplete="off" spellcheck="false">
+            <button onclick="_apiKeyToggleShow()" id="api-key-show-btn"
+              style="background:#ede9fe;border:1px solid #ddd6fe;color:#5b21b6;border-radius:8px;padding:8px 14px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);white-space:nowrap">
+              👁 Show
+            </button>
+            <button onclick="_apiKeyClear()"
+              style="background:#fff;border:1px solid #fecaca;color:#dc2626;border-radius:8px;padding:8px 14px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);white-space:nowrap">
+              🗑 Clear
+            </button>
+            <span id="api-key-status" style="font-size:10px;font-family:var(--mono);color:var(--text3)"></span>
+          </div>
+          <div style="margin-top:8px;font-size:10px;color:var(--text3);font-family:var(--mono);line-height:1.6">
+            Key is stored in your browser's <strong>localStorage</strong> — never sent anywhere except directly to <code>api.anthropic.com</code>.
+            Generate a key at <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:#7c3aed">console.anthropic.com</a>.
+          </div>
+        </div>
+
+        <!-- ── Data Snapshot — Save / Restore ── -->
+        <div class="card" id="snapshot-card" style="margin-bottom:14px;border-left:4px solid #0891b2">
+          <div class="card-title">
+            <svg viewBox="0 0 16 16" fill="none" stroke="#0891b2" stroke-width="1.5" style="width:14px;height:14px"><path d="M13 2H3a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1V3a1 1 0 00-1-1z"/><path d="M11 2v5H5V2M8 10v3M6.5 11.5l1.5 1.5 1.5-1.5"/></svg>
+            <span style="font-weight:700;color:#0e7490">Data Snapshot — Save &amp; Restore</span>
+            <span style="font-size:10px;font-family:var(--mono);color:var(--text3);margin-left:6px">Persist loaded BPML &amp; Test Planning data across sessions</span>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px">
+            <button onclick="_snapshotSave()" id="snap-save-btn"
+              style="background:#0891b2;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:6px">
+              <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" style="width:11px;height:11px"><path d="M7 1v8M4 6l3 3 3-3M2 11h10"/></svg>
+              Save Snapshot
+            </button>
+            <button onclick="_snapshotDownload()"
+              style="background:#fff;border:1px solid #a5f3fc;color:#0e7490;border-radius:8px;padding:8px 16px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:6px">
+              📥 Download JSON
+            </button>
+            <label style="background:#fff;border:1px solid #a5f3fc;color:#0e7490;border-radius:8px;padding:8px 16px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:6px">
+              📂 Load JSON
+              <input type="file" accept=".json" style="display:none" onchange="_snapshotLoadFile(this)">
+            </label>
+            <button onclick="_snapshotRestore()"
+              style="background:#fff;border:1px solid #a5f3fc;color:#0e7490;border-radius:8px;padding:8px 16px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:6px">
+              ♻️ Restore from Browser
+            </button>
+            <button onclick="_snapshotClear()"
+              style="background:#fff;border:1px solid #fecaca;color:#dc2626;border-radius:8px;padding:8px 16px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font)">
+              🗑 Clear Saved
+            </button>
+          </div>
+          <div id="snap-status" style="margin-top:8px;font-size:10px;font-family:var(--mono);color:var(--text3);line-height:1.6">
+            No snapshot in browser storage. Data auto-saves to browser on every successful BPML build or Test Planning upload.
           </div>
         </div>
 
@@ -3173,6 +3310,9 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16V8m0 0l-4 4m4-4l4 4"/><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1"/></svg>
               <div class="upload-zone-title">Drop Sprint CSV here</div>
               <div class="upload-zone-sub">Updates: Overview · Sprint Update · Workstream · Team</div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+              <button type="button" class="upload-btn sprint-btn" style="padding:7px 14px;font-size:11px;margin:0" onclick="_jiraPullSprint()">Pull from Jira</button>
             </div>
             <div class="upload-field-guide">
               <div class="ufg-title">Expected fields</div>
@@ -3206,6 +3346,9 @@
               <div class="upload-zone-title">Drop RAID CSV here</div>
               <div class="upload-zone-sub">Updates: Overview · RAID Log · Workstream · Team</div>
             </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+              <button type="button" class="upload-btn raid-btn" style="padding:7px 14px;font-size:11px;margin:0" onclick="_jiraPullRaid()">Pull from Jira</button>
+            </div>
             <div class="upload-field-guide">
               <div class="ufg-title">Expected fields</div>
               <div class="ufg-tags">
@@ -3237,6 +3380,9 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16V8m0 0l-4 4m4-4l4 4"/><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1"/></svg>
               <div class="upload-zone-title">Drop Cross Functional CSV here</div>
               <div class="upload-zone-sub">Updates: Overview · Cross Functional</div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+              <button type="button" class="upload-btn" style="padding:7px 14px;font-size:11px;margin:0;background:#059669;color:#fff;border:none" onclick="_jiraPullCf()">Pull from Jira</button>
             </div>
             <div class="upload-field-guide">
               <div class="ufg-title">Expected fields</div>
@@ -3320,6 +3466,10 @@
                   <span id="bpml-file3-dot" style="width:8px;height:8px;border-radius:50%;background:var(--grey300);flex-shrink:0"></span>
                 </div>
               </div>
+              <button type="button" onclick="_jiraPullBpml()"
+                style="width:100%;background:#7c3aed;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font)">
+                Pull all 3 files from Jira &amp; build
+              </button>
               <!-- Build button -->
               <button id="bpml-build-btn" onclick="_bpmlBuildFromFiles()" disabled
                 style="margin-top:4px;width:100%;background:var(--bpml-color);color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);opacity:0.4;transition:opacity 0.2s"
@@ -3377,6 +3527,9 @@
               <div class="upload-zone-title">Drop Sprint Stories CSV here</div>
               <div class="upload-zone-sub">Updates: Sprint Planning tab — Full Items + Planning board</div>
             </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+              <button type="button" class="upload-btn" style="padding:7px 14px;font-size:11px;margin:0;background:var(--sp-color);color:#fff;border:none" onclick="_jiraPullSprintPlan()">Pull from Jira</button>
+            </div>
             <div class="upload-field-guide">
               <div class="ufg-title">Expected fields</div>
               <div class="ufg-tags">
@@ -3410,6 +3563,9 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16V8m0 0l-4 4m4-4l4 4"/><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1"/></svg>
               <div class="upload-zone-title">Drop Test Planning CSV here</div>
               <div class="upload-zone-sub">Same Jira stories CSV — focuses on FUT, FSD &amp; TC coverage</div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+              <button type="button" class="upload-btn" style="padding:7px 14px;font-size:11px;margin:0;background:var(--tp-color);color:#fff;border:none" onclick="_jiraPullTestPlan()">Pull from Jira</button>
             </div>
             <div class="upload-field-guide">
               <div class="ufg-title">Expected fields</div>
@@ -3555,6 +3711,31 @@
 ═══════════════════════════════════════════════════ */
 const DEFAULT = null;  // intentionally null — data must be uploaded
 const JIRA_BASE = 'https://pmohub.pwc.com/jira/browse/';
+/** Optional: override default proxy origin (or set localStorage key pmo_jira_proxy). */
+window.PMO_JIRA_PROXY = window.PMO_JIRA_PROXY || 'http://127.0.0.1:8787';
+function _pmoJiraProxyUrl() {
+  try {
+    const ls = localStorage.getItem('pmo_jira_proxy');
+    if (ls && ls.trim()) return ls.trim().replace(/\/$/, '');
+  } catch (e) { /* ignore */ }
+  return String(window.PMO_JIRA_PROXY || 'http://127.0.0.1:8787').replace(/\/$/, '');
+}
+(function _pmoJiraProxyInputInit() {
+  const el = document.getElementById('pmo-jira-proxy-input');
+  if (!el) return;
+  try {
+    const ls = localStorage.getItem('pmo_jira_proxy');
+    el.value = (ls && ls.trim()) ? ls.trim() : (el.getAttribute('data-default') || 'http://127.0.0.1:8787');
+  } catch (e) {
+    el.value = 'http://127.0.0.1:8787';
+  }
+  el.addEventListener('change', function () {
+    try {
+      localStorage.setItem('pmo_jira_proxy', el.value.trim());
+      if (typeof showToast === 'function') showToast('Jira proxy URL saved');
+    } catch (err) { /* ignore */ }
+  });
+})();
 
 /* ── CHARTS ── */
 let catChartObj=null, donutObj=null, dueChartObj=null, wsChartObj=null, teamChartObj=null;
@@ -3589,6 +3770,25 @@ function showSection(id){
   if(id==='workstream') setTimeout(()=>{ renderWSRaidTable(window._raidData); if(window._data) renderWsChart(window._data); }, 50);
   if(id==='team') setTimeout(()=>{ renderTeamSprintTable(window._data); renderTeamRaidTable(window._raidData); },50);
   if(id==='search') setTimeout(()=>{ _suSearchInit(); }, 50);
+  if(id==='testplan') setTimeout(()=>{
+    // Update E2E generator notice based on whether BPML is loaded
+    const noBpml = document.getElementById('ts-no-bpml');
+    if (noBpml) {
+      if (window._bpmlData && window._bpmlMap) {
+        const l2count = (window._bpmlData||[]).filter(i=>i.level===2).length;
+        const l3count = (window._bpmlData||[]).filter(i=>i.level===3).length;
+        const l4count = (window._bpmlData||[]).filter(i=>i.level===4).length;
+        noBpml.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="#86efac" stroke-width="1.5" style="width:28px;height:28px;margin-bottom:8px;display:block;margin-left:auto;margin-right:auto"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-5"/></svg>
+          <strong style="color:#15803d">BPML hierarchy loaded</strong> — ${l2count} L2 processes · ${l3count} L3 sub-processes${l4count?' · '+l4count+' L4 steps':''}.<br>
+          Select your <strong>Sub-Business</strong> and <strong>Detail</strong> level, then click <strong>Generate Test Scenarios</strong>.`;
+        noBpml.style.background = '#f0fdf4';
+        noBpml.style.color = '#166534';
+      } else {
+        noBpml.style.background = '#faf5ff';
+        noBpml.style.color = '';
+      }
+    }
+  }, 50);
 }
 
 /* ── MAIN RENDER ── */
@@ -5637,44 +5837,34 @@ function _cfFallbackInsights(items) {
 }
 
 // ── File handler ──
+function processCfCsvText(rawText, chipLabel, toastMsg) {
+  let text = rawText;
+  if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+  const items = parseCFCsv(text);
+  if (!items) {
+    setUploadChip('cf-status-chip', chipLabel, 'Parse error', '#dc2626');
+    showToast('Could not parse Cross Functional file \u2014 check field names');
+    return null;
+  }
+  window._cfData = items;
+  _loaded.cf = true;
+  try { renderCF(items); } catch(e) { console.error('renderCF:',e); }
+  setUploadChip('cf-status-chip', chipLabel, items.length + ' items', '#059669');
+  try { renderCFInsights(items); } catch(err) { console.error('cfInsights:',err); }
+  renderOverview(window._data || null, window._raidData || null);
+  document.getElementById('footer-date').textContent = new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  updateRefreshBtn();
+  showToast(toastMsg || ('Cross Functional loaded: ' + items.length + ' items'));
+  if (typeof _uploadSetLock === 'function') _uploadSetLock('cf');
+  return items;
+}
+
 function handleCFFile(file) {
   if (!file) return;
   if (typeof _uploadCheckConflict === 'function' && !_uploadCheckConflict('cf', 'Cross Functional')) return;
-  // Show filename immediately so chip never stays blank
   setUploadChip('cf-status-chip', file.name, 'Reading\u2026', '#059669');
   const rd = new FileReader();
-  rd.onload = e => {
-    // Strip BOM if present (common in Excel-exported CSVs)
-    let text = e.target.result;
-    if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
-
-    const items = parseCFCsv(text);
-    if (!items) {
-      setUploadChip('cf-status-chip', file.name, 'Parse error', '#dc2626');
-      showToast('Could not parse Cross Functional file \u2014 check field names');
-      return;
-    }
-
-    window._cfData = items;
-    _loaded.cf = true;
-
-    // Render table/charts synchronously first
-    try { renderCF(items); } catch(e) { console.error('renderCF:',e); }
-
-    // Update chip with actual count immediately after render
-    setUploadChip('cf-status-chip', file.name, items.length + ' items', '#059669');
-
-    // Insights is async — run it but don't let it block or break the chip
-    try { renderCFInsights(items); } catch(err) { console.error('cfInsights:',err); }
-
-    // Refresh Overview feed so CF insights appear immediately
-    renderOverview(window._data || null, window._raidData || null);
-
-    document.getElementById('footer-date').textContent = new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
-    updateRefreshBtn();
-    showToast('Cross Functional loaded: ' + items.length + ' items');
-    if (typeof _uploadSetLock === 'function') _uploadSetLock('cf');
-  };
+  rd.onload = e => { processCfCsvText(e.target.result, file.name); };
   rd.onerror = () => {
     setUploadChip('cf-status-chip', file.name, 'Read error', '#dc2626');
     showToast('Could not read file');
@@ -5916,6 +6106,30 @@ function _suApplySprint() {
   showToast('\u2713 ' + sprint + ' \u2014 ' + parsed.total + ' stories loaded');
 }
 
+function processSprintCsvText(rawText, chipLabel, toastMsg) {
+  let text = rawText;
+  if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+  const parsed = parseCSV(text);
+  if (!parsed) { showToast('Could not parse — check field names'); return null; }
+  _loaded.sprint = true;
+  window._spRawCsvText = text;
+  window._data = parsed;
+  const suNo = document.getElementById('su-no-data-state');
+  const suDa = document.getElementById('su-data-state');
+  if (suNo) suNo.style.display = 'none';
+  if (suDa) suDa.style.display = 'block';
+  _suShowSprintSelector(parsed);
+  try { render(parsed); } catch(err) { console.error('render error:', err); }
+  try { renderSprintInsights(parsed); } catch(err) { console.error('insights error:', err); }
+  showSection('risks');
+  updateRefreshBtn();
+  showToast(toastMsg || ('✓ Sprint CSV loaded — ' + parsed.total + ' stories across ' + (parsed.allSprints||[]).length + ' sprint(s). Select a sprint above to view data.'));
+  document.getElementById('footer-date').textContent = new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  setUploadChip('sprint-status-chip', chipLabel, parsed.total + ' stories', '#16a34a');
+  if (typeof _uploadSetLock === 'function') _uploadSetLock('sprint');
+  return parsed;
+}
+
 function handleSprintFile(file) {
   if (!file || !file.name.endsWith('.csv')) { showToast('Please upload a .csv Jira export'); return; }
   if (typeof _uploadCheckConflict === 'function' && !_uploadCheckConflict('sprint', 'Sprint Update')) return;
@@ -5923,30 +6137,31 @@ function handleSprintFile(file) {
   const rd = new FileReader();
   rd.onload = ev => {
     spinRefresh(false);
-    const parsed = parseCSV(ev.target.result);
-    if (!parsed) { showToast('Could not parse — check field names'); return; }
-    _loaded.sprint = true;
-    window._spRawCsvText = ev.target.result;  // store for sprint re-filtering
-    window._data = parsed;
-    // Show su-data-state (header + selector) but NOT the content body yet
-    const suNo = document.getElementById('su-no-data-state');
-    const suDa = document.getElementById('su-data-state');
-    if (suNo) suNo.style.display = 'none';
-    if (suDa) suDa.style.display = 'block';
-    // Populate selector — no sprint applied yet, prompt shown
-    _suShowSprintSelector(parsed);
-    // Still run render so other tabs (Overview, Workstream, Team) update
-    try { render(parsed); } catch(err) { console.error('render error:', err); }
-    try { renderSprintInsights(parsed); } catch(err) { console.error('insights error:', err); }
-    // Navigate to Sprint Update tab
-    showSection('risks');
-    updateRefreshBtn();
-    showToast('✓ Sprint CSV loaded — ' + parsed.total + ' stories across ' + (parsed.allSprints||[]).length + ' sprint(s). Select a sprint above to view data.');
-    document.getElementById('footer-date').textContent = new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
-    setUploadChip('sprint-status-chip', file.name, parsed.total + ' stories', '#16a34a');
-    if (typeof _uploadSetLock === 'function') _uploadSetLock('sprint');
+    processSprintCsvText(ev.target.result, file.name);
   };
   rd.readAsText(file);
+}
+
+function processRaidCsvText(rawText, chipLabel, toastMsg) {
+  let text = rawText;
+  if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+  const parsed = parseRAID(text);
+  if (!parsed) { showToast('Could not parse RAID file — check field names'); return null; }
+  _loaded.raid = true;
+  try { renderRAID(parsed); } catch(e) { console.error('renderRAID:',e); }
+  try { renderRAIDInsights(parsed); } catch(e) { console.error('raidInsights:',e); }
+  try { renderRAIDDuplicates(parsed); } catch(e) { console.error('raidDups:',e); }
+  renderWSRaidTable(parsed);
+  renderTeamRaidTable(parsed);
+  renderOverview(window._data, parsed);
+  updateRefreshBtn();
+  showToast(toastMsg || ('RAID loaded: ' + parsed.items.length + ' items from ' + chipLabel));
+  setUploadChip('raid-status-chip', chipLabel, parsed.items.length + ' items', '#6366f1');
+  document.getElementById('sb-raid-badge').textContent = parsed.items.length;
+  document.getElementById('sb-raid-count').textContent = parsed.items.length;
+  document.getElementById('footer-date').textContent = new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  if (typeof _uploadSetLock === 'function') _uploadSetLock('raid');
+  return parsed;
 }
 
 function handleRaidFile(file) {
@@ -5956,24 +6171,133 @@ function handleRaidFile(file) {
   const rd = new FileReader();
   rd.onload = e => {
     spinRefresh(false);
-    const parsed = parseRAID(e.target.result);
-    if (!parsed) { showToast('Could not parse RAID file — check field names'); return; }
-    _loaded.raid = true;
-    try { renderRAID(parsed); } catch(e) { console.error('renderRAID:',e); }
-    try { renderRAIDInsights(parsed); } catch(e) { console.error('raidInsights:',e); }
-    try { renderRAIDDuplicates(parsed); } catch(e) { console.error('raidDups:',e); }
-    renderWSRaidTable(parsed);
-    renderTeamRaidTable(parsed);
-    renderOverview(window._data, parsed);
-    updateRefreshBtn();
-    showToast('RAID loaded: ' + parsed.items.length + ' items from ' + file.name);
-    setUploadChip('raid-status-chip', file.name, parsed.items.length + ' items', '#6366f1');
-    document.getElementById('sb-raid-badge').textContent = parsed.items.length;
-    document.getElementById('sb-raid-count').textContent = parsed.items.length;
-    document.getElementById('footer-date').textContent = new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
-    if (typeof _uploadSetLock === 'function') _uploadSetLock('raid');
+    processRaidCsvText(e.target.result, file.name);
   };
   rd.readAsText(file);
+}
+
+/* ── Jira proxy: fetch CSV from local server (see jira-proxy/server.mjs) ── */
+async function _pmoJiraFetchCsv(path) {
+  const base = _pmoJiraProxyUrl();
+  let r;
+  try {
+    r = await fetch(base + path, { cache: 'no-store' });
+  } catch (e) {
+    const hint = (location.protocol === 'file:')
+      ? ' Open the dashboard via http://localhost (run serve-dashboard.cmd), not as a file.'
+      : '';
+    throw new Error('Cannot reach Jira proxy at ' + base + ' — is run-proxy.cmd running? ' + (e && e.message ? '(' + e.message + ')' : '') + hint);
+  }
+  const text = await r.text();
+  if (!r.ok) {
+    let msg = r.statusText || ('HTTP ' + r.status);
+    try {
+      const j = JSON.parse(text);
+      if (j && j.error) msg = String(j.error);
+    } catch (e) {
+      if (text && text.trim()) msg = text.trim().slice(0, 800);
+    }
+    throw new Error(msg);
+  }
+  return text;
+}
+async function _jiraPullSprint() {
+  if (typeof _uploadCheckConflict === 'function' && !_uploadCheckConflict('sprint', 'Sprint Update')) return;
+  spinRefresh(true);
+  try {
+    const text = await _pmoJiraFetchCsv('/api/export/sprint');
+    processSprintCsvText(text, 'Jira (live)', '✓ Sprint data loaded from Jira');
+  } catch (e) {
+    console.error(e);
+    showToast('⚠ Jira proxy: ' + e.message);
+  } finally {
+    spinRefresh(false);
+  }
+}
+async function _jiraPullRaid() {
+  if (typeof _uploadCheckConflict === 'function' && !_uploadCheckConflict('raid', 'RAID Log')) return;
+  spinRefresh(true);
+  try {
+    const text = await _pmoJiraFetchCsv('/api/export/raid');
+    processRaidCsvText(text, 'Jira (live)', '✓ RAID loaded from Jira');
+  } catch (e) {
+    console.error(e);
+    showToast('⚠ Jira proxy: ' + e.message);
+  } finally {
+    spinRefresh(false);
+  }
+}
+async function _jiraPullCf() {
+  if (typeof _uploadCheckConflict === 'function' && !_uploadCheckConflict('cf', 'Cross Functional')) return;
+  setUploadChip('cf-status-chip', 'Jira…', 'Fetching…', '#059669');
+  spinRefresh(true);
+  try {
+    const text = await _pmoJiraFetchCsv('/api/export/cf');
+    processCfCsvText(text, 'Jira (live)', '✓ Cross Functional loaded from Jira');
+  } catch (e) {
+    console.error(e);
+    setUploadChip('cf-status-chip', 'Error', '—', '#dc2626');
+    showToast('⚠ Jira proxy: ' + e.message);
+  } finally {
+    spinRefresh(false);
+  }
+}
+async function _jiraPullSprintPlan() {
+  if (typeof _uploadCheckConflict === 'function' && !_uploadCheckConflict('sprintplan', 'Sprint Planning')) return;
+  const chip = document.getElementById('spplan-status-chip');
+  if (chip) chip.innerHTML = '<span class="usc-dot" style="background:var(--amber)"></span>Fetching…';
+  spinRefresh(true);
+  try {
+    const text = await _pmoJiraFetchCsv('/api/export/sprintplan');
+    processSprintPlanCsvText(text, 'Jira (live)', '✓ Sprint Planning loaded from Jira');
+  } catch (e) {
+    console.error(e);
+    if (chip) chip.innerHTML = '<span class="usc-dot" style="background:var(--red)"></span>Error';
+    showToast('⚠ Jira proxy: ' + e.message);
+  } finally {
+    spinRefresh(false);
+  }
+}
+async function _jiraPullTestPlan() {
+  if (typeof _uploadCheckConflict === 'function' && !_uploadCheckConflict('testplan', 'Test Planning')) return;
+  const chip = document.getElementById('testplan-status-chip');
+  if (chip) chip.innerHTML = '<span class="usc-dot" style="background:var(--amber)"></span>Fetching…';
+  spinRefresh(true);
+  try {
+    const text = await _pmoJiraFetchCsv('/api/export/testplan');
+    processTestPlanCsvText(text, 'Jira (live)', '✓ Test Planning loaded from Jira');
+  } catch (e) {
+    console.error(e);
+    if (chip) chip.innerHTML = '<span class="usc-dot" style="background:var(--red)"></span>Error';
+    showToast('⚠ Jira proxy: ' + e.message);
+  } finally {
+    spinRefresh(false);
+  }
+}
+async function _jiraPullBpml() {
+  if (typeof _uploadCheckConflict === 'function' && !_uploadCheckConflict('bpml', 'BPML')) return;
+  const chip = document.getElementById('bpml-status-chip');
+  if (chip) chip.innerHTML = '<span class="usc-dot" style="background:var(--amber)"></span>Jira…';
+  spinRefresh(true);
+  try {
+    const t1 = await _pmoJiraFetchCsv('/api/export/bpml/1');
+    const t2 = await _pmoJiraFetchCsv('/api/export/bpml/2');
+    const t3 = await _pmoJiraFetchCsv('/api/export/bpml/3');
+    window._bpmlFiles.f1 = t1.charCodeAt(0) === 0xFEFF ? t1.slice(1) : t1;
+    window._bpmlFiles.f2 = t2.charCodeAt(0) === 0xFEFF ? t2.slice(1) : t2;
+    window._bpmlFiles.f3 = t3.charCodeAt(0) === 0xFEFF ? t3.slice(1) : t3;
+    _bpmlSetSlotStatus(1, true, '✓ Jira — BPML structure');
+    _bpmlSetSlotStatus(2, true, '✓ Jira — RICEFW');
+    _bpmlSetSlotStatus(3, true, '✓ Jira — Req/FSD/FUT');
+    _bpmlBuildFromFiles();
+    showToast('✓ BPML loaded from Jira (3 exports)');
+  } catch (e) {
+    console.error(e);
+    showToast('⚠ Jira proxy: ' + e.message);
+    if (chip) chip.innerHTML = '<span class="usc-dot" style="background:var(--red)"></span>Error';
+  } finally {
+    spinRefresh(false);
+  }
 }
 
 function setUploadChip(id, filename, count, color) {
@@ -8081,6 +8405,7 @@ AND "Phase (Multi)" in ("Release 1","Enterprise Design")`
   ],
 
   sprintplan: `project = "PG&E - Propel (CONAMER1000364)"
+AND status not in (Withdrawn)
 AND issuetype = story
 AND "Story Category" is not EMPTY
 AND "Story Category" not in (Requirement)
@@ -8943,6 +9268,16 @@ function _bpmlParseCSV(src) {
 }
 
 // ── Parse File 1: BPML hierarchy (Level 1 / Level 2 / Level 3) ──
+// ── Column index helper: matches Jira "Field" and "Field.1" … numbered exports / API CSV
+function _bpmlGcol(headers, name) {
+  return headers.reduce((a, h, i) => {
+    const hn = h.trim();
+    if (hn === name) a.push(i);
+    else if (hn.startsWith(name + '.') && /^\d+$/.test(hn.slice(name.length + 1))) a.push(i);
+    return a;
+  }, []);
+}
+
 // ── Parse File 1: BPML hierarchy (Level 1 / Level 2 / Level 3)
 // L1 Outward PC → L2 keys
 // L2 Outward PC → L3 keys
@@ -8952,7 +9287,7 @@ function parseBPMLCsv(text) {
   if (rows.length < 2) return null;
   const headers = rows[0].map(h => h.trim());
   const col  = name => headers.indexOf(name);
-  const gcol = name => headers.reduce((a,h,i) => { if (h===name) a.push(i); return a; }, []);
+  const gcol = name => _bpmlGcol(headers, name);
 
   const iKey    = col('Issue key');
   const iSum    = col('Summary');
@@ -9011,7 +9346,7 @@ function parseRicefwCsv(text) {
   if (rows.length < 2) return null;
   const headers = rows[0].map(h => h.trim());
   const col  = name => headers.indexOf(name);
-  const gcol = name => headers.reduce((a,h,i) => { if (h===name) a.push(i); return a; }, []);
+  const gcol = name => _bpmlGcol(headers, name);
 
   const iKey    = col('Issue key');
   const iSum    = col('Summary');
@@ -9075,7 +9410,7 @@ function parseFsdFutCsv(text) {
   if (rows.length < 2) return null;
   const headers = rows[0].map(h => h.trim());
   const col  = name => headers.indexOf(name);
-  const gcol = name => headers.reduce((a,h,i) => { if (h===name) a.push(i); return a; }, []);
+  const gcol = name => _bpmlGcol(headers, name);
 
   const iKey    = col('Issue key');
   const iSum    = col('Summary');
@@ -9143,12 +9478,28 @@ function _bpmlMergeData(bpmlItems, ricefwItems, f3Items) {
     map[it.key] = it;
   });
 
-  // 2. Wire BPML L1→L2→L3 via Outward PC
+  // 2. Wire BPML L1→L2→L3→L4 via Outward PC; init l4Children on L3 nodes
   const l3Keys = new Set(bpmlItems.filter(i=>i.level===3).map(i=>i.key));
   bpmlItems.forEach(it => {
-    if (it.level < 3) {
+    it.l4Children = [];  // prep array on every BPML item
+  });
+  bpmlItems.forEach(it => {
+    if (it.level < 4) {
       it.children.forEach(ck => {
         if (map[ck] && !map[ck].parents.includes(it.key)) map[ck].parents.push(it.key);
+        // Wire L4 children from L3
+        if (it.level === 3 && map[ck] && map[ck].level === 4) {
+          if (!it.l4Children.includes(ck)) it.l4Children.push(ck);
+        }
+      });
+    }
+    // Also detect L4 items whose parents include an L3 (via their inward PC)
+    if (it.level === 4) {
+      it.parents.forEach(pk => {
+        const parent = map[pk];
+        if (parent && parent.level === 3 && !parent.l4Children.includes(it.key)) {
+          parent.l4Children.push(it.key);
+        }
       });
     }
   });
@@ -9426,6 +9777,7 @@ function _bpmlRender() {
     if (itemMatches(it)) return true;
     const kids = [
       ...(it.children||[]),
+      ...(it.l4Children||[]),
       ...(it.reqChildren||[]),
       ...(it.ricefwChild ? [it.ricefwChild] : []),
       ...(it.docChildren||[]),
@@ -9541,6 +9893,7 @@ function _bpmlRender() {
 
       l3s.forEach(l3 => {
         if (!subtreeVisible(l3.key)) return;
+        const l4Items  = (l3.l4Children||[]).map(k=>map[k]).filter(it=>it && !it._withdrawn);
         const reqItems = (l3.reqChildren||[]).map(k=>map[k]).filter(Boolean);
         const metaParts = [];
         if (l3.reporter) metaParts.push(_bpmlFmtEmail(l3.reporter));
@@ -9561,11 +9914,31 @@ function _bpmlRender() {
             <div class="bpml-l3-toggle open" id="bpml-t-${l3.key}">&#9654;</div>
             <div class="bpml-l3-id">${_escH(l3.idNum||l3.key)}</div>
             <div class="bpml-l3-title">${_escH(l3.summary)}</div>
-            <div class="bpml-l3-badge">${reqItems.length} Req${rfCount?' &nbsp;·&nbsp; '+rfCount+' RICEFW':''}${fsdCount?' &nbsp;·&nbsp; '+fsdCount+' FSD':''}${futCount?' &nbsp;·&nbsp; '+futCount+' FUT':''}</div>
+            <div class="bpml-l3-badge">${l4Items.length?' <span style="font-size:9px;font-weight:700;background:#fef3c7;color:#92400e;padding:1px 6px;border-radius:10px;font-family:var(--mono)">'+(l4Items.length)+' L4</span>&nbsp;':''}${reqItems.length} Req${rfCount?' &nbsp;·&nbsp; '+rfCount+' RICEFW':''}${fsdCount?' &nbsp;·&nbsp; '+fsdCount+' FSD':''}${futCount?' &nbsp;·&nbsp; '+futCount+' FUT':''}</div>
             ${metaParts.length?`<div class="bpml-l3-meta">${metaParts.join(' · ')}</div>`:''}
             ${_bpmlKeyLink(l3.key,'bpml-l3-key')}
           </div>
           <div class="bpml-l3-body" id="bpml-body-${l3.key}">`;
+
+        // ── Level 4 steps under L3 ──
+        l4Items.forEach(l4 => {
+          if (!l4) return;
+          const who = l4.assignee?_bpmlFmtEmail(l4.assignee):l4.reporter?_bpmlFmtEmail(l4.reporter):'';
+          html += `<div style="border-top:1px solid var(--grey100)">
+            <div style="padding:7px 18px 7px 80px;display:flex;align-items:flex-start;gap:9px;background:#fffdf5;font-size:11px;transition:background 0.1s"
+                 onmouseover="this.style.background='#fffbeb'" onmouseout="this.style.background='#fffdf5'">
+              <div style="width:5px;height:5px;border-radius:50%;background:#d97706;flex-shrink:0;margin-top:5px"></div>
+              <span style="font-size:9px;font-weight:700;font-family:var(--mono);color:#92400e;background:#fef3c7;padding:1px 6px;border-radius:4px;white-space:nowrap;flex-shrink:0">L4</span>
+              ${l4.idNum?`<span style="font-size:9px;font-family:var(--mono);color:#b45309;white-space:nowrap;flex-shrink:0">${_escH(l4.idNum)}</span>`:''}
+              <span style="flex:1;color:var(--text);line-height:1.5;min-width:0;font-weight:500">${_escH(l4.summary)}</span>
+              ${_bpmlStatusBadge(l4.status)}
+              ${l4.phase?`<span style="font-size:9px;font-family:var(--mono);color:#fff;background:var(--sp-color);padding:1px 6px;border-radius:3px;white-space:nowrap;flex-shrink:0">${_escH(l4.phase)}</span>`:''}
+              ${who?`<span style="font-size:9px;color:var(--text2);font-family:var(--mono);white-space:nowrap">${who}</span>`:''}
+              ${l4.due?`<span style="font-size:9px;font-family:var(--mono);color:#b45309;white-space:nowrap">${l4.due}</span>`:''}
+              ${_bpmlKeyLink(l4.key,'bpml-l4-key')}
+            </div>
+          </div>`;
+        });
 
         // ── Requirements under L3, each with optional RICEFW→FSD/FUT ──
         reqItems.forEach(req => {
@@ -9722,10 +10095,59 @@ function _bpmlRender() {
     const visWdDoc = wd.docs.filter(sectionItemVisible);
     const totalWd = visWdRF.length + visWdReq.length + visWdDoc.length;
     if (totalWd > 0) {
-    const wdId    = 'bpml-withdrawn-block';
-    const fsdWd   = visWdDoc.filter(d=>d.cat==='FSD');
-    const futWd   = visWdDoc.filter(d=>d.cat==='FUT');
+    const wdId  = 'bpml-withdrawn-block';
+    const fsdWd = visWdDoc.filter(d=>d.cat==='FSD');
+    const futWd = visWdDoc.filter(d=>d.cat==='FUT');
 
+    // ── inline toggle helper (unique IDs keyed to render timestamp to avoid DOM collisions) ──
+    const _wdT = (id) =>
+      `onclick="(function(){var b=document.getElementById('wdb-${id}'),t=document.getElementById('wdt-${id}');if(!b)return;var o=b.style.display==='none';b.style.display=o?'':'none';t.style.transform=o?'rotate(90deg)':'';})()"`; 
+
+    // ── sub-section header (collapsed by default) ──
+    function wdSubHdr(id, label, count, borderColor, badgeItems) {
+      const badges = (badgeItems||[]).map(([lbl,cnt,bg,col])=>
+        cnt>0?`<span style="font-size:9px;font-weight:700;font-family:var(--mono);color:${col};background:${bg};padding:2px 8px;border-radius:10px;white-space:nowrap">${cnt} ${lbl}</span>`:''
+      ).join('');
+      return `<div style="border-top:1px solid #e5e7eb">
+        <div style="padding:9px 18px;display:flex;align-items:center;gap:9px;cursor:pointer;background:#f9fafb;user-select:none;transition:background 0.12s"
+             ${_wdT(id)} onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='#f9fafb'">
+          <div style="width:16px;height:16px;background:rgba(107,114,128,0.15);border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;color:#6b7280;transition:transform 0.2s" id="wdt-${id}">&#9654;</div>
+          <span style="font-size:11px;font-weight:700;color:#374151;flex:1">${label}</span>
+          <span style="font-size:9px;font-weight:700;font-family:var(--mono);color:#6b7280;background:#e5e7eb;padding:2px 9px;border-radius:10px">${count}</span>
+          ${badges}
+        </div>
+        <div id="wdb-${id}" style="display:none">`;  // collapsed by default
+    }
+
+    // ── RICEFW type sub-sub-section ──
+    function wdRfTypeHdr(id, typeName, items) {
+      const dc=rfColor(typeName), db=rfBg(typeName);
+      return `<div style="border-top:1px solid #f3f4f6">
+        <div style="padding:7px 18px 7px 36px;display:flex;align-items:center;gap:8px;cursor:pointer;background:#fafafa;user-select:none;transition:background 0.12s"
+             ${_wdT(id)} onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='#fafafa'">
+          <div style="width:14px;height:14px;background:${db};border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:9px;color:${dc};transition:transform 0.2s" id="wdt-${id}">&#9654;</div>
+          <span style="font-size:9px;font-weight:700;font-family:var(--mono);color:${dc};background:${db};padding:1px 7px;border-radius:4px;white-space:nowrap">${_escH(typeName)}</span>
+          <span style="font-size:11px;font-weight:600;color:#374151;flex:1">${_escH(typeName)}</span>
+          <span style="font-size:9px;font-family:var(--mono);color:#9ca3af">${items.length} item${items.length!==1?'s':''}</span>
+        </div>
+        <div id="wdb-${id}" style="display:none;padding:4px 0 4px 36px">`;
+    }
+
+    // ── single withdrawn item row ──
+    function wdItemRow(it, typeTag, tagColor, tagBg, extraBadges) {
+      const who = it.assignee?_bpmlFmtEmail(it.assignee):it.reporter?_bpmlFmtEmail(it.reporter):'';
+      return `<div style="padding:6px 14px 6px 18px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #f3f4f6;background:#fff;font-size:11px;transition:background 0.1s"
+               onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='#fff'">
+        <span style="font-size:9px;font-weight:700;font-family:var(--mono);color:${tagColor};background:${tagBg};padding:1px 6px;border-radius:4px;white-space:nowrap;flex-shrink:0">${_escH(typeTag)}</span>
+        <span style="flex:1;color:var(--text2);min-width:0;text-decoration:line-through;opacity:0.7;line-height:1.4">${_escH(it.summary)}</span>
+        <span style="font-size:9px;font-weight:700;font-family:var(--mono);color:#6b7280;background:#f3f4f6;padding:1px 6px;border-radius:10px;white-space:nowrap;flex-shrink:0">Withdrawn</span>
+        ${extraBadges||''}
+        ${who?`<span style="font-size:9px;color:var(--text3);font-family:var(--mono);white-space:nowrap;flex-shrink:0">${who}</span>`:''}
+        ${_bpmlKeyLink(it.key,'bpml-l4-key')}
+      </div>`;
+    }
+
+    // ── outer Withdrawn block — COLLAPSED by default (display:none on body) ──
     html += `<div style="margin-top:16px;border:2px dashed #d1d5db;border-radius:var(--radius);overflow:hidden" id="${wdId}">
       <div style="background:linear-gradient(135deg,#374151,#6b7280);padding:14px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none"
            onclick="_bpmlToggle('wd','${wdId}')">
@@ -9733,76 +10155,106 @@ function _bpmlRender() {
         <svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="1.5" style="width:16px;height:16px;flex-shrink:0"><path d="M2 4h12M5 4V2h6v2M6 7v5M10 7v5M3 4l1 10h8l1-10"/></svg>
         <div style="font-size:14px;font-weight:800;color:#fff;flex:1">Withdrawn Items</div>
         <div style="display:flex;gap:6px;align-items:center">
-          ${wd.ricefw.length?`<span style="font-size:9px;font-weight:700;font-family:var(--mono);color:#fff;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:10px">${wd.ricefw.length} RICEFW</span>`:''}
-          ${wd.req.length?`<span style="font-size:9px;font-weight:700;font-family:var(--mono);color:#fff;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:10px">${wd.req.length} Req</span>`:''}
+          ${visWdRF.length?`<span style="font-size:9px;font-weight:700;font-family:var(--mono);color:#fff;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:10px">${visWdRF.length} RICEFW</span>`:''}
+          ${visWdReq.length?`<span style="font-size:9px;font-weight:700;font-family:var(--mono);color:#fff;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:10px">${visWdReq.length} Req</span>`:''}
           ${fsdWd.length?`<span style="font-size:9px;font-weight:700;font-family:var(--mono);color:#fff;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:10px">${fsdWd.length} FSD</span>`:''}
           ${futWd.length?`<span style="font-size:9px;font-weight:700;font-family:var(--mono);color:#fff;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:10px">${futWd.length} FUT</span>`:''}
         </div>
       </div>
-      <div id="bpml-body-${wdId}" style="background:#f9fafb">
+      <div id="bpml-body-${wdId}" style="display:none;background:#f9fafb">
         <div style="padding:10px 18px 6px;font-size:10px;color:#6b7280;font-family:var(--mono);border-bottom:1px solid #e5e7eb">
           These items have Status = <strong>Withdrawn</strong> and are excluded from the main hierarchy.
         </div>`;
 
-    // ── Withdrawn RICEFW ──
+    // ════════════════════════════════════════════
+    // SUB-SECTION 1 — RICEFW (grouped by type)
+    // ════════════════════════════════════════════
     if (visWdRF.length) {
-      html += `<div style="padding:10px 18px 4px">
-        <div style="font-size:10px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">RICEFW (${visWdRF.length})</div>`;
-      visWdRF.forEach(rf => {
-        const dc=rfColor(rf.type), db=rfBg(rf.type);
-        const fsdC=(rf.docChildren||[]).filter(k=>map[k]&&map[k].cat==='FSD').length;
-        const futC=(rf.docChildren||[]).filter(k=>map[k]&&map[k].cat==='FUT').length;
-        html += `<div style="padding:7px 14px;display:flex;align-items:center;gap:8px;border:1px solid #e5e7eb;border-radius:6px;margin-bottom:4px;background:#fff;font-size:11px">
-          <span style="font-size:9px;font-weight:700;font-family:var(--mono);color:${dc};background:${db};padding:1px 7px;border-radius:4px;white-space:nowrap;flex-shrink:0">${_escH(rf.type||'RICEFW')}</span>
-          <span style="flex:1;color:var(--text2);min-width:0;text-decoration:line-through;opacity:0.7">${_escH(rf.summary)}</span>
-          <span style="font-size:9px;font-weight:700;font-family:var(--mono);color:#6b7280;background:#f3f4f6;padding:1px 6px;border-radius:10px;white-space:nowrap">Withdrawn</span>
-          ${fsdC?`<span style="font-size:9px;font-family:var(--mono);color:#6b7280;background:#f3f4f6;padding:1px 6px;border-radius:4px">${fsdC} FSD</span>`:''}
-          ${futC?`<span style="font-size:9px;font-family:var(--mono);color:#6b7280;background:#f3f4f6;padding:1px 6px;border-radius:4px">${futC} FUT</span>`:''}
-          ${_bpmlKeyLink(rf.key,'bpml-l4-key')}
-        </div>`;
+      const rfTypes = ['Report','Interface','Conversion','Enhancement','Form','Workflow'];
+      const rfByType = {};
+      rfTypes.forEach(t => { rfByType[t] = visWdRF.filter(r=>r.type===t); });
+      const rfOther = visWdRF.filter(r=>!rfTypes.includes(r.type));
+
+      html += wdSubHdr('wd-ricefw', 'RICEFW', visWdRF.length, '#6b7280',
+        rfTypes.filter(t=>rfByType[t].length>0).map(t=>[t, rfByType[t].length, rfBg(t), rfColor(t)]));
+
+      rfTypes.forEach(typeName => {
+        const items = rfByType[typeName];
+        if (!items.length) return;
+        const typeId = 'wd-rf-' + typeName.toLowerCase();
+        html += wdRfTypeHdr(typeId, typeName, items);
+        items.forEach(rf => {
+          const fsdC=(rf.docChildren||[]).filter(k=>map[k]&&map[k].cat==='FSD').length;
+          const futC=(rf.docChildren||[]).filter(k=>map[k]&&map[k].cat==='FUT').length;
+          const extra = (fsdC?`<span style="font-size:9px;font-family:var(--mono);color:#6b7280;background:#f3f4f6;padding:1px 6px;border-radius:4px;white-space:nowrap">${fsdC} FSD</span>`:'')
+                      + (futC?`<span style="font-size:9px;font-family:var(--mono);color:#6b7280;background:#f3f4f6;padding:1px 6px;border-radius:4px;white-space:nowrap;margin-left:3px">${futC} FUT</span>`:'');
+          html += wdItemRow(rf, rf.type||'RICEFW', rfColor(rf.type), rfBg(rf.type), extra);
+        });
+        html += `</div></div>`;  // type body + type block
       });
-      html += `</div>`;
+
+      // Other / unknown type
+      if (rfOther.length) {
+        const typeId = 'wd-rf-other';
+        html += wdRfTypeHdr(typeId, 'Other', rfOther);
+        rfOther.forEach(rf => { html += wdItemRow(rf, rf.type||'RICEFW', '#4b5563', '#f3f4f6', ''); });
+        html += `</div></div>`;
+      }
+
+      html += `</div></div>`;  // RICEFW sub-section body + block
     }
 
-    // ── Withdrawn Requirements ──
+    // ════════════════════════════════════════════
+    // SUB-SECTION 2 — REQUIREMENTS
+    // ════════════════════════════════════════════
     if (visWdReq.length) {
-      html += `<div style="padding:6px 18px 4px;border-top:1px solid #e5e7eb">
-        <div style="font-size:10px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">Requirements (${visWdReq.length})</div>`;
-      visWdReq.forEach(req => {
-        const who = req.assignee?_bpmlFmtEmail(req.assignee):req.reporter?_bpmlFmtEmail(req.reporter):'';
-        html += `<div style="padding:7px 14px;display:flex;align-items:center;gap:8px;border:1px solid #e5e7eb;border-radius:6px;margin-bottom:4px;background:#fff;font-size:11px">
-          <span style="font-size:9px;font-weight:700;font-family:var(--mono);color:#fff;background:#9ca3af;padding:1px 6px;border-radius:4px;white-space:nowrap;flex-shrink:0">REQ</span>
-          <span style="flex:1;color:var(--text2);min-width:0;text-decoration:line-through;opacity:0.7">${_escH(req.summary)}</span>
-          <span style="font-size:9px;font-weight:700;font-family:var(--mono);color:#6b7280;background:#f3f4f6;padding:1px 6px;border-radius:10px;white-space:nowrap">Withdrawn</span>
-          ${who?`<span style="font-size:9px;color:var(--text3);font-family:var(--mono);white-space:nowrap">${who}</span>`:''}
-          ${_bpmlKeyLink(req.key,'bpml-l4-key')}
-        </div>`;
-      });
-      html += `</div>`;
+      html += wdSubHdr('wd-req', 'Requirements', visWdReq.length, '#6b7280', []);
+      visWdReq.forEach(req => { html += wdItemRow(req, 'REQ', '#fff', '#9ca3af', ''); });
+      html += `</div></div>`;  // req sub-section body + block
     }
 
-    // ── Withdrawn FSD / FUT (sorted FSD first) ──
+    // ════════════════════════════════════════════
+    // SUB-SECTION 3 — FSD / FUT (two sub-groups)
+    // ════════════════════════════════════════════
     if (visWdDoc.length) {
-      const sortedDocs = [...visWdDoc].sort((a,b)=>(a.cat==='FSD'?0:1)-(b.cat==='FSD'?0:1));
-      html += `<div style="padding:6px 18px 10px;border-top:1px solid #e5e7eb">
-        <div style="font-size:10px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">
-          FSD / FUT (${visWdDoc.length})
-          ${fsdWd.length?`<span style="font-size:9px;font-family:var(--mono);color:#6b7280;background:#f3f4f6;padding:1px 8px;border-radius:4px;text-transform:none;font-weight:700;margin-left:4px">${fsdWd.length} FSD</span>`:''}
-          ${futWd.length?`<span style="font-size:9px;font-family:var(--mono);color:#6b7280;background:#f3f4f6;padding:1px 8px;border-radius:4px;text-transform:none;font-weight:700;margin-left:4px">${futWd.length} FUT</span>`:''}
-        </div>`;
-      sortedDocs.forEach(doc => {
-        const isFsd=doc.cat==='FSD';
-        const dc=isFsd?'#9ca3af':'#9ca3af', db=isFsd?'#f3f4f6':'#f3f4f6';
-        const who = doc.assignee?_bpmlFmtEmail(doc.assignee):doc.reporter?_bpmlFmtEmail(doc.reporter):'';
-        html += `<div style="padding:6px 14px;display:flex;align-items:flex-start;gap:8px;border:1px solid #e5e7eb;border-radius:6px;margin-bottom:4px;background:#fff;font-size:11px">
-          <span style="font-size:9px;font-weight:700;font-family:var(--mono);color:${dc};background:${db};padding:1px 6px;border-radius:4px;white-space:nowrap;flex-shrink:0">${_escH(doc.cat||'DOC')}</span>
-          <span style="flex:1;color:var(--text2);line-height:1.5;min-width:0;text-decoration:line-through;opacity:0.7">${_escH(doc.summary)}</span>
-          <span style="font-size:9px;font-weight:700;font-family:var(--mono);color:#6b7280;background:#f3f4f6;padding:1px 6px;border-radius:10px;white-space:nowrap">Withdrawn</span>
-          ${who?`<span style="font-size:9px;color:var(--text3);font-family:var(--mono);white-space:nowrap">${who}</span>`:''}
-          ${_bpmlKeyLink(doc.key,'bpml-l4-key')}
-        </div>`;
-      });
-      html += `</div>`;
+      html += wdSubHdr('wd-fsdfut', 'FSD / FUT', visWdDoc.length, '#6b7280', [
+        ['FSD', fsdWd.length, '#e0f2fe', '#0369a1'],
+        ['FUT', futWd.length, '#ffedd5', '#7c2d12'],
+      ]);
+
+      // FSD sub-group
+      if (fsdWd.length) {
+        const fsdGrpId = 'wd-fsd-grp';
+        html += `<div style="border-top:1px solid #f3f4f6">
+          <div style="padding:7px 18px 7px 36px;display:flex;align-items:center;gap:8px;cursor:pointer;background:#fafafa;user-select:none"
+               ${_wdT(fsdGrpId)} onmouseover="this.style.background='#f0f9ff'" onmouseout="this.style.background='#fafafa'">
+            <div style="width:14px;height:14px;background:#e0f2fe;border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:9px;color:#0369a1;transition:transform 0.2s" id="wdt-${fsdGrpId}">&#9654;</div>
+            <span style="font-size:9px;font-weight:700;font-family:var(--mono);color:#0369a1;background:#e0f2fe;padding:1px 7px;border-radius:4px">FSD</span>
+            <span style="font-size:11px;font-weight:600;color:#374151;flex:1">Functional Specifications</span>
+            <span style="font-size:9px;font-family:var(--mono);color:#9ca3af">${fsdWd.length} item${fsdWd.length!==1?'s':''}</span>
+          </div>
+          <div id="wdb-${fsdGrpId}" style="display:none;padding:4px 0 4px 36px">`;
+        fsdWd.forEach(doc => { html += wdItemRow(doc, 'FSD', '#0369a1', '#e0f2fe', ''); });
+        html += `</div></div>`;  // FSD body + block
+      }
+
+      // FUT sub-group
+      if (futWd.length) {
+        const futGrpId = 'wd-fut-grp';
+        html += `<div style="border-top:1px solid #f3f4f6">
+          <div style="padding:7px 18px 7px 36px;display:flex;align-items:center;gap:8px;cursor:pointer;background:#fafafa;user-select:none"
+               ${_wdT(futGrpId)} onmouseover="this.style.background='#fffbeb'" onmouseout="this.style.background='#fafafa'">
+            <div style="width:14px;height:14px;background:#ffedd5;border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:9px;color:#7c2d12;transition:transform 0.2s" id="wdt-${futGrpId}">&#9654;</div>
+            <span style="font-size:9px;font-weight:700;font-family:var(--mono);color:#7c2d12;background:#ffedd5;padding:1px 7px;border-radius:4px">FUT</span>
+            <span style="font-size:11px;font-weight:600;color:#374151;flex:1">Functional Unit Tests</span>
+            <span style="font-size:9px;font-family:var(--mono);color:#9ca3af">${futWd.length} item${futWd.length!==1?'s':''}</span>
+          </div>
+          <div id="wdb-${futGrpId}" style="display:none;padding:4px 0 4px 36px">`;
+        futWd.forEach(doc => { html += wdItemRow(doc, 'FUT', '#7c2d12', '#ffedd5', ''); });
+        html += `</div></div>`;  // FUT body + block
+      }
+
+      html += `</div></div>`;  // FSD/FUT sub-section body + block
     }
 
     html += `</div></div>`;  // withdrawn body + outer block
@@ -9871,8 +10323,9 @@ function _bpmlExpandToLevel() {
   }
 
   // Flags for each level
-  const openL2  = ['2','3','req','rf','all'].includes(lvl);
-  const openL3  = ['3','req','rf','all'].includes(lvl);
+  const openL2  = ['2','3','4','req','rf','all'].includes(lvl);
+  const openL3  = ['3','4','req','rf','all'].includes(lvl);
+  const openL4  = ['4','req','rf','all'].includes(lvl);
   const openReq = ['req','rf','all'].includes(lvl);
   const openRF  = ['rf','all'].includes(lvl);
   const openDoc = lvl === 'all';
@@ -9883,6 +10336,7 @@ function _bpmlExpandToLevel() {
     if (it.level === 1)                  open(it.key);
     if (it.level === 2 && openL2)        open(it.key);
     if (it.level === 3 && openL3)        open(it.key);
+    if (it.level === 4 && openL4)        open(it.key);
   });
 
   // Step 3: open Req / RICEFW / doc bodies using _fileRole
@@ -9909,8 +10363,9 @@ function _bpmlCollapseToLevel() {
 
   // Keep open: everything above the selected level; collapse everything at or below
   const keepL1  = true;
-  const keepL2  = ['2','3','req','rf','all'].includes(lvl);
-  const keepL3  = ['3','req','rf','all'].includes(lvl);
+  const keepL2  = ['2','3','4','req','rf','all'].includes(lvl);
+  const keepL3  = ['3','4','req','rf','all'].includes(lvl);
+  const keepL4  = ['4','req','rf','all'].includes(lvl);
 
   document.querySelectorAll('[id^="bpml-body-"]').forEach(el => {
     const key = el.id.replace('bpml-body-','');
@@ -9920,6 +10375,7 @@ function _bpmlCollapseToLevel() {
       if (it.level === 1) keep = keepL1;
       else if (it.level === 2) keep = keepL2;
       else if (it.level === 3) keep = keepL3;
+      else if (it.level === 4) keep = keepL4;
     }
     if (!keep) {
       el.style.display = 'none';
@@ -10039,12 +10495,16 @@ function _bpmlBuildFromFiles() {
     _bpmlGenerateInsights();
 
     showToast('✓ BPML hierarchy built — ' + bpmlItems.length + ' BPML · ' + rCount + ' RICEFW · ' + reqCount + ' Req · ' + fsdCount + ' FSD · ' + futCount + ' FUT');
+    if (typeof _snapshotStatusUpdate === 'function') _snapshotStatusUpdate();
+    if (typeof _snapshotSave === 'function') setTimeout(_snapshotSave, 300); // auto-persist
     if (typeof _uploadSetLock === 'function') _uploadSetLock('bpml');
     _updateOvBpml(bpmlItems);
     const sbBpml = document.getElementById('sb-bpml-count');
     if (sbBpml) sbBpml.textContent = totalLoaded;
     const sbBpmlView = document.getElementById('sb-bpml-view-badge');
     if (sbBpmlView) sbBpmlView.textContent = bpmlItems.length;
+    // Refresh E2E scenario generator notice in Test Planning tab
+    showSection && setTimeout(()=>{ const tp=document.getElementById('sec-testplan'); if(tp&&tp.classList.contains('active')) showSection('testplan'); }, 100);
 
   } catch(err) {
     console.error('BPML build error', err);
@@ -10077,18 +10537,24 @@ document.getElementById('csv-bpml-input').addEventListener('change', e => {
   });
 });
 
-// ── Shared Claude API helper — works in claude.ai; falls back locally ──
-async function _callClaudeAPI(prompt) {
+// ── Shared Claude API helper — injects local API key when running outside claude.ai ──
+async function _callClaudeAPI(prompt, maxTokens) {
+  const key = (typeof _apiKeyGet === 'function') ? _apiKeyGet() : '';
+  const headers = { 'Content-Type': 'application/json' };
+  if (key) { headers['x-api-key'] = key; headers['anthropic-version'] = '2023-06-01'; }
   const resp = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 1000,
+      max_tokens: maxTokens || 1000,
       messages: [{ role: 'user', content: prompt }]
     })
   });
-  if (!resp.ok) throw new Error('API ' + resp.status);
+  if (!resp.ok) {
+    const errText = await resp.text().catch(()=>'');
+    throw new Error('API ' + resp.status + (errText ? ': ' + errText.slice(0,120) : ''));
+  }
   const data = await resp.json();
   return (data.content||[]).map(b=>b.text||'').join('');
 }
@@ -10123,6 +10589,7 @@ function _bpmlLocalInsights() {
   const l1s  = items.filter(i=>i.level===1);
   const l2s  = items.filter(i=>i.level===2);
   const l3s  = items.filter(i=>i.level===3);
+  const l4s  = items.filter(i=>i.level===4);
 
   // RICEFW stats
   const rfItems  = allItems.filter(i=>i._fileRole==='ricefw');
@@ -10160,7 +10627,7 @@ function _bpmlLocalInsights() {
 
   // Card 1: BPML Hierarchy Health
   html += _insCard('📐 BPML Hierarchy Health',
-    `Structure spans <strong>${kpis.total} BPML items</strong>: ${kpis.l1} L1 → ${kpis.l2} L2 → ${kpis.l3} L3. ` +
+    `Structure spans <strong>${kpis.total} BPML items</strong>: ${kpis.l1} L1 → ${kpis.l2} L2 → ${kpis.l3} L3${kpis.l4?' → <strong>'+kpis.l4+' L4</strong>':''}. ` +
     `<strong>${l3WithRicefw} of ${l3s.length} L3</strong> processes are linked to at least one RICEFW item. ` +
     l1Lines.map(s=>`<strong>${s.name}</strong>: ${s.l2} L2 / ${s.l3} L3`).join('; ') + '.',
     '#faf5ff','#7c3aed');
@@ -10226,6 +10693,7 @@ async function _bpmlGenerateInsights() {
   const kpis = _bpmlBuildKPIs(items);
   const map  = window._bpmlMap || {};
   const l3s  = items.filter(i=>i.level===3);
+  const l4s  = items.filter(i=>i.level===4);
 
   const rfItems  = allItems.filter(i=>i._fileRole==='ricefw');
   const rfTypes  = {};
@@ -10243,17 +10711,21 @@ async function _bpmlGenerateInsights() {
   };
 
   const l3WithRF = l3s.filter(l3=>(l3.reqChildren||[]).some(rk=>{ const r=map[rk]; return r&&r.ricefwChild; })).length;
+  // L4 coverage: L3s that have at least one L4 step
+  const l3WithL4 = l3s.filter(l3=>(l3.l4Children||[]).length>0).length;
 
   const l1Lines = items.filter(i=>i.level===1).map(l1 => {
     const myL2 = l1.children.map(k=>map[k]).filter(Boolean).filter(i=>i&&i.level===2);
     const myL3 = myL2.flatMap(l2=>l2.children.map(k=>map[k]).filter(Boolean).filter(i=>i&&i.level===3));
-    return '- ' + (l1.idNum||l1.key) + ': "' + l1.summary.slice(0,40) + '" | L2:' + myL2.length + ' L3:' + myL3.length + ' | WS:' + (l1.ws||'—');
+    const myL4 = myL3.flatMap(l3=>(l3.l4Children||[]).map(k=>map[k]).filter(Boolean));
+    return '- ' + (l1.idNum||l1.key) + ': "' + l1.summary.slice(0,40) + '" | L2:' + myL2.length + ' L3:' + myL3.length + (myL4.length?' L4:'+myL4.length:'') + ' | WS:' + (l1.ws||'—');
   }).join('\n');
 
   const prompt = 'You are a senior SAP Activate PMO analyst for PG&E Propel Supply Chain.\n'
     + 'Analyse this full BPML hierarchy with RICEFW, Requirements, FSD and FUT data. Give 5 concise actionable insights as HTML.\n\n'
-    + 'BPML: ' + kpis.total + ' items | L1:' + kpis.l1 + ' L2:' + kpis.l2 + ' L3:' + kpis.l3 + ' | STP:' + kpis.stp + ' ITD:' + kpis.itd + '\n'
+    + 'BPML: ' + kpis.total + ' items | L1:' + kpis.l1 + ' L2:' + kpis.l2 + ' L3:' + kpis.l3 + (kpis.l4?' L4:'+kpis.l4:'') + ' | STP:' + kpis.stp + ' ITD:' + kpis.itd + '\n'
     + 'L3 with RICEFW coverage: ' + l3WithRF + '/' + l3s.length + ' (' + Math.round(l3WithRF/Math.max(l3s.length,1)*100) + '%)\n'
+    + (l4s.length ? 'L4 steps: ' + l4s.length + ' total | ' + l3WithL4 + '/' + l3s.length + ' L3s have L4 detail\n' : '')
     + 'L1 areas:\n' + l1Lines + '\n\n'
     + 'RICEFW (' + rfItems.length + ' total): ' + rfTypeStr + '\n'
     + 'Requirements (' + reqItems.length + '): ' + statusSummary(reqItems) + '\n'
@@ -10261,7 +10733,7 @@ async function _bpmlGenerateInsights() {
     + 'FUT (' + futItems.length + '): ' + statusSummary(futItems) + '\n'
     + 'Withdrawn: ' + allItems.filter(i=>i._withdrawn).length + ' | '
     + 'Orphaned: ' + (window._bpmlOrphans ? (window._bpmlOrphans.ricefw||[]).length+(window._bpmlOrphans.req||[]).length+(window._bpmlOrphans.docs||[]).length : 0) + '\n\n'
-    + 'Write 5 insights: (1) BPML hierarchy health & L3 coverage, (2) RICEFW type distribution & gaps, (3) Requirements completeness, (4) FSD/FUT readiness & test risk, (5) top 3 PMO actions.\n'
+    + 'Write 5 insights: (1) BPML hierarchy health & L3/L4 coverage, (2) RICEFW type distribution & gaps, (3) Requirements completeness, (4) FSD/FUT readiness & test risk, (5) top 3 PMO actions.\n'
     + 'Use <strong> for key numbers. Each insight 2-3 sentences. Return only HTML <div> blocks, no preamble.';
 
   try {
@@ -10276,6 +10748,844 @@ async function _bpmlGenerateInsights() {
   } finally {
     if (btn) { btn.disabled = false; btn.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px"><path d="M13.5 8a5.5 5.5 0 11-1.1-3.3"/><path d="M13.5 2v3h-3"/></svg> Refresh'; }
   }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   E2E TEST SCENARIO GENERATOR — Power Generation (Fossil / Hydro / Solar)
+   Reads BPML hierarchy (L2→L3→L4 + Req + FSD) and generates
+   comprehensive SAP E2E test scenarios via Claude AI
+═══════════════════════════════════════════════════════════════════ */
+
+window._tsScenarios = null;  // last generated scenario data
+
+// ── Module colour coding for render ──
+function _tsModuleStyle(mod) {
+  if (!mod) return { bg: '#e0f2fe', col: '#0369a1' };
+  const m = mod.toUpperCase();
+  if (/ARIBA/i.test(mod))         return { bg: '#fef3c7', col: '#92400e' };
+  if (/SBN|BUSINESS NETWORK/i.test(mod)) return { bg: '#fce7f3', col: '#9d174d' };
+  if (/FIORI/i.test(mod))         return { bg: '#ede9fe', col: '#5b21b6' };
+  if (/^PM/i.test(mod))           return { bg: '#dcfce7', col: '#166534' };
+  if (/^MM/i.test(mod))           return { bg: '#e0f2fe', col: '#0369a1' };
+  if (/^FI/i.test(mod))           return { bg: '#fef9c3', col: '#713f12' };
+  if (/^CO/i.test(mod))           return { bg: '#fefce8', col: '#854d0e' };
+  if (/^PS/i.test(mod))           return { bg: '#f0fdf4', col: '#166534' };
+  if (/^WM|^EWM|^LE/i.test(mod))  return { bg: '#e0f2fe', col: '#075985' };
+  if (/^SD/i.test(mod))           return { bg: '#fce7f3', col: '#831843' };
+  if (/^HR|^HCM/i.test(mod))      return { bg: '#f5f3ff', col: '#4c1d95' };
+  if (/S\/4|S4/i.test(mod))       return { bg: '#f1f5f9', col: '#334155' };
+  return { bg: '#f3f4f6', col: '#374151' };
+}
+
+// ── Build structured BPML context — includes ALL L2s with WS tagging ──
+function _tsBuildBpmlContext(subBiz, depth) {
+  const items    = window._bpmlData;
+  const map      = window._bpmlMap;
+  const allItems = window._bpmlAllItems || [];
+  if (!items || !map) return null;
+
+  // Workstream detection
+  const isSTP = t => /source.to.pay|stp\b|procure|ariba|sourcing|purchase|vendor|supplier|contract|invoice|payment|ap\b|accounts.pay/i.test(t||'');
+  const isITD = t => /inventory.to.deliver|itd\b|inventory|warehouse|delivery|logistics|fulfil|stock|material.mgmt|ewm|wm\b/i.test(t||'');
+  const isPG  = t => /power.gen|generation|fossil|hydro|solar|turbine|dam|plant.maint|pm\b|work.order|asset|equipment|outage|grid/i.test(t||'');
+
+  // Sub-business keyword filter
+  const subKw = {
+    fossil: /fossil|coal|gas|thermal|steam|combustion|turbine|natural.gas|combined.cycle/i,
+    hydro:  /hydro|water|reservoir|dam|penstock|pumped.storage/i,
+    solar:  /solar|photovoltaic|pv\b|panel|inverter|renewable/i,
+  };
+
+  function matchesSub(text) {
+    if (subBiz === 'all') return true;
+    return (subKw[subBiz]||/./i).test(text||'');
+  }
+
+  // Get ALL L2 nodes (no keyword pre-filter — let AI decide relevance)
+  const l2s = items.filter(i=>i.level===2);
+
+  const sections = [];
+  l2s.forEach(l2 => {
+    const l3s = l2.children.map(k=>map[k]).filter(it=>it&&it.level===3&&!it._withdrawn);
+    if (!l3s.length) return;
+
+    // Determine workstream tags from L2 and its children
+    const textBag = [l2.summary, l2.ws, ...(l3s.map(l=>l.summary))].join(' ');
+    const wsTags = [];
+    if (isSTP(textBag)) wsTags.push('STP');
+    if (isITD(textBag)) wsTags.push('ITD');
+    if (isPG(textBag))  wsTags.push('PG');
+    if (!wsTags.length) wsTags.push('General');
+
+    // Sub-business filter — apply at L2 level, or include if 'all'
+    if (subBiz !== 'all' && !matchesSub(textBag)) return;
+
+    const l2Sec = {
+      id:  l2.idNum||l2.key,
+      name: l2.summary,
+      ws:  l2.ws||'',
+      wsTags,
+      l3s: [],
+    };
+
+    l3s.forEach(l3 => {
+      const l4s  = (l3.l4Children||[]).map(k=>map[k]).filter(it=>it&&!it._withdrawn);
+      const reqs = (l3.reqChildren||[]).map(k=>map[k]).filter(Boolean);
+      const ricefws = reqs.map(r=>r.ricefwChild?map[r.ricefwChild]:null).filter(Boolean);
+      const fsds = ricefws.flatMap(rf=>(rf.docChildren||[]).map(k=>map[k]).filter(d=>d&&d.cat==='FSD'&&!d._withdrawn));
+      const futs = ricefws.flatMap(rf=>(rf.docChildren||[]).map(k=>map[k]).filter(d=>d&&d.cat==='FUT'&&!d._withdrawn));
+      const rfTypes = [...new Set(ricefws.map(rf=>rf.type).filter(Boolean))];
+
+      const l3Entry = {
+        id: l3.idNum||l3.key,
+        name: l3.summary,
+        l4Steps: l4s.slice(0,8).map(l=>l.summary),
+        reqCount: reqs.length,
+        fsdCount: fsds.length,
+        futCount: futs.length,
+        rfTypes,
+      };
+      if (depth === 'summary') { delete l3Entry.l4Steps; delete l3Entry.rfTypes; }
+      if (depth === 'comprehensive') {
+        l3Entry.reqSamples  = reqs.slice(0,3).map(r=>r.summary);
+        l3Entry.fsdSamples  = fsds.slice(0,3).map(d=>d.summary);
+      }
+      l2Sec.l3s.push(l3Entry);
+    });
+
+    if (l2Sec.l3s.length > 0) sections.push(l2Sec);
+  });
+
+  return sections.length > 0 ? sections : null;
+}
+
+// ── Render generated scenario cards into DOM ──
+function _tsRenderScenarios(scenarios) {
+  const body  = document.getElementById('ts-scenarios-body');
+  const strip = document.getElementById('ts-summary-strip');
+  if (!body) return;
+
+  window._tsScenarios = scenarios;
+
+  const totalScenarios = scenarios.reduce((s,g)=>s+(g.scenarios||[]).length, 0);
+  const totalSteps     = scenarios.reduce((s,g)=>s+(g.scenarios||[]).reduce((ss,sc)=>ss+(sc.steps||[]).length,0), 0);
+  const subBiz   = (document.getElementById('ts-filter-sub')||{}).value||'all';
+  const subLabel = subBiz==='all'?'All Sub-Businesses':subBiz.charAt(0).toUpperCase()+subBiz.slice(1);
+
+  // Count cross-workstream scenarios
+  const crossWS = scenarios.reduce((s,g)=>s+(g.scenarios||[]).filter(sc=>sc.crossWorkstream).length, 0);
+
+  if (strip) strip.innerHTML = `
+    <div style="display:flex;align-items:center;gap:6px">
+      <span style="font-size:18px;font-weight:800;color:#5b21b6">${scenarios.length}</span>
+      <span style="font-size:10px;color:var(--text2);font-family:var(--mono)">L2 Process<br>Groups</span>
+    </div>
+    <div style="width:1px;background:#ddd6fe;align-self:stretch"></div>
+    <div style="display:flex;align-items:center;gap:6px">
+      <span style="font-size:18px;font-weight:800;color:#7c3aed">${totalScenarios}</span>
+      <span style="font-size:10px;color:var(--text2);font-family:var(--mono)">E2E Test<br>Scenarios</span>
+    </div>
+    <div style="width:1px;background:#ddd6fe;align-self:stretch"></div>
+    <div style="display:flex;align-items:center;gap:6px">
+      <span style="font-size:18px;font-weight:800;color:#9333ea">${totalSteps}</span>
+      <span style="font-size:10px;color:var(--text2);font-family:var(--mono)">Total Test<br>Steps</span>
+    </div>
+    ${crossWS>0?`<div style="width:1px;background:#ddd6fe;align-self:stretch"></div>
+    <div style="display:flex;align-items:center;gap:6px">
+      <span style="font-size:18px;font-weight:800;color:#0891b2">${crossWS}</span>
+      <span style="font-size:10px;color:var(--text2);font-family:var(--mono)">STP↔ITD<br>Cross-WS</span>
+    </div>`:''}
+    <div style="margin-left:auto;display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+      <span style="font-size:9px;font-weight:700;font-family:var(--mono);color:#fff;background:#7c3aed;padding:3px 10px;border-radius:10px">Power Generation</span>
+      <span style="font-size:9px;font-weight:700;font-family:var(--mono);color:#5b21b6;background:#ede9fe;padding:3px 10px;border-radius:10px">${subLabel}</span>
+    </div>`;
+
+  const priorityColor = p => p==='Critical'?'#dc2626':p==='High'?'#d97706':p==='Medium'?'#0891b2':'#6b7280';
+  const priorityBg    = p => p==='Critical'?'#fef2f2':p==='High'?'#fffbeb':p==='Medium'?'#e0f2fe':'#f3f4f6';
+
+  // Workstream header colour
+  const wsGrad = ws => {
+    if (!ws) return 'linear-gradient(135deg,#5b21b6,#7c3aed)';
+    if (/STP/i.test(ws)) return 'linear-gradient(135deg,#0f766e,#0d9488)';
+    if (/ITD/i.test(ws)) return 'linear-gradient(135deg,#1e40af,#2563eb)';
+    if (/cross|stp.*itd|itd.*stp/i.test(ws)) return 'linear-gradient(135deg,#0f766e,#2563eb)';
+    return 'linear-gradient(135deg,#5b21b6,#7c3aed)';
+  };
+
+  let html = '';
+  scenarios.forEach((group, gi) => {
+    const groupId   = 'ts-group-'+gi;
+    const wsBadges  = (group.workstreams||[]).map(w => {
+      const bc = w==='STP'?'rgba(13,148,136,0.3)':w==='ITD'?'rgba(37,99,235,0.3)':'rgba(255,255,255,0.2)';
+      return `<span style="font-size:9px;font-weight:700;font-family:var(--mono);color:#fff;background:${bc};padding:2px 8px;border-radius:8px">${w}</span>`;
+    }).join('');
+    const grad = wsGrad((group.workstreams||[]).join(' '));
+
+    html += `<div style="margin-bottom:14px;border:1px solid #e2e8f0;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm)">
+      <div style="background:${grad};padding:12px 18px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none"
+           onclick="_tsToggle('${groupId}')">
+        <div style="width:20px;height:20px;background:rgba(255,255,255,0.2);border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;color:#fff;transition:transform 0.2s;transform:rotate(90deg)" id="ts-t-${groupId}">&#9654;</div>
+        <div style="font-size:13px;font-weight:800;color:#fff;flex:1;min-width:0">${_escH(group.l2Process||'')}</div>
+        ${wsBadges}
+        ${group.subBusiness?`<span style="font-size:9px;font-weight:700;font-family:var(--mono);color:#fff;background:rgba(255,255,255,0.15);padding:2px 9px;border-radius:10px">${_escH(group.subBusiness)}</span>`:''}
+        <span style="font-size:9px;font-weight:700;font-family:var(--mono);color:#fff;background:rgba(0,0,0,0.2);padding:2px 9px;border-radius:10px">${(group.scenarios||[]).length} scenarios</span>
+      </div>
+      <div id="ts-body-${groupId}" style="background:#fff">`;
+
+    (group.scenarios||[]).forEach((sc, si) => {
+      const scId = 'ts-sc-'+gi+'-'+si;
+      const pri  = sc.priority||'Medium';
+      const isCross = sc.crossWorkstream || /STP.*ITD|ITD.*STP|cross.work|hand.?off|inter.?dep/i.test(sc.title+' '+(sc.objective||''));
+      html += `<div style="border-bottom:1px solid #f1f5f9">
+        <div style="padding:11px 18px;display:flex;align-items:flex-start;gap:10px;cursor:pointer;background:${isCross?'#f0f9ff':'#fdfcff'};transition:background 0.12s"
+             onclick="_tsToggle('${scId}')" onmouseover="this.style.background='${isCross?'#e0f2fe':'#f5f0ff'}'" onmouseout="this.style.background='${isCross?'#f0f9ff':'#fdfcff'}'">
+          <div style="width:18px;height:18px;background:rgba(124,58,237,0.12);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;color:#7c3aed;transition:transform 0.2s;transform:rotate(90deg)" id="ts-t-${scId}">&#9654;</div>
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:3px">
+              <span style="font-size:12px;font-weight:700;color:var(--text)">${_escH(sc.title||'')}</span>
+              ${isCross?'<span style="font-size:9px;font-weight:700;font-family:var(--mono);color:#fff;background:#0891b2;padding:1px 7px;border-radius:8px;flex-shrink:0">STP↔ITD</span>':''}
+            </div>
+            <div style="font-size:10px;color:var(--text2);font-family:var(--mono)">${_escH(sc.objective||'')}</div>
+          </div>
+          <span style="font-size:9px;font-weight:700;font-family:var(--mono);color:${priorityColor(pri)};background:${priorityBg(pri)};padding:2px 8px;border-radius:8px;white-space:nowrap;flex-shrink:0">${pri}</span>
+          ${sc.l3Process?`<span style="font-size:9px;font-family:var(--mono);color:#7c3aed;background:#ede9fe;padding:2px 8px;border-radius:8px;white-space:nowrap;flex-shrink:0;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="${_escH(sc.l3Process)}">${_escH(sc.l3Process)}</span>`:''}
+          <span style="font-size:9px;font-family:var(--mono);color:var(--text3);white-space:nowrap;flex-shrink:0">${(sc.steps||[]).length} steps</span>
+        </div>
+        <div id="ts-body-${scId}" style="padding:0 18px 14px 46px;background:${isCross?'#f8fdff':'#faf8ff'}">
+          ${sc.preConditions?`<div style="margin-bottom:8px;padding:7px 12px;background:#f8fafc;border-left:3px solid #7c3aed;border-radius:4px;font-size:11px"><span style="font-weight:700;color:#5b21b6">Pre-conditions: </span><span style="color:var(--text2)">${_escH(sc.preConditions)}</span></div>`:''}
+          <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:11px;margin-bottom:8px;min-width:600px">
+            <thead><tr style="background:#ede9fe">
+              <th style="padding:5px 8px;text-align:left;font-size:9px;font-weight:700;color:#5b21b6;font-family:var(--mono);width:28px">#</th>
+              <th style="padding:5px 8px;text-align:left;font-size:9px;font-weight:700;color:#5b21b6;font-family:var(--mono)">Test Step / Action</th>
+              <th style="padding:5px 8px;text-align:left;font-size:9px;font-weight:700;color:#5b21b6;font-family:var(--mono);width:210px">Expected Result</th>
+              <th style="padding:5px 8px;text-align:left;font-size:9px;font-weight:700;color:#5b21b6;font-family:var(--mono);width:80px">App / Module</th>
+              <th style="padding:5px 8px;text-align:left;font-size:9px;font-weight:700;color:#5b21b6;font-family:var(--mono);width:60px">WS</th>
+            </tr></thead>
+            <tbody>
+              ${(sc.steps||[]).map((st,idx)=>{
+                const mod   = st.module||'S/4HANA';
+                const mst   = _tsModuleStyle(mod);
+                const wsTag = st.workstream||'';
+                const wsBg  = wsTag==='STP'?'#ccfbf1':wsTag==='ITD'?'#dbeafe':'#f3f4f6';
+                const wsCol = wsTag==='STP'?'#0f766e':wsTag==='ITD'?'#1e40af':'#9ca3af';
+                return `<tr style="border-top:1px solid #f0ebff;${idx%2===0?'background:#fff':'background:#faf5ff'}">
+                  <td style="padding:6px 8px;color:var(--text3);font-family:var(--mono);font-weight:700;white-space:nowrap">${idx+1}</td>
+                  <td style="padding:6px 8px;color:var(--text);line-height:1.5">${_escH(st.action||st||'')}</td>
+                  <td style="padding:6px 8px;color:var(--text2);line-height:1.5">${_escH(st.expected||'Verify successful completion')}</td>
+                  <td style="padding:6px 8px;white-space:nowrap"><span style="font-size:9px;font-weight:700;font-family:var(--mono);color:${mst.col};background:${mst.bg};padding:1px 6px;border-radius:4px;display:inline-block">${_escH(mod)}</span></td>
+                  <td style="padding:6px 8px">${wsTag?`<span style="font-size:9px;font-weight:700;font-family:var(--mono);color:${wsCol};background:${wsBg};padding:1px 6px;border-radius:4px">${wsTag}</span>`:''}</td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+          </div>
+          ${sc.postConditions?`<div style="margin-bottom:6px;padding:7px 12px;background:#f0fdf4;border-left:3px solid #16a34a;border-radius:4px;font-size:11px"><span style="font-weight:700;color:#166534">Post-conditions: </span><span style="color:var(--text2)">${_escH(sc.postConditions)}</span></div>`:''}
+          ${(sc.linkedRequirements&&sc.linkedRequirements.length)?`<div style="margin-top:4px;font-size:10px;color:var(--text3);font-family:var(--mono)">Linked: ${sc.linkedRequirements.map(r=>`<span style="background:#ede9fe;color:#5b21b6;padding:1px 6px;border-radius:3px;margin-right:4px">${_escH(r)}</span>`).join('')}</div>`:''}
+        </div>
+      </div>`;
+    });
+
+    html += `</div></div>`;
+  });
+
+  body.innerHTML = html || '<div style="padding:24px;text-align:center;color:var(--text3);font-family:var(--mono);font-size:12px">No scenarios generated.</div>';
+}
+
+function _tsToggle(id) {
+  const body = document.getElementById('ts-body-'+id);
+  const tog  = document.getElementById('ts-t-'+id);
+  if (!body) return;
+  if (body.style.display === '' || body.style.display === 'block') {
+    body.style.display = 'none';
+    if (tog) tog.style.transform = '';
+  } else {
+    body.style.display = '';
+    if (tog) tog.style.transform = 'rotate(90deg)';
+  }
+}
+
+// ── Robust JSON repair: handles mid-string and mid-object truncation ──
+function _jsonRepairAndParse(raw) {
+  if (!raw) return null;
+
+  // 1. Strip markdown fences
+  let s = raw.replace(/```json\s*/g,'').replace(/```\s*/g,'').trim();
+
+  // 2. Try direct parse first (happy path)
+  try { return JSON.parse(s); } catch(e1) { /* fall through to repair */ }
+
+  // 3. Find the last position of a fully closed top-level object
+  //    by tracking brace depth AND whether we're inside a string
+  //    (so we don't miscount braces inside string values)
+  let depth = 0, lastGoodClose = -1, inStr = false, escape = false;
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (escape)        { escape = false; continue; }
+    if (c === '\\')    { if (inStr) escape = true; continue; }
+    if (c === '"')     { inStr = !inStr; continue; }
+    if (inStr)         continue;
+    if (c === '{')     depth++;
+    if (c === '}')     { depth--; if (depth === 0) lastGoodClose = i; }
+  }
+
+  if (lastGoodClose > 0) {
+    let cut = s.slice(0, lastGoodClose + 1).trim();
+    // Ensure it's wrapped in an array
+    if (!cut.startsWith('[')) cut = '[' + cut + ']';
+    else if (!cut.endsWith(']')) cut = cut + ']';
+    try { return JSON.parse(cut); } catch(e2) { /* fall through */ }
+  }
+
+  // 4. Last resort: try progressively shorter slices (step 200 chars back each time)
+  let attempt = s.length - 200;
+  while (attempt > 100) {
+    let sub = s.slice(0, attempt);
+    // Find last } in this sub-slice
+    const lastBrace = sub.lastIndexOf('}');
+    if (lastBrace > 0) {
+      let cut = sub.slice(0, lastBrace + 1).trim();
+      if (!cut.startsWith('[')) cut = '[' + cut + ']';
+      else if (!cut.endsWith(']')) cut = cut + ']';
+      try { return JSON.parse(cut); } catch(e3) { /* keep going */ }
+    }
+    attempt -= 200;
+  }
+
+  return null;  // all repair attempts failed — caller should use local fallback
+}
+
+// ── Main generator ──
+async function _tsGenerateScenarios() {
+  const items = window._bpmlData;
+  const map   = window._bpmlMap;
+
+  const noBpml  = document.getElementById('ts-no-bpml');
+  const loading = document.getElementById('ts-loading');
+  const results = document.getElementById('ts-results');
+  const btn     = document.getElementById('ts-generate-btn');
+  const loadMsg = document.getElementById('ts-loading-msg');
+  const meta    = document.getElementById('ts-meta');
+
+  if (!items || !map) {
+    showToast('⚠ Load BPML Structure data first (BPML tab → Build Hierarchy)');
+    if (noBpml) noBpml.style.display = '';
+    return;
+  }
+
+  const subBiz   = (document.getElementById('ts-filter-sub')||{}).value || 'all';
+  const depth    = (document.getElementById('ts-filter-depth')||{}).value || 'detailed';
+  const subLabel = subBiz==='all'?'All (Fossil + Hydro + Solar)':subBiz.charAt(0).toUpperCase()+subBiz.slice(1);
+
+  if (noBpml)  noBpml.style.display  = 'none';
+  if (results) results.style.display = 'none';
+  if (loading) loading.style.display = 'block';
+  if (btn) { btn.disabled = true; btn.style.opacity='0.6'; }
+
+  const loadMsgs = [
+    'Scanning BPML L2 → L3 → L4 hierarchy…',
+    'Identifying STP, ITD & Power Generation processes…',
+    'Mapping cross-workstream dependencies…',
+    'Calling Claude AI — generating comprehensive scenarios…',
+    'Structuring Fiori, Ariba & SAP module steps…',
+  ];
+  let msgIdx = 0;
+  const msgTimer = setInterval(() => {
+    msgIdx = (msgIdx+1) % loadMsgs.length;
+    if (loadMsg) loadMsg.textContent = loadMsgs[msgIdx];
+  }, 1800);
+
+  try {
+    const sections = _tsBuildBpmlContext(subBiz, depth);
+    if (!sections || sections.length === 0) {
+      clearInterval(msgTimer);
+      if (loading) loading.style.display = 'none';
+      if (noBpml) { noBpml.style.display=''; noBpml.innerHTML='<strong>No matching processes found</strong> for the selected sub-business. Try selecting "All".'; }
+      if (btn) { btn.disabled=false; btn.style.opacity='1'; }
+      showToast('⚠ No matching L2 processes found');
+      return;
+    }
+
+    // Separate sections by workstream tag for richer context
+    const stpSections = sections.filter(s=>s.wsTags.includes('STP'));
+    const itdSections = sections.filter(s=>s.wsTags.includes('ITD'));
+    const pgSections  = sections.filter(s=>s.wsTags.includes('PG'));
+    const otherSecs   = sections.filter(s=>!s.wsTags.includes('STP')&&!s.wsTags.includes('ITD')&&!s.wsTags.includes('PG'));
+
+    const formatSection = s => {
+      let str = `[${s.wsTags.join('/')}] L2: [${s.id}] ${s.name}\n`;
+      s.l3s.forEach(l3 => {
+        str += `  L3: [${l3.id}] ${l3.name}`;
+        if (l3.rfTypes && l3.rfTypes.length) str += ` (RICEFW: ${l3.rfTypes.join(', ')})`;
+        str += `\n`;
+        if (l3.l4Steps && l3.l4Steps.length) l3.l4Steps.forEach(s4=>{ str += `    L4: ${s4}\n`; });
+        if (l3.reqSamples && l3.reqSamples.length) str += `    Req: ${l3.reqSamples.join(' | ')}\n`;
+        if (l3.fsdSamples && l3.fsdSamples.length) str += `    FSD: ${l3.fsdSamples.join(' | ')}\n`;
+        if (!l3.reqSamples) str += `    (${l3.reqCount} Req, ${l3.fsdCount} FSD, ${l3.futCount} FUT)\n`;
+      });
+      return str;
+    };
+
+    const allSectionStr = sections.map(formatSection).join('\n');
+    const l4Total = (window._bpmlData||[]).filter(i=>i.level===4).length;
+
+    const prompt = `You are a senior SAP S/4HANA test architect for PG&E Propel Supply Chain.
+Generate comprehensive End-to-End (E2E) test scenarios covering ALL workstreams in the BPML hierarchy.
+
+=== CONTEXT ===
+Client: Pacific Gas & Electric (PG&E)
+Program: PROPEL Supply Chain (SAP S/4HANA Cloud implementation)
+Sub-Businesses in scope: ${subLabel} — within Power Generation (Fossil, Hydro, Solar)
+Workstreams:
+  • STP = Source-to-Pay: Ariba Sourcing, Ariba Contracts, Ariba Buying & Invoicing, SAP Business Network (SBN), MM-Purchasing, FI-AP
+  • ITD = Inventory-to-Deliver: MM-Inventory Mgmt, EWM/WM, Goods Receipt/Issue, Stock Transfers, SD-Delivery
+  • PG  = Power Generation: PM (Plant Maintenance), PS (Project Systems), Asset Management, Work Orders
+BPML: ${sections.length} L2 processes (STP:${stpSections.length} ITD:${itdSections.length} PG:${pgSections.length} Other:${otherSecs.length}), ${sections.reduce((s,g)=>s+g.l3s.length,0)} L3s, ${l4Total} L4 steps
+
+=== FIORI APP & TOOL REFERENCE ===
+Use the "module" field EXACTLY as follows (no free text — pick the closest):
+  SAP Fiori apps (S/4HANA Cloud): "Fiori – Manage Purchase Orders", "Fiori – Create Work Order", "Fiori – Goods Receipt", "Fiori – My Inbox", "Fiori – Manage Contracts", "Fiori – Stock Overview", "Fiori – Process Purchase Requisitions", "Fiori – Approve Purchase Orders"
+  Classic SAP GUI transactions: "MM – ME21N", "MM – MIGO", "MM – ME51N", "PM – IW21", "PM – IW31", "PM – IW41", "PM – IP30", "FI – MIRO", "FI – F-53", "CO – KO88", "PS – CJ20N", "WM – LT01"
+  Ariba modules: "Ariba Sourcing", "Ariba Contracts", "Ariba Buying & Invoicing", "Ariba Guided Buying"
+  SAP Business Network: "SBN – Order Collaboration", "SBN – Invoice Collaboration"
+
+=== BPML HIERARCHY ===
+${allSectionStr}
+
+=== INSTRUCTIONS ===
+1. Generate scenarios for EVERY L2 process group listed.
+2. For STP processes: include Ariba and SBN touchpoints. Show the full procure-to-pay cycle.
+3. For ITD processes: include inventory movements, GR/GI, stock transfers between plants.
+4. For PG processes: include PM work orders, task lists, equipment history, outage planning.
+5. CROSS-WORKSTREAM: Generate at least 2 scenarios that explicitly show the STP↔ITD handoff (e.g. "PO created in Ariba → GR posted in ITD → invoice in Ariba → payment in FI") AND at least 2 STP↔PG or ITD↔PG scenarios (e.g. work order triggers PR in STP; goods issue from ITD to PM work order).
+6. Mark cross-workstream scenarios with "crossWorkstream": true.
+7. Each step must have a "workstream" field: "STP", "ITD", "PG", or "General".
+8. Include happy-path AND at least 1 exception/negative path per L2.
+9. Use specific SAP transactions or Fiori app names in every action step.
+10. For ${subBiz==='all'?'Fossil, Hydro, and Solar':subBiz}: call out specific equipment types (e.g. Fossil: gas turbines, boilers; Hydro: generating units, gates; Solar: inverters, string combiner boxes).
+
+RESPOND ONLY with valid JSON — no markdown fences, no preamble. Schema:
+[
+  {
+    "l2Process": "string",
+    "subBusiness": "Fossil|Hydro|Solar|General",
+    "workstreams": ["STP"|"ITD"|"PG"|"General"],
+    "scenarios": [
+      {
+        "title": "string",
+        "objective": "string",
+        "priority": "Critical|High|Medium|Low",
+        "l3Process": "string",
+        "crossWorkstream": false,
+        "preConditions": "string",
+        "postConditions": "string",
+        "linkedRequirements": [],
+        "steps": [
+          { "action": "string", "expected": "string", "module": "string (from reference above)", "workstream": "STP|ITD|PG|General" }
+        ]
+      }
+    ]
+  }
+]`;
+
+    // ── Enrich with Test Planning data if loaded ──
+    let tpContext = '';
+    if (window._tpData && window._tpData.length) {
+      const tpItems = window._tpData;
+      const tpFUT = tpItems.filter(i=>i.category==='FUT'), tpFSD = tpItems.filter(i=>i.category==='FSD');
+      const tpDoneF = tpFUT.filter(i=>i.status==='Completed').length;
+      const tpDoneS = tpFSD.filter(i=>i.status==='Completed').length;
+      const tpWS = {};
+      tpItems.forEach(i=>{ const w=i.ws||'Unknown'; if(!tpWS[w]) tpWS[w]={fut:0,fsd:0,futDone:0,fsdDone:0}; if(i.category==='FUT'){tpWS[w].fut++;if(i.status==='Completed')tpWS[w].futDone++;} if(i.category==='FSD'){tpWS[w].fsd++;if(i.status==='Completed')tpWS[w].fsdDone++;} });
+      tpContext = `\n=== TEST PLANNING DATA (from loaded CSV) ===\nFUT: ${tpFUT.length} (${tpDoneF} done, ${Math.round(tpDoneF/Math.max(tpFUT.length,1)*100)}%) | FSD: ${tpFSD.length} (${tpDoneS} done, ${Math.round(tpDoneS/Math.max(tpFSD.length,1)*100)}%)\nBy Sub-Workstream:\n`
+        + Object.entries(tpWS).sort((a,b)=>(b[1].fut+b[1].fsd)-(a[1].fut+a[1].fsd)).slice(0,8).map(([w,r])=>`  ${w}: FUT ${r.futDone}/${r.fut} FSD ${r.fsdDone}/${r.fsd}`).join('\n')
+        + '\nPrioritise scenarios for workstreams with lowest completion rates.\n';
+    }
+
+    // ── Chunked API calls (3 L2s per call) to avoid token truncation ──
+    const CHUNK_SIZE = 3;
+    const allScenarios = [];
+    const sectionChunks = [];
+    for (let i = 0; i < sections.length; i += CHUNK_SIZE) sectionChunks.push(sections.slice(i, i+CHUNK_SIZE));
+
+    // Always add a cross-workstream chunk
+    sectionChunks.push([{
+      id:'CROSS', name:'Cross-Workstream Integration', ws:'STP+ITD+PG', wsTags:['STP','ITD','PG'],
+      l3s:[
+        {id:'CW1',name:'STP→ITD: PO to Goods Receipt to Payment',reqCount:0,fsdCount:0,futCount:0,rfTypes:['Interface']},
+        {id:'CW2',name:'PG→STP→ITD: Work Order triggers Procurement and Goods Issue',reqCount:0,fsdCount:0,futCount:0,rfTypes:['Interface']},
+      ]
+    }]);
+
+    const apiKey = _apiKeyGet();
+    const keyHeaders = { 'Content-Type': 'application/json' };
+    if (apiKey) { keyHeaders['x-api-key'] = apiKey; keyHeaders['anthropic-version'] = '2023-06-01'; }
+
+    const MODULE_REF = `Use EXACTLY one of these for "module": "Ariba Sourcing", "Ariba Buying & Invoicing", "Ariba Contracts", "Ariba Guided Buying", "SBN – Order Collaboration", "SBN – Invoice Collaboration", "Fiori – Goods Receipt", "Fiori – Process Purchase Requisitions", "Fiori – Approve Purchase Orders", "Fiori – My Inbox", "Fiori – Stock Overview", "Fiori – Create Work Order", "Fiori – Manage Contracts", "MM – ME21N", "MM – MIGO", "PM – IW21", "PM – IW31", "PM – IW41", "PM – IP30", "FI – MIRO", "FI – F-53", "CO – KO88", "WM – LT01", "PS – CJ20N"`;
+
+    for (let ci = 0; ci < sectionChunks.length; ci++) {
+      const chunk = sectionChunks[ci];
+      const isCross = chunk[0] && chunk[0].id === 'CROSS';
+      const chunkStr = chunk.map(s => {
+        let str = `[${(s.wsTags||[]).join('/')}] L2: [${s.id}] ${s.name}\n`;
+        (s.l3s||[]).forEach(l3 => {
+          str += `  L3: [${l3.id}] ${l3.name}`;
+          if (l3.rfTypes && l3.rfTypes.length) str += ` (RICEFW: ${l3.rfTypes.join(', ')})`;
+          str += `\n`;
+          if (l3.l4Steps && l3.l4Steps.length) l3.l4Steps.forEach(s4=>{ str += `    L4: ${s4}\n`; });
+          if (l3.reqSamples && l3.reqSamples.length) str += `    Req: ${l3.reqSamples.join(' | ')}\n`;
+          if (!l3.reqSamples) str += `    (${l3.reqCount||0} Req, ${l3.fsdCount||0} FSD, ${l3.futCount||0} FUT)\n`;
+        });
+        return str;
+      }).join('\n');
+
+      if (loadMsg) loadMsg.textContent = `Generating group ${ci+1}/${sectionChunks.length}${isCross?' — cross-workstream scenarios…':'…'}`;
+
+      const chunkPrompt = isCross
+        ? `You are a senior SAP S/4HANA test architect for PG&E Propel Supply Chain.
+Generate exactly 2 CROSS-WORKSTREAM process groups with realistic SAP E2E test scenarios.${tpContext}
+
+${MODULE_REF}
+
+Group 1 — "STP↔ITD: Procure-to-Receive Full Cycle": 1 happy-path + 1 exception showing Ariba→SBN→ITD GR→Ariba Invoice→FI payment.
+Group 2 — "PG↔STP↔ITD: Work Order to Procurement to Goods Issue": PM WO release→Ariba PO→ITD GR→GI to WO→CO settlement. 1 happy-path + 1 exception.
+All steps: mark crossWorkstream:true, use "workstream":"STP"|"ITD"|"PG" per step.
+
+RESPOND ONLY with a compact valid JSON array (no markdown, no preamble, no trailing text):
+[{"l2Process":"string","subBusiness":"General","workstreams":["STP","ITD","PG"],"scenarios":[{"title":"string","objective":"string","priority":"Critical","l3Process":"string","crossWorkstream":true,"preConditions":"string","postConditions":"string","linkedRequirements":[],"steps":[{"action":"string","expected":"string","module":"string","workstream":"string"}]}]}]`
+        : `You are a senior SAP S/4HANA test architect for PG&E Propel Supply Chain.
+Generate E2E test scenarios for the BPML processes below. Sub-Business: ${subLabel}.${tpContext}
+
+${MODULE_REF}
+STP processes → use Ariba + SBN. ITD processes → use MM/WM/Fiori. PG processes → PM transactions + Fiori.
+2–3 scenarios per group (1 happy path + 1 exception minimum). Each step must name a specific app or transaction.
+
+=== PROCESSES ===
+${chunkStr}
+
+RESPOND ONLY with a compact valid JSON array (no markdown, no preamble):
+[{"l2Process":"string","subBusiness":"Fossil|Hydro|Solar|General","workstreams":["STP"|"ITD"|"PG"],"scenarios":[{"title":"string","objective":"string","priority":"Critical|High|Medium|Low","l3Process":"string","crossWorkstream":false,"preConditions":"string","postConditions":"string","linkedRequirements":[],"steps":[{"action":"string","expected":"string","module":"string","workstream":"STP|ITD|PG|General"}]}]}]`;
+
+      try {
+        const chunkResp = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: keyHeaders,
+          body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:4000, messages:[{role:'user',content:chunkPrompt}] })
+        });
+        if (!chunkResp.ok) { const e=await chunkResp.text().catch(()=>''); throw new Error('API '+chunkResp.status+': '+e.slice(0,80)); }
+        const chunkData = await chunkResp.json();
+        let raw = (chunkData.content||[]).map(b=>b.text||'').join('').replace(/```json\s*/g,'').replace(/```\s*/g,'').trim();
+
+        const parsed = _jsonRepairAndParse(raw);
+        if (Array.isArray(parsed)) allScenarios.push(...parsed);
+        else if (parsed && parsed.l2Process) allScenarios.push(parsed);
+      } catch(chunkErr) {
+        console.warn('Chunk', ci, 'API/parse failed:', chunkErr.message, '— local fallback for this chunk');
+        allScenarios.push(..._tsLocalScenarios(chunk, subBiz));
+      }
+    }
+
+    const scenarios = allScenarios.length > 0 ? allScenarios : _tsLocalScenarios(sections, subBiz);
+
+    clearInterval(msgTimer);
+    if (loading) loading.style.display = 'none';
+    if (results) results.style.display = 'block';
+    if (meta) meta.textContent = 'Generated ' + new Date().toLocaleTimeString() + ' · ' + subLabel + ' · ' + scenarios.length + ' groups';
+    _tsRenderScenarios(scenarios);
+    // Auto-save to snapshot
+    window._tsScenarios = scenarios;
+    try { const s=JSON.parse(localStorage.getItem(_SNAP_KEY)||'{"version":3}'); s.scenarios=scenarios; s.savedAt=new Date().toISOString(); s.version=3; localStorage.setItem(_SNAP_KEY,JSON.stringify(s)); _snapshotStatusUpdate(); } catch(e){}
+    showToast('✓ ' + scenarios.reduce((s,g)=>s+(g.scenarios||[]).length,0) + ' E2E scenarios across ' + scenarios.length + ' process groups');
+
+  } catch(err) {
+    clearInterval(msgTimer);
+    console.error('TS generate error', err);
+    const sections = _tsBuildBpmlContext(subBiz, depth) || [];
+    const scenarios = _tsLocalScenarios(sections, subBiz);
+    if (loading) loading.style.display = 'none';
+    if (results) results.style.display = 'block';
+    if (meta) meta.textContent = 'Local generation · ' + new Date().toLocaleTimeString();
+    _tsRenderScenarios(scenarios);
+    showToast('✓ Test scenarios generated (local fallback)');
+  } finally {
+    if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
+  }
+}
+
+// ── Comprehensive local fallback — STP, ITD, PG, and cross-workstream ──
+function _tsLocalScenarios(sections, subBiz) {
+
+  // ── Template library ──
+  const T = {
+
+    stp_pr_to_po: {
+      title: 'STP — Purchase Requisition to Purchase Order (Ariba)',
+      priority: 'Critical', crossWorkstream: false,
+      objective: 'Verify the full Source-to-Pay cycle from PR creation through PO issuance via Ariba.',
+      preConditions: 'Vendor master and material master configured; Ariba integrated with S/4HANA; approval workflow active.',
+      postConditions: 'PO issued to vendor; PO replicated to SAP S/4HANA; vendor order confirmation received in SBN.',
+      steps: [
+        { action: 'Create Purchase Requisition via Fiori – Process Purchase Requisitions', expected: 'PR created with correct account assignment, plant, and delivery date', module: 'Fiori – Process Purchase Requisitions', workstream: 'STP' },
+        { action: 'PR routed to Ariba Buying & Invoicing for sourcing (auto-replication)', expected: 'PR visible in Ariba with requisition line items', module: 'Ariba Buying & Invoicing', workstream: 'STP' },
+        { action: 'Buyer creates RFQ and sends to shortlisted vendors in Ariba Sourcing', expected: 'RFQ published; vendors notified via SAP Business Network', module: 'Ariba Sourcing', workstream: 'STP' },
+        { action: 'Vendor submits quote through SBN – Order Collaboration', expected: 'Bid received; quote visible in Ariba Sourcing event', module: 'SBN – Order Collaboration', workstream: 'STP' },
+        { action: 'Buyer awards bid and creates Purchase Order in Ariba', expected: 'PO created; approval workflow triggered', module: 'Ariba Buying & Invoicing', workstream: 'STP' },
+        { action: 'Approver approves PO via Fiori – Approve Purchase Orders', expected: 'PO approved; PO replicated to SAP S/4HANA via MM – ME21N equivalent', module: 'Fiori – Approve Purchase Orders', workstream: 'STP' },
+        { action: 'Vendor acknowledges PO in SAP Business Network (SBN – Order Collaboration)', expected: 'Order acknowledgement received; PO status updated', module: 'SBN – Order Collaboration', workstream: 'STP' },
+      ]
+    },
+
+    stp_invoice_to_pay: {
+      title: 'STP — Invoice Processing & Payment (Ariba → FI-AP)',
+      priority: 'High', crossWorkstream: false,
+      objective: 'Verify vendor invoice submission via SBN, 3-way match in Ariba, and payment posting in FI.',
+      preConditions: 'PO and GR posted; vendor configured in SAP Business Network.',
+      postConditions: 'Invoice posted in FI-AP; payment run scheduled; vendor payment cleared.',
+      steps: [
+        { action: 'Vendor submits invoice via SBN – Invoice Collaboration', expected: 'Invoice received in Ariba Buying & Invoicing; PO and GR matched', module: 'SBN – Invoice Collaboration', workstream: 'STP' },
+        { action: 'Ariba performs automated 3-way match (PO / GR / Invoice)', expected: 'Match successful; invoice routed for approval if within tolerance', module: 'Ariba Buying & Invoicing', workstream: 'STP' },
+        { action: 'Invoice approved via Fiori – My Inbox (workflow)', expected: 'Invoice approved; replicated to SAP FI as FI document via MIRO', module: 'Fiori – My Inbox', workstream: 'STP' },
+        { action: 'Verify FI invoice posting (FI – MIRO equivalent)', expected: 'Vendor liability posted; G/L accounts correct; tax calculated', module: 'FI – MIRO', workstream: 'STP' },
+        { action: 'Execute payment run (FI – F-53)', expected: 'Payment document created; vendor cleared; bank transfer initiated', module: 'FI – F-53', workstream: 'STP' },
+      ]
+    },
+
+    itd_goods_receipt: {
+      title: 'ITD — Goods Receipt & Warehouse Putaway',
+      priority: 'High', crossWorkstream: false,
+      objective: 'Validate goods receipt posting against PO and subsequent warehouse putaway in EWM.',
+      preConditions: 'PO confirmed; delivery scheduled; warehouse configured in EWM.',
+      postConditions: 'Stock updated in storage location; GR document posted; PO history updated.',
+      steps: [
+        { action: 'Post Goods Receipt via Fiori – Goods Receipt (referencing PO)', expected: 'GR document created; stock increases in receiving storage location', module: 'Fiori – Goods Receipt', workstream: 'ITD' },
+        { action: 'Verify stock update in Fiori – Stock Overview', expected: 'Quantity visible in correct plant/storage location/batch', module: 'Fiori – Stock Overview', workstream: 'ITD' },
+        { action: 'Create putaway transfer order (WM – LT01)', expected: 'Transfer order created; bin assignment confirmed', module: 'WM – LT01', workstream: 'ITD' },
+        { action: 'Confirm transfer order and bin placement', expected: 'Goods physically in bin; EWM stock balance updated', module: 'WM – LT01', workstream: 'ITD' },
+        { action: 'Verify PO history reflects 3-way match readiness', expected: 'GR quantity matches PO; invoice matching can proceed', module: 'MM – MIGO', workstream: 'ITD' },
+      ]
+    },
+
+    itd_stock_transfer: {
+      title: 'ITD — Inter-Plant Stock Transfer (Power Generation Plants)',
+      priority: 'High', crossWorkstream: false,
+      objective: 'Verify stock transfer between power generation plants for spare parts redeployment.',
+      preConditions: 'Sending and receiving plants configured; STO document type active.',
+      postConditions: 'Stock transferred; GI posted at sending plant; GR posted at receiving plant.',
+      steps: [
+        { action: 'Create Stock Transfer Order (MM – ME21N, doc type UB)', expected: 'STO created with correct plants, materials, and quantity', module: 'MM – ME21N', workstream: 'ITD' },
+        { action: 'Post Goods Issue at sending plant (Fiori – Goods Receipt for STO)', expected: 'Stock reduced at sending plant; in-transit stock created', module: 'MM – MIGO', workstream: 'ITD' },
+        { action: 'Post Goods Receipt at receiving plant (Fiori – Goods Receipt)', expected: 'Stock received at receiving plant; in-transit cleared', module: 'Fiori – Goods Receipt', workstream: 'ITD' },
+        { action: 'Verify Fiori – Stock Overview at both plants', expected: 'Correct quantities reflected; no discrepancies', module: 'Fiori – Stock Overview', workstream: 'ITD' },
+      ]
+    },
+
+    pg_corrective_wo: {
+      title: 'PG — Corrective Work Order (Equipment Breakdown)',
+      priority: 'Critical', crossWorkstream: false,
+      objective: 'Verify end-to-end corrective maintenance from equipment failure notification to cost settlement.',
+      preConditions: 'Equipment master and functional location exist; maintenance plant configured; cost center assigned.',
+      postConditions: 'Work order technically completed; actual costs settled; equipment history updated.',
+      steps: [
+        { action: 'Create Maintenance Notification via Fiori – Create Work Order (or PM – IW21)', expected: 'Notification created; equipment and functional location populated', module: 'PM – IW21', workstream: 'PG' },
+        { action: 'Convert notification to Corrective Work Order (PM – IW31)', expected: 'Work order in CRTD status; operations and components assigned', module: 'PM – IW31', workstream: 'PG' },
+        { action: 'Release Work Order (PM – IW32) — triggers PR for spare parts', expected: 'WO status REL; PR created for required materials and sent to STP', module: 'PM – IW31', workstream: 'PG' },
+        { action: 'Confirm PR received in Ariba / STP workstream for procurement', expected: 'PR visible in Fiori – Process Purchase Requisitions for buyer action', module: 'Fiori – Process Purchase Requisitions', workstream: 'STP' },
+        { action: 'Post Goods Issue of spare parts to Work Order (Fiori – Goods Receipt)', expected: 'Materials issued from ITD inventory; WO component costs updated', module: 'MM – MIGO', workstream: 'ITD' },
+        { action: 'Confirm Work Order operations (PM – IW41)', expected: 'Actual labour hours confirmed; completion confirmations recorded', module: 'PM – IW41', workstream: 'PG' },
+        { action: 'Technically Complete Work Order (TECO via PM – IW32)', expected: 'WO status TECO; actual vs planned costs visible', module: 'PM – IW31', workstream: 'PG' },
+        { action: 'Settle Work Order costs to Asset/Cost Centre (CO – KO88)', expected: 'Costs settled; no residual variance; asset value updated if capitalised', module: 'CO – KO88', workstream: 'PG' },
+      ]
+    },
+
+    pg_preventive: {
+      title: 'PG — Preventive Maintenance Plan Execution',
+      priority: 'High', crossWorkstream: false,
+      objective: 'Validate scheduled preventive maintenance cycle from plan scheduling to order completion.',
+      preConditions: 'Maintenance plan active; task list assigned; counter/time-based scheduling configured.',
+      postConditions: 'PM order completed; next due date updated automatically; inspection findings documented.',
+      steps: [
+        { action: 'Schedule Maintenance Plan (PM – IP30) to generate due orders', expected: 'PM Work Orders generated for all due maintenance items', module: 'PM – IP30', workstream: 'PG' },
+        { action: 'Review and release PM Orders (PM – IW32)', expected: 'Orders released; spare parts list confirmed; labour planned', module: 'PM – IW31', workstream: 'PG' },
+        { action: 'Check material availability — goods issue from warehouse via Fiori – Goods Receipt', expected: 'Spare parts issued from ITD stock; WO components updated', module: 'Fiori – Goods Receipt', workstream: 'ITD' },
+        { action: 'Execute maintenance activities and confirm operations (PM – IW41)', expected: 'Operations confirmed with actual times; completion dates recorded', module: 'PM – IW41', workstream: 'PG' },
+        { action: 'Record measurement readings (PM – IK11) for monitored equipment', expected: 'Counter readings updated; next PM date recalculated', module: 'PM – IP30', workstream: 'PG' },
+        { action: 'Technically complete order (TECO)', expected: 'Order TECO; next scheduled date auto-updated in maintenance plan', module: 'PM – IW31', workstream: 'PG' },
+      ]
+    },
+
+    cross_stp_itd: {
+      title: 'CROSS-WS — STP↔ITD: Purchase Order to Goods Receipt to Invoice (Full Cycle)',
+      priority: 'Critical', crossWorkstream: true,
+      objective: 'Verify the complete inter-workstream handoff from Ariba PO creation through ITD goods receipt to FI invoice payment.',
+      preConditions: 'Ariba–S/4 integration active; vendor in SBN; receiving plant and storage location configured.',
+      postConditions: 'Stock received in ITD; invoice matched and paid in STP/FI; PO history complete.',
+      steps: [
+        { action: 'Buyer creates and approves PO in Ariba Buying & Invoicing (STP)', expected: 'PO approved; replicated to SAP MM; vendor notified via SBN', module: 'Ariba Buying & Invoicing', workstream: 'STP' },
+        { action: 'Vendor confirms PO in SAP Business Network (SBN – Order Collaboration)', expected: 'Order confirmation received; expected delivery date updated', module: 'SBN – Order Collaboration', workstream: 'STP' },
+        { action: 'Vendor creates Advance Shipment Notification (ASN) in SBN', expected: 'ASN received; inbound delivery created in ITD', module: 'SBN – Order Collaboration', workstream: 'ITD' },
+        { action: 'Post Goods Receipt in ITD via Fiori – Goods Receipt (against inbound delivery)', expected: 'Stock updated in plant; GR document posted; PO delivery completed', module: 'Fiori – Goods Receipt', workstream: 'ITD' },
+        { action: 'Verify stock in Fiori – Stock Overview (ITD)', expected: 'Quantity available in storage location for downstream consumption', module: 'Fiori – Stock Overview', workstream: 'ITD' },
+        { action: 'Vendor submits invoice via SBN – Invoice Collaboration (STP)', expected: '3-way match performed in Ariba against PO and GR', module: 'SBN – Invoice Collaboration', workstream: 'STP' },
+        { action: 'Invoice replicated to SAP FI via MIRO equivalent; payment run executed (FI – F-53)', expected: 'Vendor cleared; payment transferred; bank reconciliation updated', module: 'FI – F-53', workstream: 'STP' },
+      ]
+    },
+
+    cross_pg_stp: {
+      title: 'CROSS-WS — PG↔STP↔ITD: Work Order Triggers Procurement & Goods Issue',
+      priority: 'Critical', crossWorkstream: true,
+      objective: 'Verify that a PM Work Order release triggers STP procurement and ITD goods issue back to the work order.',
+      preConditions: 'Equipment master, BOM, and maintenance task list configured; Ariba integration active; materials stocked or procurable.',
+      postConditions: 'Work order completed with materials procured and issued; all costs settled across workstreams.',
+      steps: [
+        { action: 'Release Work Order in PM (PM – IW31) — system generates PR for missing materials', expected: 'PR automatically created; sent to STP workstream for procurement', module: 'PM – IW31', workstream: 'PG' },
+        { action: 'Buyer processes PR in Ariba Buying & Invoicing (STP) — converts to PO', expected: 'PO created in Ariba; replicated to SAP MM; vendor notified via SBN', module: 'Ariba Buying & Invoicing', workstream: 'STP' },
+        { action: 'Vendor delivers materials; GR posted in ITD via Fiori – Goods Receipt', expected: 'Materials received in plant stock; GR document links to PO', module: 'Fiori – Goods Receipt', workstream: 'ITD' },
+        { action: 'Post Goods Issue of materials from ITD stock to PM Work Order (MM – MIGO)', expected: 'Material cost charged to work order; ITD stock reduced', module: 'MM – MIGO', workstream: 'ITD' },
+        { action: 'Confirm Work Order completion (PM – IW41); settle costs (CO – KO88)', expected: 'Work order TECO; all costs (STP procurement + ITD GI + PG labour) settled', module: 'CO – KO88', workstream: 'PG' },
+        { action: 'Vendor submits invoice via SBN – Invoice Collaboration', expected: 'Invoice matched to PO and GR; routed for payment in FI-AP', module: 'SBN – Invoice Collaboration', workstream: 'STP' },
+      ]
+    },
+
+    exception_no_stock: {
+      title: 'Exception — Goods Receipt Fails: Material Not in System',
+      priority: 'Medium', crossWorkstream: false,
+      objective: 'Verify system error handling when attempting to post GR for a material not in the material master.',
+      preConditions: 'PO exists for a material that has no material master record.',
+      postConditions: 'GR blocked; error logged; material master creation triggered; no partial posting.',
+      steps: [
+        { action: 'Attempt GR via Fiori – Goods Receipt for PO with unknown material', expected: 'System error: "Material XXXX does not exist or not maintained for plant"', module: 'Fiori – Goods Receipt', workstream: 'ITD' },
+        { action: 'Verify no partial stock posting occurred', expected: 'Material ledger unchanged; no GR document created', module: 'Fiori – Stock Overview', workstream: 'ITD' },
+        { action: 'Create material master (MM60 / material creation app)', expected: 'Material master created with correct views and plant data', module: 'MM – MIGO', workstream: 'ITD' },
+        { action: 'Re-post GR after material master creation', expected: 'GR succeeds; stock updated; PO delivery completed', module: 'Fiori – Goods Receipt', workstream: 'ITD' },
+      ]
+    },
+  };
+
+  // Assign templates to sections based on workstream tags
+  const results = [];
+
+  // --- STP sections ---
+  stpSections_loop: for (const sec of sections.filter(s=>s.wsTags.includes('STP'))) {
+    const scenarios = [];
+    scenarios.push({ ...T.stp_pr_to_po,      l3Process: sec.l3s[0]?.name||sec.name, linkedRequirements: [] });
+    scenarios.push({ ...T.stp_invoice_to_pay, l3Process: sec.l3s[1]?.name||sec.name, linkedRequirements: [] });
+    // Exception
+    scenarios.push({
+      title: `STP Exception — ${sec.name}: PO Approval Threshold Exceeded`,
+      l3Process: sec.l3s[0]?.name||sec.name, priority: 'Medium', crossWorkstream: false,
+      objective: 'Verify Ariba approval workflow escalation when PO value exceeds delegated authority.',
+      preConditions: 'PO value exceeds approver delegation limit; escalation workflow configured in Ariba.',
+      postConditions: 'PO escalated to next approval level; audit trail maintained.',
+      linkedRequirements: [],
+      steps: [
+        { action: 'Submit PO in Ariba Buying & Invoicing exceeding approver limit', expected: 'System triggers approval escalation workflow', module: 'Ariba Buying & Invoicing', workstream: 'STP' },
+        { action: 'Escalated approver receives notification via Fiori – My Inbox', expected: 'Approval task visible; PO details and spend analysis shown', module: 'Fiori – My Inbox', workstream: 'STP' },
+        { action: 'Approver approves or returns PO with comments', expected: 'PO proceeds or is returned to buyer with reason', module: 'Ariba Buying & Invoicing', workstream: 'STP' },
+      ]
+    });
+    results.push({ l2Process: sec.name, subBusiness: 'General', workstreams: ['STP'], scenarios });
+  }
+
+  // --- ITD sections ---
+  for (const sec of sections.filter(s=>s.wsTags.includes('ITD')&&!s.wsTags.includes('STP'))) {
+    const scenarios = [];
+    scenarios.push({ ...T.itd_goods_receipt,  l3Process: sec.l3s[0]?.name||sec.name, linkedRequirements: [] });
+    scenarios.push({ ...T.itd_stock_transfer,  l3Process: sec.l3s[1]?.name||sec.name, linkedRequirements: [] });
+    scenarios.push({ ...T.exception_no_stock,  l3Process: sec.l3s[0]?.name||sec.name, linkedRequirements: [] });
+    results.push({ l2Process: sec.name, subBusiness: 'General', workstreams: ['ITD'], scenarios });
+  }
+
+  // --- PG (Power Generation) sections ---
+  for (const sec of sections.filter(s=>s.wsTags.includes('PG'))) {
+    const sub = subBiz==='all'
+      ? (/(fossil|thermal|gas|turbine)/i.test(sec.name)?'Fossil':/(hydro|dam|water)/i.test(sec.name)?'Hydro':/(solar|pv|inverter)/i.test(sec.name)?'Solar':'General')
+      : subBiz.charAt(0).toUpperCase()+subBiz.slice(1);
+
+    const pgTitle1 = `${sub} PG — ${sec.l3s[0]?.name||sec.name}`;
+    const pgTitle2 = `${sub} PG — ${sec.l3s[1]?.name||sec.name} (PM Plan)`;
+    const scenarios = [
+      { ...T.pg_corrective_wo, title: pgTitle1, l3Process: sec.l3s[0]?.name||sec.name, linkedRequirements: [] },
+      { ...T.pg_preventive,   title: pgTitle2, l3Process: sec.l3s[1]?.name||sec.name, linkedRequirements: [] },
+    ];
+    results.push({ l2Process: sec.name, subBusiness: sub, workstreams: ['PG'], scenarios });
+  }
+
+  // --- General / other sections ---
+  for (const sec of sections.filter(s=>s.wsTags.includes('General')&&!s.wsTags.includes('STP')&&!s.wsTags.includes('ITD')&&!s.wsTags.includes('PG'))) {
+    results.push({ l2Process: sec.name, subBusiness: 'General', workstreams: ['General'],
+      scenarios: [{ ...T.pg_corrective_wo, title: `${sec.name} — End-to-End Flow`, l3Process: sec.l3s[0]?.name||sec.name, linkedRequirements: [] }] });
+  }
+
+  // --- Always add the two cross-workstream scenarios ---
+  results.push({
+    l2Process: 'Cross-Workstream: STP ↔ ITD — Procure to Receive',
+    subBusiness: 'General', workstreams: ['STP','ITD'],
+    scenarios: [{ ...T.cross_stp_itd, linkedRequirements: [] }]
+  });
+  results.push({
+    l2Process: 'Cross-Workstream: PG ↔ STP ↔ ITD — Work Order to Procurement to Goods Issue',
+    subBusiness: subBiz==='all'?'General':subBiz.charAt(0).toUpperCase()+subBiz.slice(1),
+    workstreams: ['PG','STP','ITD'],
+    scenarios: [{ ...T.cross_pg_stp, linkedRequirements: [] }]
+  });
+
+  return results.length > 0 ? results : [
+    { l2Process: 'Source-to-Pay', subBusiness: 'General', workstreams: ['STP'], scenarios: [{ ...T.stp_pr_to_po, linkedRequirements: [] }] },
+    { l2Process: 'Inventory-to-Deliver', subBusiness: 'General', workstreams: ['ITD'], scenarios: [{ ...T.itd_goods_receipt, linkedRequirements: [] }] },
+    { l2Process: 'Cross-Workstream: STP ↔ ITD', subBusiness: 'General', workstreams: ['STP','ITD'], scenarios: [{ ...T.cross_stp_itd, linkedRequirements: [] }] },
+    { l2Process: 'Cross-Workstream: PG ↔ STP ↔ ITD', subBusiness: 'General', workstreams: ['PG','STP','ITD'], scenarios: [{ ...T.cross_pg_stp, linkedRequirements: [] }] },
+  ];
+}
+
+// ── Export helpers ──
+function _tsExportMarkdown() {
+  const scenarios = window._tsScenarios;
+  if (!scenarios || !scenarios.length) { showToast('No scenarios to export'); return; }
+  let md = '# PG&E Propel — Power Generation E2E Test Scenarios\n\n';
+  md += `_Generated: ${new Date().toLocaleString()}_\n\n`;
+  scenarios.forEach(group => {
+    md += `## ${group.l2Process} — ${group.subBusiness||''}\n\n`;
+    (group.scenarios||[]).forEach((sc, i) => {
+      md += `### ${i+1}. ${sc.title}\n`;
+      md += `**Objective:** ${sc.objective||''}\n`;
+      md += `**Priority:** ${sc.priority||'Medium'} | **L3 Process:** ${sc.l3Process||''}\n\n`;
+      if (sc.preConditions) md += `**Pre-conditions:** ${sc.preConditions}\n\n`;
+      md += `| # | Test Step | Expected Result | SAP Module |\n|---|-----------|-----------------|------------|\n`;
+      (sc.steps||[]).forEach((st,idx) => {
+        md += `| ${idx+1} | ${(st.action||st).replace(/\|/g,'/')} | ${(st.expected||'').replace(/\|/g,'/')} | ${(st.module||'').replace(/\|/g,'/')} |\n`;
+      });
+      if (sc.postConditions) md += `\n**Post-conditions:** ${sc.postConditions}\n`;
+      md += '\n---\n\n';
+    });
+  });
+  const a = document.createElement('a');
+  a.href = 'data:text/markdown;charset=utf-8,' + encodeURIComponent(md);
+  a.download = 'PGE_Propel_E2E_Test_Scenarios.md';
+  a.click();
+  showToast('✓ Exported as Markdown');
+}
+
+function _tsExportCSV() {
+  const scenarios = window._tsScenarios;
+  if (!scenarios || !scenarios.length) { showToast('No scenarios to export'); return; }
+  const esc = v => '"' + String(v||'').replace(/"/g,'""') + '"';
+  let csv = 'L2 Process,Sub-Business,Scenario Title,Priority,L3 Process,Objective,Step #,Action,Expected Result,SAP Module\n';
+  scenarios.forEach(group => {
+    (group.scenarios||[]).forEach(sc => {
+      (sc.steps||[]).forEach((st, idx) => {
+        csv += [
+          esc(group.l2Process), esc(group.subBusiness||''),
+          esc(sc.title), esc(sc.priority||'Medium'), esc(sc.l3Process||''), esc(sc.objective||''),
+          idx+1, esc(st.action||st), esc(st.expected||''), esc(st.module||'SAP')
+        ].join(',') + '\n';
+      });
+    });
+  });
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'PGE_Propel_E2E_Test_Scenarios.csv';
+  a.click();
+  showToast('✓ Exported as CSV');
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -11014,68 +12324,72 @@ function _spStyleSheet(ws, rowCount, colCount) {
 }
 
 // ── Main handler ──
+function processSprintPlanCsvText(rawText, chipLabel, toastMsg) {
+  const chip = document.getElementById('spplan-status-chip');
+  try {
+    let text = rawText;
+    if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+    const items = parseSprintPlanCSV(text);
+    if (!items) {
+      if (chip) chip.innerHTML = '<span class="usc-dot" style="background:var(--red)"></span>Parse error';
+      showToast('⚠ Sprint Planning CSV parse failed');
+      return null;
+    }
+    window._spData    = items;
+    window._spPlanned = [];
+
+    const kpis = { total:items.length, done:0,ip:0,rev:0,ns:0,hold:0, sp:0 };
+    items.forEach(it=>{
+      if(it.status==='Completed')   kpis.done++;
+      else if(it.status==='In Progress') kpis.ip++;
+      else if(it.status==='In Review')   kpis.rev++;
+      else if(it.status==='Not Started') kpis.ns++;
+      else if(it.status==='On Hold')     kpis.hold++;
+      if(it.sp) kpis.sp += it.sp;
+    });
+    ['total','done','ip','rev','ns','hold','sp'].forEach(k=>{
+      const el=document.getElementById('spkpi-'+k);
+      if(el) el.textContent = k==='sp' ? kpis[k].toFixed(0) : kpis[k];
+    });
+    document.getElementById('spkpi-planned').textContent='0';
+
+    if (chip) chip.innerHTML = `<span class="usc-dot" style="background:var(--green)"></span>${items.length} items`;
+    const hChip = document.getElementById('sp-header-chip');
+    if (hChip) { hChip.textContent=items.length+' items · '+chipLabel; hChip.style.display=''; }
+
+    document.getElementById('sp-no-data-state').style.display='none';
+    document.getElementById('sp-data-state').style.display='block';
+    document.getElementById('sp-kpi-strip').style.display='block';
+
+    _spInitFilters(items);
+    _sp.filtered = items;
+    _spRenderItemsPage(1);
+    _spRenderPlanned();
+
+    showToast(toastMsg || ('✓ Sprint Planning loaded — '+items.length+' stories'));
+    if (typeof _uploadSetLock === 'function') _uploadSetLock('sprintplan');
+    _updateOvSprintPlan(items);
+    const sbSp = document.getElementById('sb-spplan-count');
+    if (sbSp) sbSp.textContent = items.length;
+    const sbSpView = document.getElementById('sb-sp-view-badge');
+    if (sbSpView) sbSpView.textContent = items.length;
+    _spAdhocRender();
+    return items;
+  } catch(err) {
+    console.error('Sprint Plan parse error', err);
+    if (chip) chip.innerHTML='<span class="usc-dot" style="background:var(--red)"></span>Error';
+    showToast('⚠ Error: '+err.message);
+    return null;
+  }
+}
+
 function handleSprintPlanFile(file) {
   if (typeof _uploadCheckConflict === 'function' && !_uploadCheckConflict('sprintplan', 'Sprint Planning')) return;
   const chip = document.getElementById('spplan-status-chip');
   if (chip) chip.innerHTML = '<span class="usc-dot" style="background:var(--amber)"></span>Parsing…';
 
   const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const items = parseSprintPlanCSV(e.target.result);
-      if (!items) {
-        if (chip) chip.innerHTML = '<span class="usc-dot" style="background:var(--red)"></span>Parse error';
-        showToast('⚠ Sprint Planning CSV parse failed');
-        return;
-      }
-      window._spData    = items;
-      window._spPlanned = [];  // reset plan on new upload
-
-      // KPIs
-      const kpis = { total:items.length, done:0,ip:0,rev:0,ns:0,hold:0, sp:0 };
-      items.forEach(it=>{
-        if(it.status==='Completed')   kpis.done++;
-        else if(it.status==='In Progress') kpis.ip++;
-        else if(it.status==='In Review')   kpis.rev++;
-        else if(it.status==='Not Started') kpis.ns++;
-        else if(it.status==='On Hold')     kpis.hold++;
-        if(it.sp) kpis.sp += it.sp;
-      });
-      ['total','done','ip','rev','ns','hold','sp'].forEach(k=>{
-        const el=document.getElementById('spkpi-'+k);
-        if(el) el.textContent = k==='sp' ? kpis[k].toFixed(0) : kpis[k];
-      });
-      document.getElementById('spkpi-planned').textContent='0';
-
-      // Show UI
-      if (chip) chip.innerHTML = `<span class="usc-dot" style="background:var(--green)"></span>${items.length} items`;
-      const hChip = document.getElementById('sp-header-chip');
-      if (hChip) { hChip.textContent=items.length+' items · '+file.name; hChip.style.display=''; }
-
-      document.getElementById('sp-no-data-state').style.display='none';
-      document.getElementById('sp-data-state').style.display='block';
-      document.getElementById('sp-kpi-strip').style.display='block';
-
-      _spInitFilters(items);
-      _sp.filtered = items;
-      _spRenderItemsPage(1);
-      _spRenderPlanned();
-
-      showToast('✓ Sprint Planning loaded — '+items.length+' stories');
-      if (typeof _uploadSetLock === 'function') _uploadSetLock('sprintplan');
-      _updateOvSprintPlan(items);
-      const sbSp = document.getElementById('sb-spplan-count');
-      if (sbSp) sbSp.textContent = items.length;
-      const sbSpView = document.getElementById('sb-sp-view-badge');
-      if (sbSpView) sbSpView.textContent = items.length;
-      // Re-render adhoc dropdowns with fresh option lists (keeps existing rows)
-      _spAdhocRender();
-    } catch(err) {
-      console.error('Sprint Plan parse error', err);
-      if (chip) chip.innerHTML='<span class="usc-dot" style="background:var(--red)"></span>Error';
-      showToast('⚠ Error: '+err.message);
-    }
-  };
+  reader.onload = e => { processSprintPlanCsvText(e.target.result, file.name); };
   reader.readAsText(file);
 }
 
@@ -11461,6 +12775,57 @@ Write 5 concise HTML insights: FUT readiness, FSD readiness, TC health, top 3 ri
   }
 }
 
+function processTestPlanCsvText(rawText, chipLabel, toastMsg) {
+  const chip = document.getElementById('testplan-status-chip');
+  try {
+    let text = rawText;
+    if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+    const items = parseTestPlanCSV(text);
+    if (!items) {
+      if(chip) chip.innerHTML='<span class="usc-dot" style="background:var(--red)"></span>Parse error';
+      showToast('⚠ Test Planning CSV parse failed');
+      return null;
+    }
+    window._tpData = items;
+
+    const fut=items.filter(i=>i.category==='FUT'), fsd=items.filter(i=>i.category==='FSD');
+    const tcPass=items.filter(i=>i.tcStatus==='64D12E').length;
+    const tcInProg=items.filter(i=>i.tcStatus==='FFD257').length;
+    const tcNotRun=items.filter(i=>!i.tcStatus||i.tcStatus==='103064'||i.tcStatus==='FFFFFF').length;
+    const kpis={total:items.length,fut:fut.length,fsd:fsd.length,
+      tcpass:tcPass,tcfail:tcNotRun,tcinprog:tcInProg,
+      futdone:fut.filter(i=>i.status==='Completed').length,
+      fsddone:fsd.filter(i=>i.status==='Completed').length};
+    Object.entries(kpis).forEach(([k,v])=>{ const el=document.getElementById('tpkpi-'+k); if(el) el.textContent=v; });
+
+    if(chip) chip.innerHTML=`<span class="usc-dot" style="background:var(--green)"></span>${items.length} items`;
+    const hChip=document.getElementById('tp-header-chip');
+    if(hChip){hChip.textContent=items.length+' items · '+chipLabel;hChip.style.display='';}
+
+    document.getElementById('tp-no-data-state').style.display='none';
+    document.getElementById('tp-data-state').style.display='block';
+
+    const wsMap=_tpBuildReadiness(items);
+    _tpRenderReadiness(wsMap);
+
+    _tpInitFilters(items);
+    _tp.filtered=items;
+    _tpRenderPage(1);
+
+    showToast(toastMsg || ('✓ Test Planning loaded — '+items.length+' stories'));
+    if (typeof _snapshotStatusUpdate === 'function') _snapshotStatusUpdate();
+    if (typeof _snapshotSave === 'function') setTimeout(_snapshotSave, 300);
+    if (typeof _uploadSetLock === 'function') _uploadSetLock('testplan');
+    _updateOvTestPlan(items);
+    return items;
+  } catch(err) {
+    console.error('Test Plan parse error',err);
+    if(chip) chip.innerHTML='<span class="usc-dot" style="background:var(--red)"></span>Error';
+    showToast('⚠ Error: '+err.message);
+    return null;
+  }
+}
+
 // File handler
 function handleTestPlanFile(file) {
   if (typeof _uploadCheckConflict === 'function' && !_uploadCheckConflict('testplan', 'Test Planning')) return;
@@ -11468,54 +12833,7 @@ function handleTestPlanFile(file) {
   if (chip) chip.innerHTML='<span class="usc-dot" style="background:var(--amber)"></span>Parsing…';
 
   const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const items = parseTestPlanCSV(e.target.result);
-      if (!items) {
-        if(chip) chip.innerHTML='<span class="usc-dot" style="background:var(--red)"></span>Parse error';
-        showToast('⚠ Test Planning CSV parse failed');
-        return;
-      }
-      window._tpData = items;
-
-      // KPIs
-      const fut=items.filter(i=>i.category==='FUT'), fsd=items.filter(i=>i.category==='FSD');
-      const tcPass=items.filter(i=>i.tcStatus==='64D12E').length;
-      const tcInProg=items.filter(i=>i.tcStatus==='FFD257').length;
-      const tcNotRun=items.filter(i=>!i.tcStatus||i.tcStatus==='103064'||i.tcStatus==='FFFFFF').length;
-      const kpis={total:items.length,fut:fut.length,fsd:fsd.length,
-        tcpass:tcPass,tcfail:tcNotRun,tcinprog:tcInProg,
-        futdone:fut.filter(i=>i.status==='Completed').length,
-        fsddone:fsd.filter(i=>i.status==='Completed').length};
-      Object.entries(kpis).forEach(([k,v])=>{ const el=document.getElementById('tpkpi-'+k); if(el) el.textContent=v; });
-
-      // Header chip
-      if(chip) chip.innerHTML=`<span class="usc-dot" style="background:var(--green)"></span>${items.length} items`;
-      const hChip=document.getElementById('tp-header-chip');
-      if(hChip){hChip.textContent=items.length+' items · '+file.name;hChip.style.display='';}
-
-      // Show UI
-      document.getElementById('tp-no-data-state').style.display='none';
-      document.getElementById('tp-data-state').style.display='block';
-
-      // Readiness matrix
-      const wsMap=_tpBuildReadiness(items);
-      _tpRenderReadiness(wsMap);
-
-      // Full items table
-      _tpInitFilters(items);
-      _tp.filtered=items;
-      _tpRenderPage(1);
-
-      showToast('✓ Test Planning loaded — '+items.length+' stories');
-      if (typeof _uploadSetLock === 'function') _uploadSetLock('testplan');
-      _updateOvTestPlan(items);
-    } catch(err) {
-      console.error('Test Plan parse error',err);
-      if(chip) chip.innerHTML='<span class="usc-dot" style="background:var(--red)"></span>Error';
-      showToast('⚠ Error: '+err.message);
-    }
-  };
+  reader.onload = e => { processTestPlanCsvText(e.target.result, file.name); };
   reader.readAsText(file);
 }
 
@@ -13321,6 +14639,329 @@ function _toTitleCase(str){
 }
 
 _userLoadRoster();
+
+/* ═══════════════════════════════════════════════════════
+   API KEY MANAGEMENT (localStorage — local use)
+═══════════════════════════════════════════════════════ */
+const _API_KEY_STORE = 'propel_claude_api_key';
+
+function _apiKeyGet() {
+  return localStorage.getItem(_API_KEY_STORE) || '';
+}
+function _apiKeySave() {
+  const val = (document.getElementById('claude-api-key-input')||{}).value || '';
+  if (val) { localStorage.setItem(_API_KEY_STORE, val); _apiKeyStatusUpdate(); }
+}
+function _apiKeyClear() {
+  localStorage.removeItem(_API_KEY_STORE);
+  const inp = document.getElementById('claude-api-key-input');
+  if (inp) inp.value = '';
+  _apiKeyStatusUpdate();
+  showToast('API key cleared');
+}
+function _apiKeyToggleShow() {
+  const inp = document.getElementById('claude-api-key-input');
+  const btn = document.getElementById('api-key-show-btn');
+  if (!inp) return;
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  if (btn) btn.textContent = inp.type === 'password' ? '👁 Show' : '🙈 Hide';
+}
+function _apiKeyStatusUpdate() {
+  const key = _apiKeyGet();
+  const el  = document.getElementById('api-key-status');
+  const inp = document.getElementById('claude-api-key-input');
+  if (inp && !inp.value && key) inp.value = key;
+  if (el) {
+    if (key && key.startsWith('sk-ant-')) {
+      el.innerHTML = '<span style="color:#16a34a;font-weight:700">✓ Key stored (sk-ant-…' + key.slice(-4) + ')</span>';
+    } else if (key) {
+      el.innerHTML = '<span style="color:#d97706;font-weight:700">⚠ Key present but format unexpected</span>';
+    } else {
+      el.innerHTML = '<span style="color:var(--text3)">No key stored — AI features will use Claude app proxy</span>';
+    }
+  }
+}
+
+// Chunked JSON API call — splits into batches to avoid truncation
+async function _callClaudeAPIJson(prompt, maxTokens) {
+  const key = _apiKeyGet();
+  const headers = { 'Content-Type': 'application/json' };
+  if (key) { headers['x-api-key'] = key; headers['anthropic-version'] = '2023-06-01'; }
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: maxTokens || 4000,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  if (!resp.ok) {
+    const errBody = await resp.text().catch(()=>'');
+    throw new Error('API ' + resp.status + (errBody ? ': ' + errBody.slice(0,120) : ''));
+  }
+  const data = await resp.json();
+  const raw  = (data.content||[]).map(b=>b.text||'').join('');
+  const result = _jsonRepairAndParse(raw);
+  if (!result) throw new Error('JSON repair failed — no valid objects found in response');
+  return result;
+}
+
+/* ═══════════════════════════════════════════════════════
+   DATA SNAPSHOT — save / restore BPML + TP data
+   Excludes raw CSV file text (too large) and the BPML map
+   (rebuilt on restore from the data array).
+═══════════════════════════════════════════════════════ */
+const _SNAP_KEY = 'propel_data_snapshot';
+
+function _snapshotBuild() {
+  // Never include raw CSV strings (window._bpmlFiles) — can be megabytes
+  // Never include _bpmlMap — it's derived from _bpmlData; rebuild on restore
+  return {
+    version: 3,
+    savedAt: new Date().toISOString(),
+    bpml: {
+      data:      window._bpmlData      || null,
+      allItems:  window._bpmlAllItems  || null,
+      orphans:   window._bpmlOrphans   || null,
+      withdrawn: window._bpmlWithdrawn || null,
+    },
+    tp: {
+      data: window._tpData || null,
+    },
+    scenarios: window._tsScenarios || null,
+  };
+}
+
+function _snapshotSave() {
+  const snap = _snapshotBuild();
+  if (!snap.bpml.data && !snap.tp.data) {
+    showToast('⚠ No data loaded yet — upload BPML or Test Planning data first'); return;
+  }
+  try {
+    const json = JSON.stringify(snap);
+    localStorage.setItem(_SNAP_KEY, json);
+    _snapshotStatusUpdate();
+    showToast('✓ Snapshot saved to browser storage');
+  } catch(e) {
+    showToast('⚠ Save failed (localStorage full?): ' + e.message);
+  }
+}
+
+function _snapshotDownload() {
+  const snap = _snapshotBuild();
+  if (!snap.bpml.data && !snap.tp.data) {
+    showToast('⚠ No data loaded to download'); return;
+  }
+  try {
+    const json = JSON.stringify(snap, null, 2);
+    // Use Blob + object URL — avoids the 2 MB data: URI limit
+    const blob = new Blob([json], { type: 'application/json' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = 'PGE_Propel_Snapshot_' + new Date().toISOString().slice(0,10) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { URL.revokeObjectURL(url); document.body.removeChild(a); }, 1000);
+    showToast('✓ Snapshot downloaded');
+  } catch(e) {
+    showToast('⚠ Download failed: ' + e.message);
+  }
+}
+
+function _snapshotApply(snap) {
+  if (!snap || (snap.version||0) < 2) {
+    showToast('⚠ Snapshot format not recognised (version too old)'); return;
+  }
+
+  // ── Restore BPML ──
+  if (snap.bpml && snap.bpml.data) {
+    window._bpmlData      = snap.bpml.data;
+    window._bpmlAllItems  = snap.bpml.allItems || snap.bpml.data;
+    window._bpmlOrphans   = snap.bpml.orphans   || { ricefw:[], req:[], docs:[] };
+    window._bpmlWithdrawn = snap.bpml.withdrawn  || { ricefw:[], req:[], docs:[] };
+
+    // Rebuild map from allItems (avoids storing duplicated data in JSON)
+    const rebuiltMap = {};
+    (window._bpmlAllItems || []).forEach(it => { if(it && it.key) rebuiltMap[it.key] = it; });
+    // Also seed from data in case allItems was partial
+    (window._bpmlData || []).forEach(it => { if(it && it.key) rebuiltMap[it.key] = it; });
+    window._bpmlMap = rebuiltMap;
+    // Restore bpmlFiles stub so build button state works
+    window._bpmlFiles = window._bpmlFiles || { f1: '(restored)', f2: null, f3: null };
+
+    // Re-render BPML UI
+    try {
+      _bpmlInitFilters(window._bpmlData);
+      _bpmlBuildExtendedKPIs(
+        (window._bpmlAllItems||[]).filter(i=>i._fileRole==='ricefw'),
+        (window._bpmlAllItems||[]).filter(i=>i._fileRole==='requirement'||i._fileRole==='fsd_fut')
+      );
+      document.getElementById('bpml-no-data-state').style.display = 'none';
+      document.getElementById('bpml-data-state').style.display    = 'block';
+      document.getElementById('bpml-kpi-strip').style.display     = 'block';
+      document.getElementById('bpml-filter-bar').style.display    = 'block';
+      document.getElementById('bpml-insights-panel').style.display= 'block';
+      _bpmlRender();
+      const kpis = _bpmlBuildKPIs(window._bpmlData);
+      ['total','l1','l2','l3','l4','stp','itd','due'].forEach(k => {
+        const el = document.getElementById('bkpi-'+k); if(el) el.textContent = kpis[k]||0;
+      });
+      const totalLoaded = (window._bpmlAllItems||window._bpmlData).length;
+      const sbCount = document.getElementById('sb-bpml-count'); if(sbCount) sbCount.textContent = totalLoaded;
+      const sbView  = document.getElementById('sb-bpml-view-badge'); if(sbView) sbView.textContent = window._bpmlData.length;
+      const hChip   = document.getElementById('bpml-header-chip');
+      if(hChip) { hChip.textContent = '↺ Restored snapshot · ' + window._bpmlData.length + ' BPML items'; hChip.style.display=''; }
+      _updateOvBpml(window._bpmlData);
+    } catch(renderErr) { console.warn('BPML render after restore:', renderErr); }
+  }
+
+  // ── Restore Test Planning ──
+  if (snap.tp && snap.tp.data) {
+    window._tpData = snap.tp.data;
+    const items  = window._tpData;
+    const fut    = items.filter(i=>i.category==='FUT');
+    const fsd    = items.filter(i=>i.category==='FSD');
+    const tcPass = items.filter(i=>i.tcStatus==='64D12E').length;
+    const tcInP  = items.filter(i=>i.tcStatus==='FFD257').length;
+    const tcNotR = items.filter(i=>!i.tcStatus||i.tcStatus==='103064'||i.tcStatus==='FFFFFF').length;
+    const kpis   = { total:items.length, fut:fut.length, fsd:fsd.length,
+      tcpass:tcPass, tcfail:tcNotR, tcinprog:tcInP,
+      futdone:fut.filter(i=>i.status==='Completed').length,
+      fsddone:fsd.filter(i=>i.status==='Completed').length };
+    Object.entries(kpis).forEach(([k,v])=>{ const el=document.getElementById('tpkpi-'+k); if(el) el.textContent=v; });
+    try {
+      document.getElementById('tp-no-data-state').style.display = 'none';
+      document.getElementById('tp-data-state').style.display    = 'block';
+      const hChip = document.getElementById('tp-header-chip');
+      if(hChip){ hChip.textContent = '↺ Restored · '+items.length+' items'; hChip.style.display=''; }
+      if(typeof _tpBuildReadiness==='function'){ _tpRenderReadiness(_tpBuildReadiness(items)); }
+      if(typeof _tpInitFilters==='function'){ _tpInitFilters(items); _tp.filtered=items; _tpRenderPage(1); }
+      _updateOvTestPlan(items);
+    } catch(tpErr) { console.warn('TP render after restore:', tpErr); }
+  }
+
+  // ── Restore generated scenarios ──
+  if (snap.scenarios && snap.scenarios.length) {
+    window._tsScenarios = snap.scenarios;
+    // Re-render scenarios in Test Planning tab
+    try {
+      const noBpmlEl = document.getElementById('ts-no-bpml');
+      const res      = document.getElementById('ts-results');
+      const loading  = document.getElementById('ts-loading');
+      if (noBpmlEl) noBpmlEl.style.display = 'none';
+      if (loading)  loading.style.display  = 'none';
+      if (res)      { res.style.display = 'block'; _tsRenderScenarios(snap.scenarios); }
+      const meta = document.getElementById('ts-meta');
+      if (meta) meta.textContent = '↺ Restored from snapshot · ' + snap.scenarios.reduce((s,g)=>s+(g.scenarios||[]).length,0) + ' scenarios · ' + new Date(snap.savedAt).toLocaleTimeString();
+    } catch(scErr) { console.warn('Scenario render after restore:', scErr); }
+  }
+
+  const bpmlCount = snap.bpml?.data?.length || 0;
+  const tpCount   = snap.tp?.data?.length   || 0;
+  const scCount   = snap.scenarios ? snap.scenarios.reduce((s,g)=>s+(g.scenarios||[]).length,0) : 0;
+  showToast('✓ Restored: ' + [
+    bpmlCount ? bpmlCount+' BPML items' : '',
+    tpCount   ? tpCount+' TP items'     : '',
+    scCount   ? scCount+' scenarios'    : '',
+  ].filter(Boolean).join(' · '));
+
+  // Refresh Test Planning BPML notice after a tick
+  setTimeout(() => {
+    const noBpml = document.getElementById('ts-no-bpml');
+    if (noBpml && window._bpmlData) {
+      const l2c = window._bpmlData.filter(i=>i.level===2).length;
+      const l3c = window._bpmlData.filter(i=>i.level===3).length;
+      const l4c = window._bpmlData.filter(i=>i.level===4).length;
+      noBpml.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="#86efac" stroke-width="1.5" style="width:28px;height:28px;margin-bottom:8px;display:block;margin-left:auto;margin-right:auto"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-5"/></svg>
+        <strong style="color:#15803d">BPML hierarchy restored from snapshot</strong> — ${l2c} L2 · ${l3c} L3${l4c?' · '+l4c+' L4':''}.<br>
+        Select <strong>Sub-Business</strong> and <strong>Detail</strong>, then click <strong>Generate Test Scenarios</strong>.`;
+      noBpml.style.background = '#f0fdf4'; noBpml.style.color = '#166534';
+    }
+  }, 300);
+}
+
+function _snapshotRestore() {
+  try {
+    const raw = localStorage.getItem(_SNAP_KEY);
+    if (!raw) { showToast('⚠ No snapshot found in browser storage'); return; }
+    _snapshotApply(JSON.parse(raw));
+  } catch(e) { showToast('⚠ Restore failed: ' + e.message); }
+}
+
+function _snapshotLoadFile(input) {
+  const f = input.files[0];
+  if (!f) return;
+  const btn = document.getElementById('snap-status');
+  if(btn) btn.textContent = '⏳ Loading ' + f.name + '…';
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const text = e.target.result;
+      const snap = JSON.parse(text);
+      _snapshotApply(snap);
+      // Cache to localStorage for future browser restores
+      try { localStorage.setItem(_SNAP_KEY, text); } catch(lsErr) {
+        // If too large for localStorage, store without scenarios
+        try {
+          const lean = { ...snap, scenarios: null };
+          localStorage.setItem(_SNAP_KEY, JSON.stringify(lean));
+        } catch(e2) { /* silent */ }
+      }
+      _snapshotStatusUpdate();
+    } catch(err) {
+      showToast('⚠ Failed to load snapshot: ' + err.message);
+      if(btn) btn.textContent = 'Load failed: ' + err.message;
+    }
+  };
+  reader.onerror = () => showToast('⚠ File read error');
+  reader.readAsText(f);
+  input.value = '';
+}
+
+function _snapshotClear() {
+  localStorage.removeItem(_SNAP_KEY);
+  _snapshotStatusUpdate();
+  showToast('Snapshot cleared from browser storage');
+}
+
+function _snapshotStatusUpdate() {
+  const el = document.getElementById('snap-status');
+  if (!el) return;
+  try {
+    const raw = localStorage.getItem(_SNAP_KEY);
+    if (!raw) { el.innerHTML = 'No snapshot in browser storage.'; return; }
+    const snap = JSON.parse(raw);
+    const parts = [];
+    if (snap.bpml && snap.bpml.data) parts.push(`BPML: <strong>${snap.bpml.data.length}</strong> items`);
+    if (snap.tp   && snap.tp.data)   parts.push(`Test Planning: <strong>${snap.tp.data.length}</strong> items`);
+    if (snap.scenarios)              parts.push(`Scenarios: <strong>${snap.scenarios.reduce((s,g)=>s+(g.scenarios||[]).length,0)}</strong> E2E`);
+    const kb = Math.round(raw.length / 1024);
+    el.innerHTML = `<span style="color:#0e7490;font-weight:700">✓ Snapshot in browser</span> — ${parts.join(' · ')} · ${kb} KB · Saved: <strong>${new Date(snap.savedAt).toLocaleString()}</strong>`;
+  } catch(e) { el.textContent = 'Snapshot read error: ' + e.message; }
+}
+
+// Initialise on page load
+(function _initApiAndSnapshot() {
+  _apiKeyStatusUpdate();
+  _snapshotStatusUpdate();
+  // Auto-restore if snapshot exists and no data is loaded
+  const raw = localStorage.getItem(_SNAP_KEY);
+  if (raw && !window._bpmlData && !window._tpData) {
+    try {
+      const snap = JSON.parse(raw);
+      if ((snap.bpml && snap.bpml.data) || (snap.tp && snap.tp.data)) {
+        // Auto-restore silently — show banner
+        setTimeout(()=>{
+          const el = document.getElementById('snap-status');
+          if (el) el.innerHTML += ' &nbsp;<button onclick="_snapshotRestore()" style="background:#0891b2;color:#fff;border:none;border-radius:5px;padding:2px 10px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--font)">Restore Now</button>';
+        }, 800);
+      }
+    } catch(e) {}
+  }
+})();
+
 </script>
 
 
