@@ -3320,6 +3320,9 @@
                   </button>
                 </div>
 
+                <!-- Environment detection banner — populated by _pmoEnvBannerRender() on DOMContentLoaded -->
+                <div id="jira-env-banner" style="border-radius:9px;padding:10px 14px;margin-bottom:12px;display:none;align-items:flex-start;gap:10px"></div>
+
                 <!-- ── Proxy Config Card ── -->
                 <div style="background:#f0fdf4;border:1.5px solid #a7f3d0;border-radius:10px;padding:14px 16px;margin-bottom:10px">
                   <div style="font-size:10px;font-weight:700;color:#065f46;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:6px">
@@ -3330,7 +3333,10 @@
                   <!-- View mode (read-only) -->
                   <!-- VIEW MODE -->
                   <div id="jira-cfg-view" style="display:grid;grid-template-columns:auto 1fr;gap:6px 14px;align-items:start">
-                    <span style="font-size:10px;font-weight:700;color:#065f46;font-family:var(--mono);white-space:nowrap;padding-top:4px">Proxy URL</span>
+                    <span id="proxy-v-label" style="font-size:10px;font-weight:700;color:#065f46;font-family:var(--mono);white-space:nowrap;padding-top:4px" title="Only used when running locally. Not applicable on GitHub Pages.">
+                      Proxy URL
+                      <div id="proxy-v-sublabel" style="font-size:8px;font-weight:500;margin-top:1px;color:#6ee7b7">local only</div>
+                    </span>
                     <span id="jira-cfg-v-proxy" style="font-size:11px;font-family:var(--mono);color:var(--text);background:#dcfce7;padding:3px 10px;border-radius:5px;word-break:break-all">http://127.0.0.1:8787</span>
                     <span style="font-size:10px;font-weight:700;color:#065f46;font-family:var(--mono);white-space:nowrap;padding-top:4px">Jira Base URL</span>
                     <span id="jira-cfg-v-base" style="font-size:11px;font-family:var(--mono);color:var(--text2);background:#f1f5f9;padding:3px 10px;border-radius:5px;word-break:break-all">https://pmohub.pwc.com</span>
@@ -3367,9 +3373,16 @@
                     <!-- Connection fields -->
                     <div style="font-size:9px;font-weight:800;color:#065f46;text-transform:uppercase;letter-spacing:0.07em">Connection</div>
                     <div style="display:grid;grid-template-columns:130px 1fr;gap:8px;align-items:center">
-                      <label style="font-size:10px;font-weight:700;color:#065f46;font-family:var(--mono)">Proxy URL</label>
-                      <input id="pmo-jira-proxy-input" type="text" autocomplete="off" spellcheck="false" placeholder="http://127.0.0.1:8787" data-default="http://127.0.0.1:8787"
-                        style="border:1.5px solid #a7f3d0;border-radius:7px;padding:6px 10px;font-size:11px;font-family:var(--mono);background:#fff;color:var(--text);width:100%">
+                      <label id="proxy-url-label" style="font-size:10px;font-weight:700;color:#065f46;font-family:var(--mono)" title="Only applies when running locally via http://localhost. Not used on GitHub Pages (HTTPS blocks local HTTP proxy).">
+                        Proxy URL
+                        <div id="proxy-url-sublabel" style="font-size:9px;font-weight:500;color:#6ee7b7;margin-top:1px">local only</div>
+                      </label>
+                      <div>
+                        <input id="pmo-jira-proxy-input" type="text" autocomplete="off" spellcheck="false" placeholder="http://127.0.0.1:8787" data-default="http://127.0.0.1:8787"
+                          title="URL of the local proxy server (run python server.py or npm start). Only works when serving via http://localhost — not on GitHub Pages."
+                          style="border:1.5px solid #a7f3d0;border-radius:7px;padding:6px 10px;font-size:11px;font-family:var(--mono);background:#fff;color:var(--text);width:100%">
+                        <div id="proxy-url-env-note" style="font-size:9px;font-family:var(--mono);margin-top:4px;line-height:1.4"></div>
+                      </div>
                       <label style="font-size:10px;font-weight:700;color:#065f46;font-family:var(--mono)">Jira Base URL</label>
                       <input id="jira-cfg-base" type="text" autocomplete="off" spellcheck="false" placeholder="https://pmohub.pwc.com"
                         style="border:1.5px solid #a7f3d0;border-radius:7px;padding:6px 10px;font-size:11px;font-family:var(--mono);background:#fff;color:var(--text);width:100%">
@@ -4069,6 +4082,100 @@
 const DEFAULT = null;  // intentionally null — data must be uploaded
 const JIRA_BASE = 'https://pmohub.pwc.com/jira/browse/';
 /** Optional: override default proxy origin (or set localStorage key pmo_jira_proxy). */
+/* ── Environment detection ── */
+function _pmoDetectEnv() {
+  var h = (location.hostname || '').toLowerCase();
+  var p = (location.protocol || '').toLowerCase();
+  if (p === 'file:') return 'file';
+  if (h === 'localhost' || h === '127.0.0.1' || h === '0.0.0.0') return 'local';
+  if (h.indexOf('github.io') !== -1 || h.indexOf('github.com') !== -1) return 'github';
+  if (p === 'https:') return 'https';
+  return 'other';
+}
+
+var _ENV_CONFIG = {
+  file: {
+    bg:'#fff7ed', border:'#fed7aa', icon:'⚠️',
+    title:'File System (file://)',
+    color:'#92400e',
+    msg:'Dashboard opened directly from disk. <strong>Jira Pull is not available</strong> — browser blocks all network requests from <code>file://</code> pages. Use CSV upload instead.',
+    proxyNote:'<span style="color:#c2410c">✗ Not available in file:// mode</span>',
+    proxySublabel:'not available', proxySublabelColor:'#c2410c',
+    proxyDim:true
+  },
+  local: {
+    bg:'#f0fdf4', border:'#a7f3d0', icon:'✅',
+    title:'Local Server (localhost)',
+    color:'#065f46',
+    msg:'Running via <strong>http://localhost</strong> — Jira Pull is fully supported. Start the proxy (<code>python server.py</code> or <code>npm start</code>) then use the Pull buttons.',
+    proxyNote:'<span style="color:#059669">✓ Proxy supported on localhost</span>',
+    proxySublabel:'active', proxySublabelColor:'#059669',
+    proxyDim:false
+  },
+  github: {
+    bg:'#eff6ff', border:'#bfdbfe', icon:'ℹ️',
+    title:'GitHub Pages (https://kpwcite.github.io/…)',
+    color:'#1e40af',
+    msg:'Running on <strong>GitHub Pages (HTTPS)</strong>. Browsers block mixed-content requests — <strong>Proxy URL is not used here</strong>. The proxy only works on localhost. <strong>Use CSV upload</strong> for all data — it works identically from any environment.',
+    proxyNote:'<span style="color:#2563eb">— Not applicable (HTTPS blocks http:// proxy)</span>',
+    proxySublabel:'not applicable', proxySublabelColor:'#3b82f6',
+    proxyDim:true
+  },
+  https: {
+    bg:'#eff6ff', border:'#bfdbfe', icon:'ℹ️',
+    title:'Remote HTTPS server',
+    color:'#1e40af',
+    msg:'Running on a <strong>remote HTTPS host</strong>. The local proxy at <code>http://127.0.0.1:8787</code> is blocked by browser mixed-content policy. <strong>Use CSV upload</strong> — or run the dashboard from <code>http://localhost</code> if you need live Jira Pull.',
+    proxyNote:'<span style="color:#2563eb">— HTTPS host blocks local http:// proxy</span>',
+    proxySublabel:'not applicable', proxySublabelColor:'#3b82f6',
+    proxyDim:true
+  },
+  other: {
+    bg:'#f8fafc', border:'#cbd5e1', icon:'ℹ️',
+    title:'Unknown environment',
+    color:'#475569',
+    msg:'Environment could not be determined. If Jira Pull fails, switch the card toggles to CSV and upload manually.',
+    proxyNote:'', proxySublabel:'local only', proxySublabelColor:'#6ee7b7',
+    proxyDim:false
+  }
+};
+
+function _pmoEnvBannerRender() {
+  var env  = _pmoDetectEnv();
+  var cfg  = _ENV_CONFIG[env] || _ENV_CONFIG.other;
+  var banner = document.getElementById('jira-env-banner');
+  if (banner) {
+    banner.style.background = cfg.bg;
+    banner.style.border = '1.5px solid ' + cfg.border;
+    banner.style.display = 'flex';
+    banner.innerHTML =
+      '<div style="font-size:16px;flex-shrink:0;line-height:1">' + cfg.icon + '</div>' +
+      '<div style="font-size:11px;color:' + cfg.color + ';line-height:1.6;flex:1">' +
+        '<strong>' + cfg.title + '</strong><br>' + cfg.msg +
+      '</div>';
+  }
+  // View mode proxy label
+  var vSub = document.getElementById('proxy-v-sublabel');
+  if (vSub) { vSub.textContent = cfg.proxySublabel; vSub.style.color = cfg.proxySublabelColor; }
+  // Edit mode proxy note + dimming
+  var eNote = document.getElementById('proxy-url-env-note');
+  if (eNote) eNote.innerHTML = cfg.proxyNote;
+  var eSub = document.getElementById('proxy-url-sublabel');
+  if (eSub) { eSub.textContent = cfg.proxySublabel; eSub.style.color = cfg.proxySublabelColor; }
+  var proxyInput = document.getElementById('pmo-jira-proxy-input');
+  if (proxyInput) {
+    proxyInput.style.opacity = cfg.proxyDim ? '0.45' : '1';
+    proxyInput.readOnly = cfg.proxyDim;
+    proxyInput.style.cursor = cfg.proxyDim ? 'not-allowed' : '';
+  }
+  // Dim the Jira Pull buttons and global apply button if proxy is unavailable
+  var applyBtn = document.getElementById('apply-jira-all-btn');
+  if (applyBtn && cfg.proxyDim) {
+    applyBtn.title = 'Jira Pull not available in this environment — use CSV upload instead';
+  }
+  return env;
+}
+
 window.PMO_JIRA_PROXY = window.PMO_JIRA_PROXY || 'http://127.0.0.1:8787';
 function _pmoJiraProxyUrl() {
   try {
@@ -6745,7 +6852,7 @@ function _jiraCfgReset() {
 }
 
 // Init config on load — runs after _JQL is defined
-document.addEventListener('DOMContentLoaded', function() { _jiraCfgRender(); });
+document.addEventListener('DOMContentLoaded', function() { _jiraCfgRender(); _pmoEnvBannerRender(); });
 
 /* ── Upload card toggle: CSV ↔ Jira Pull ── */
 var _ALL_CARD_IDS = ['sprint','raid','cf','bpml','spplan','testplan'];
@@ -6828,14 +6935,20 @@ async function _ucApplyJiraAll() {
 /* ── Jira proxy: fetch CSV from local server (see jira-proxy/server.mjs) ── */
 async function _pmoJiraFetchCsv(path) {
   const base = _pmoJiraProxyUrl();
+  const env  = _pmoDetectEnv();
   let r;
   try {
     r = await fetch(base + path, { cache: 'no-store' });
   } catch (e) {
-    const hint = (location.protocol === 'file:')
-      ? ' Open the dashboard via http://localhost (run serve-dashboard.cmd), not as a file.'
-      : '';
-    throw new Error('Cannot reach Jira proxy at ' + base + ' — is run-proxy.cmd running? ' + (e && e.message ? '(' + e.message + ')' : '') + hint);
+    let hint;
+    if (env === 'file') {
+      hint = ' You are running the dashboard as a file:// page. Jira Pull is not available — use CSV upload instead.';
+    } else if (env === 'github' || env === 'https') {
+      hint = ' You are on an HTTPS page — browsers block requests to the local http:// proxy (mixed-content policy). Use CSV upload, or run the dashboard via http://localhost for live Jira Pull.';
+    } else {
+      hint = ' Make sure the proxy is running: python server.py or npm start. Then serve the dashboard via http://localhost, not file://.';
+    }
+    throw new Error('Cannot reach Jira proxy at ' + base + (e && e.message ? ' (' + e.message + ')' : '') + hint);
   }
   const text = await r.text();
   if (!r.ok) {
