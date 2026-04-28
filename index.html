@@ -959,6 +959,40 @@
   .upload-zone-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
   .upload-zone-sub { font-size: 10px; color: var(--text3); font-family: var(--mono); }
 
+  /* ── UPLOAD METHOD TOGGLE ── */
+  .uc-method-toggle {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 14px 2px;
+  }
+  .umt-track {
+    position: relative; width: 68px; height: 22px;
+    background: #dbeafe; border-radius: 11px;
+    cursor: pointer; transition: background 0.2s; flex-shrink: 0;
+    border: 1.5px solid #93c5fd;
+  }
+  .umt-track.jira-mode { background: #059669; border-color: #059669; }
+  .umt-thumb {
+    position: absolute; top: 2px; left: 2px;
+    width: 16px; height: 16px; background: #fff; border-radius: 50%;
+    transition: transform 0.22s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.22);
+  }
+  .umt-track.jira-mode .umt-thumb { transform: translateX(45px); }
+  .umt-lbl { font-size: 10px; font-weight: 700; font-family: var(--mono); user-select: none; transition: color 0.2s; }
+  .umt-lbl-csv { color: #1d6ff3; }
+  .umt-lbl-jira { color: var(--text3); }
+  .umt-track.jira-mode ~ .umt-lbl-csv { color: var(--text3); }
+  .umt-track.jira-mode ~ .umt-lbl-jira { color: #059669; }
+  .uc-jira-row {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    padding: 8px 14px 0;
+    opacity: 0.35; pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .uc-jira-row.active { opacity: 1; pointer-events: all; }
+  .uc-csv-zone { transition: opacity 0.2s; }
+  .uc-csv-zone.dimmed { opacity: 0.38; pointer-events: none; }
+
   /* ── TOAST ── */
   #toast {
     position: fixed; bottom: 24px; right: 24px;
@@ -1727,8 +1761,21 @@
 
         <!-- Workstream velocity -->
         <div class="card" style="margin-bottom:14px">
-          <div class="card-title">Workstream velocity</div>
-          <div class="chart-wrap" style="height:260px"><canvas id="ws-chart"></canvas></div>
+          <div class="card-title">
+            <span>Workstream velocity</span>
+            <span class="ov-hl-source sprint" style="font-size:9px">SPRINT</span>
+          </div>
+          <div id="ws-velocity-no-data">
+            <div style="display:flex;flex-direction:column;align-items:center;padding:32px 16px;text-align:center;color:var(--text3)">
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.3" style="opacity:0.25;margin-bottom:10px"><rect x="4" y="4" width="28" height="28" rx="5"/><path d="M10 26V18M17 26V13M24 26V8"/></svg>
+              <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:4px">No sprint data loaded</div>
+              <div style="font-size:10px;font-family:var(--mono)">Upload a Sprint CSV to see breakdown by workstream</div>
+              <div class="ov-upload-link" style="margin-top:10px" onclick="document.getElementById('csv-sprint-input').click()">Upload Sprint CSV →</div>
+            </div>
+          </div>
+          <div id="ws-velocity-data" style="display:none">
+            <div class="chart-wrap" style="height:260px"><canvas id="ws-chart"></canvas></div>
+          </div>
         </div>
 
         <!-- RAID by workstream -->
@@ -3197,15 +3244,263 @@
         <!-- Read Me -->
         <div class="card" style="margin-bottom:14px">
           <div class="card-title">Upload Data — How to use</div>
-          <div style="display:flex;flex-direction:column;gap:8px;padding:4px 0 12px">
-            <div class="us-step"><span class="us-n" style="background:var(--navy)">1</span>Open Jira for <strong>PG&amp;E Propel (<a href="https://pmohub.pwc.com/jira/secure/Dashboard.jspa#" target="_blank" style="color:var(--blue);text-decoration:underline">CONAMER1000364</a>)</strong>, run the relevant JQL query</div>
-            <div class="us-step"><span class="us-n" style="background:var(--navy)">2</span>Click <strong>Export → Export CSV (all fields)</strong> in Jira</div>
-            <div class="us-step"><span class="us-n" style="background:var(--navy)">3</span>Drop the file onto the matching card below — all fields are parsed dynamically, no default values</div>
-            <div class="us-step"><span class="us-n" style="background:var(--green)">4</span><strong>Live Jira (optional):</strong> in <code style="font-size:10px;font-family:var(--mono)">jira-proxy</code> set <code style="font-size:10px;font-family:var(--mono)">JIRA_BASE_URL</code>, <code style="font-size:10px;font-family:var(--mono)">JIRA_USER</code>, <code style="font-size:10px;font-family:var(--mono)">JIRA_API_TOKEN</code>, then run <code style="font-size:10px;font-family:var(--mono)">python server.py</code> (or edit and double‑click <code style="font-size:10px;font-family:var(--mono)">run-proxy.cmd</code>). Node/npm is optional (<code style="font-size:10px;font-family:var(--mono)">npm start</code> only if you use <code style="font-size:10px;font-family:var(--mono)">server.mjs</code>). Use <strong>Pull from Jira</strong> on each card. Serve this dashboard over <code style="font-size:10px">http://localhost</code> (not <code style="font-size:10px">file://</code>) so <code style="font-size:10px">fetch</code> to the proxy is allowed.</div>
-            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px">
-              <label style="font-size:11px;font-weight:600;color:var(--text2)">Proxy URL</label>
-              <input id="pmo-jira-proxy-input" type="text" autocomplete="off" spellcheck="false" placeholder="http://127.0.0.1:8787" data-default="http://127.0.0.1:8787"
-                style="flex:1;min-width:220px;max-width:420px;border:1px solid var(--grey300);border-radius:8px;padding:7px 12px;font-size:12px;font-family:var(--mono)">
+
+          <!-- Method selector banner -->
+          <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+            <div style="flex:1;min-width:200px;background:linear-gradient(135deg,#1e40af 0%,#1d6ff3 100%);border-radius:10px;padding:12px 16px;display:flex;align-items:flex-start;gap:10px">
+              <div style="width:30px;height:30px;background:rgba(255,255,255,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">
+                <svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="1.5" style="width:13px;height:13px"><path d="M8 10V3m0 0L5.5 5.5M8 3l2.5 2.5M3 11v1.5A1.5 1.5 0 004.5 14h7a1.5 1.5 0 001.5-1.5V11"/></svg>
+              </div>
+              <div>
+                <div style="font-size:11px;font-weight:700;color:#fff;margin-bottom:2px">Method A — CSV File Upload <span style="background:rgba(255,255,255,0.25);border-radius:4px;padding:1px 6px;font-size:9px;font-weight:800;letter-spacing:0.05em">DEFAULT</span></div>
+                <div style="font-size:10px;color:rgba(255,255,255,0.8);line-height:1.5">Export CSV from Jira manually, then drop the file onto each card below. Works from any environment — no proxy required.</div>
+              </div>
+            </div>
+            <div style="flex:1;min-width:200px;background:linear-gradient(135deg,#065f46 0%,#059669 100%);border-radius:10px;padding:12px 16px;display:flex;align-items:flex-start;gap:10px">
+              <div style="width:30px;height:30px;background:rgba(255,255,255,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">
+                <svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="1.5" style="width:13px;height:13px"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+              </div>
+              <div>
+                <div style="font-size:11px;font-weight:700;color:#fff;margin-bottom:2px">Method B — Live Jira Pull <span style="background:rgba(255,255,255,0.2);border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700;letter-spacing:0.05em">OPTIONAL</span></div>
+                <div style="font-size:10px;color:rgba(255,255,255,0.8);line-height:1.5">Use the local proxy to pull data directly from Jira without manual exports. Requires proxy setup — see step 4 below.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Steps -->
+          <div style="display:flex;flex-direction:column;gap:0;margin-bottom:14px">
+            <!-- Step 1 -->
+            <div style="display:flex;gap:0;align-items:stretch">
+              <div style="display:flex;flex-direction:column;align-items:center;width:32px;flex-shrink:0">
+                <div style="width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</div>
+                <div style="width:2px;flex:1;background:var(--grey200);margin:3px 0"></div>
+              </div>
+              <div style="padding:0 0 14px 12px;flex:1">
+                <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px">Open Jira for PG&amp;E Propel</div>
+                <div style="font-size:11px;color:var(--text2);line-height:1.5">Navigate to <a href="https://pmohub.pwc.com/jira/secure/Dashboard.jspa#" target="_blank" style="color:var(--blue);text-decoration:underline;font-weight:600">CONAMER1000364</a> and run the relevant JQL query for the data type you need (Sprint, RAID, BPML, etc.).</div>
+              </div>
+            </div>
+            <!-- Step 2 -->
+            <div style="display:flex;gap:0;align-items:stretch">
+              <div style="display:flex;flex-direction:column;align-items:center;width:32px;flex-shrink:0">
+                <div style="width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</div>
+                <div style="width:2px;flex:1;background:var(--grey200);margin:3px 0"></div>
+              </div>
+              <div style="padding:0 0 14px 12px;flex:1">
+                <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px">Export as CSV</div>
+                <div style="font-size:11px;color:var(--text2);line-height:1.5">In Jira click <strong>Export → Export CSV (all fields)</strong>. All columns are parsed dynamically — no default values assumed.</div>
+              </div>
+            </div>
+            <!-- Step 3 -->
+            <div style="display:flex;gap:0;align-items:stretch">
+              <div style="display:flex;flex-direction:column;align-items:center;width:32px;flex-shrink:0">
+                <div style="width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">3</div>
+                <div style="width:2px;flex:1;background:var(--grey200);margin:3px 0"></div>
+              </div>
+              <div style="padding:0 0 14px 12px;flex:1">
+                <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px">Drop file onto the matching card</div>
+                <div style="font-size:11px;color:var(--text2);line-height:1.5">Each card below has a CSV drop zone. Toggle the switch on each card to <strong>CSV</strong> (default) and drag-and-drop or click to browse. Data loads instantly in-browser — no server required.</div>
+              </div>
+            </div>
+            <!-- Step 4 — Live Jira Pull -->
+            <div style="display:flex;gap:0;align-items:stretch">
+              <div style="display:flex;flex-direction:column;align-items:center;width:32px;flex-shrink:0">
+                <div style="width:26px;height:26px;border-radius:50%;background:#059669;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">4</div>
+                <div style="width:2px;flex:1;background:transparent;margin:3px 0"></div>
+              </div>
+              <div style="padding:0 0 0 12px;flex:1">
+
+                <!-- Header row with edit toggle -->
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+                  <div style="font-size:12px;font-weight:700;color:#065f46">Live Jira Pull — Proxy &amp; API Configuration</div>
+                  <button id="jira-cfg-edit-btn" onclick="_jiraCfgToggleEdit()"
+                    style="display:flex;align-items:center;gap:5px;background:#f0fdf4;border:1.5px solid #6ee7b7;color:#065f46;border-radius:8px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font)">
+                    <svg id="jira-cfg-edit-icon" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" style="width:11px;height:11px"><path d="M10 2l2 2-7 7H3V9l7-7z"/></svg>
+                    <span id="jira-cfg-edit-label">Edit Config</span>
+                  </button>
+                </div>
+
+                <!-- ── Proxy Config Card ── -->
+                <div style="background:#f0fdf4;border:1.5px solid #a7f3d0;border-radius:10px;padding:14px 16px;margin-bottom:10px">
+                  <div style="font-size:10px;font-weight:700;color:#065f46;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:6px">
+                    <svg viewBox="0 0 14 14" fill="none" stroke="#059669" stroke-width="1.5" style="width:11px;height:11px"><rect x="1" y="3" width="12" height="9" rx="1.5"/><path d="M5 3V1.5M9 3V1.5M1 7h12"/></svg>
+                    Proxy &amp; JQL Configuration
+                  </div>
+
+                  <!-- View mode (read-only) -->
+                  <!-- VIEW MODE -->
+                  <div id="jira-cfg-view" style="display:grid;grid-template-columns:auto 1fr;gap:6px 14px;align-items:start">
+                    <span style="font-size:10px;font-weight:700;color:#065f46;font-family:var(--mono);white-space:nowrap;padding-top:4px">Proxy URL</span>
+                    <span id="jira-cfg-v-proxy" style="font-size:11px;font-family:var(--mono);color:var(--text);background:#dcfce7;padding:3px 10px;border-radius:5px;word-break:break-all">http://127.0.0.1:8787</span>
+                    <span style="font-size:10px;font-weight:700;color:#065f46;font-family:var(--mono);white-space:nowrap;padding-top:4px">Jira Base URL</span>
+                    <span id="jira-cfg-v-base" style="font-size:11px;font-family:var(--mono);color:var(--text2);background:#f1f5f9;padding:3px 10px;border-radius:5px;word-break:break-all">https://pmohub.pwc.com</span>
+                    <span style="font-size:10px;font-weight:700;color:#065f46;font-family:var(--mono);white-space:nowrap;padding-top:4px">Jira User</span>
+                    <span id="jira-cfg-v-user" style="font-size:11px;font-family:var(--mono);color:var(--text2);background:#f1f5f9;padding:3px 10px;border-radius:5px">—</span>
+                    <span style="font-size:10px;font-weight:700;color:#065f46;font-family:var(--mono);white-space:nowrap;padding-top:4px">API Token</span>
+                    <span id="jira-cfg-v-token" style="font-size:11px;font-family:var(--mono);color:var(--text2);background:#f1f5f9;padding:3px 10px;border-radius:5px">—</span>
+                    <!-- divider -->
+                    <div style="grid-column:1/-1;height:1px;background:#bbf7d0;margin:4px 0"></div>
+                    <div style="grid-column:1/-1;font-size:9px;font-weight:800;color:#059669;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:2px">JQL Queries — from Query Panel</div>
+                    <span style="font-size:10px;font-weight:700;color:var(--navy);font-family:var(--mono);white-space:nowrap;padding-top:3px">Sprint &amp; Velocity</span>
+                    <span id="jira-cfg-v-jql-sprint" style="font-size:9px;font-family:var(--mono);color:var(--text2);background:#f1f5f9;padding:4px 10px;border-radius:5px;white-space:pre-wrap;line-height:1.5;border-left:3px solid var(--navy)"></span>
+                    <span style="font-size:10px;font-weight:700;color:#4f46e5;font-family:var(--mono);white-space:nowrap;padding-top:3px">RAID Log</span>
+                    <span id="jira-cfg-v-jql-raid" style="font-size:9px;font-family:var(--mono);color:var(--text2);background:#f1f5f9;padding:4px 10px;border-radius:5px;white-space:pre-wrap;line-height:1.5;border-left:3px solid #6366f1"></span>
+                    <span style="font-size:10px;font-weight:700;color:#065f46;font-family:var(--mono);white-space:nowrap;padding-top:3px">Cross Functional</span>
+                    <span id="jira-cfg-v-jql-cf" style="font-size:9px;font-family:var(--mono);color:var(--text2);background:#f1f5f9;padding:4px 10px;border-radius:5px;white-space:pre-wrap;line-height:1.5;border-left:3px solid #059669"></span>
+                    <span style="font-size:10px;font-weight:700;color:var(--sp-dark);font-family:var(--mono);white-space:nowrap;padding-top:3px">Sprint Planning</span>
+                    <span id="jira-cfg-v-jql-sprintplan" style="font-size:9px;font-family:var(--mono);color:var(--text2);background:#f1f5f9;padding:4px 10px;border-radius:5px;white-space:pre-wrap;line-height:1.5;border-left:3px solid var(--sp-color)"></span>
+                    <!-- BPML — 3 files -->
+                    <div style="grid-column:1/-1;display:flex;align-items:center;gap:6px;margin-top:4px">
+                      <span style="font-size:9px;font-weight:800;color:var(--bpml-dark);text-transform:uppercase;letter-spacing:0.06em">BPML Structure — 3 JQL Files</span>
+                      <div style="flex:1;height:1px;background:#ddd6fe"></div>
+                    </div>
+                    <span style="font-size:10px;font-weight:700;color:var(--bpml-dark);font-family:var(--mono);white-space:nowrap;padding-top:3px">File 1<div style="font-size:9px;font-weight:500;color:var(--text3);margin-top:1px">Level 1–4</div></span>
+                    <span id="jira-cfg-v-jql-bpml1" style="font-size:9px;font-family:var(--mono);color:var(--text2);background:#faf5ff;padding:4px 10px;border-radius:5px;white-space:pre-wrap;line-height:1.5;border-left:3px solid var(--bpml-color)"></span>
+                    <span style="font-size:10px;font-weight:700;color:#6d28d9;font-family:var(--mono);white-space:nowrap;padding-top:3px">File 2<div style="font-size:9px;font-weight:500;color:var(--text3);margin-top:1px">RICEFW</div></span>
+                    <span id="jira-cfg-v-jql-bpml2" style="font-size:9px;font-family:var(--mono);color:var(--text2);background:#fdf4ff;padding:4px 10px;border-radius:5px;white-space:pre-wrap;line-height:1.5;border-left:3px solid #7c3aed"></span>
+                    <span style="font-size:10px;font-weight:700;color:#4338ca;font-family:var(--mono);white-space:nowrap;padding-top:3px">File 3<div style="font-size:9px;font-weight:500;color:var(--text3);margin-top:1px">Req / FSD / FUT</div></span>
+                    <span id="jira-cfg-v-jql-bpml3" style="font-size:9px;font-family:var(--mono);color:var(--text2);background:#f5f3ff;padding:4px 10px;border-radius:5px;white-space:pre-wrap;line-height:1.5;border-left:3px solid #6366f1"></span>
+                  </div>
+
+                  <!-- EDIT MODE (hidden by default) -->
+                  <div id="jira-cfg-edit" style="display:none;flex-direction:column;gap:10px">
+                    <!-- Connection fields -->
+                    <div style="font-size:9px;font-weight:800;color:#065f46;text-transform:uppercase;letter-spacing:0.07em">Connection</div>
+                    <div style="display:grid;grid-template-columns:130px 1fr;gap:8px;align-items:center">
+                      <label style="font-size:10px;font-weight:700;color:#065f46;font-family:var(--mono)">Proxy URL</label>
+                      <input id="pmo-jira-proxy-input" type="text" autocomplete="off" spellcheck="false" placeholder="http://127.0.0.1:8787" data-default="http://127.0.0.1:8787"
+                        style="border:1.5px solid #a7f3d0;border-radius:7px;padding:6px 10px;font-size:11px;font-family:var(--mono);background:#fff;color:var(--text);width:100%">
+                      <label style="font-size:10px;font-weight:700;color:#065f46;font-family:var(--mono)">Jira Base URL</label>
+                      <input id="jira-cfg-base" type="text" autocomplete="off" spellcheck="false" placeholder="https://pmohub.pwc.com"
+                        style="border:1.5px solid #a7f3d0;border-radius:7px;padding:6px 10px;font-size:11px;font-family:var(--mono);background:#fff;color:var(--text);width:100%">
+                      <label style="font-size:10px;font-weight:700;color:#065f46;font-family:var(--mono)">
+                        Jira User
+                        <div style="font-size:9px;font-weight:500;color:#6ee7b7;margin-top:1px">auto-detected</div>
+                      </label>
+                      <div style="position:relative">
+                        <input id="jira-cfg-user" type="text" autocomplete="off" spellcheck="false" placeholder="you@pwc.com"
+                          style="border:1.5px solid #a7f3d0;border-radius:7px;padding:6px 10px;font-size:11px;font-family:var(--mono);background:#fff;color:var(--text);width:100%">
+                        <span id="jira-cfg-user-src" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:9px;font-family:var(--mono);color:#059669;pointer-events:none"></span>
+                      </div>
+                      <label style="font-size:10px;font-weight:700;color:#065f46;font-family:var(--mono)">API Token</label>
+                      <div style="display:flex;gap:6px;align-items:center">
+                        <input id="jira-cfg-token" type="password" autocomplete="off" spellcheck="false" placeholder="Jira API token (id.atlassian.com)"
+                          style="flex:1;border:1.5px solid #a7f3d0;border-radius:7px;padding:6px 10px;font-size:11px;font-family:var(--mono);background:#fff;color:var(--text)">
+                        <button onclick="_jiraCfgTokenToggle()" id="jira-token-show-btn"
+                          style="background:#dcfce7;border:1.5px solid #a7f3d0;color:#065f46;border-radius:7px;padding:6px 10px;font-size:10px;cursor:pointer;font-family:var(--font);white-space:nowrap">Show</button>
+                      </div>
+                    </div>
+                    <!-- JQL section header -->
+                    <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+                      <div style="font-size:9px;font-weight:800;color:#065f46;text-transform:uppercase;letter-spacing:0.07em;white-space:nowrap">JQL Queries — sourced from Query Panel</div>
+                      <div style="flex:1;height:1px;background:#bbf7d0"></div>
+                      <span style="font-size:9px;color:var(--text3);font-family:var(--mono)">editable</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:130px 1fr;gap:8px;align-items:start">
+                      <label style="font-size:10px;font-weight:700;color:var(--navy);font-family:var(--mono);padding-top:7px">Sprint &amp; Velocity</label>
+                      <textarea id="jira-cfg-jql-sprint" rows="3" spellcheck="false"
+                        style="border:1.5px solid #a7f3d0;border-left:3px solid var(--navy);border-radius:7px;padding:6px 10px;font-size:10px;font-family:var(--mono);background:#fff;color:var(--text);width:100%;resize:vertical;line-height:1.5"></textarea>
+                      <label style="font-size:10px;font-weight:700;color:#4f46e5;font-family:var(--mono);padding-top:7px">RAID Log</label>
+                      <textarea id="jira-cfg-jql-raid" rows="3" spellcheck="false"
+                        style="border:1.5px solid #a7f3d0;border-left:3px solid #6366f1;border-radius:7px;padding:6px 10px;font-size:10px;font-family:var(--mono);background:#fff;color:var(--text);width:100%;resize:vertical;line-height:1.5"></textarea>
+                      <label style="font-size:10px;font-weight:700;color:#065f46;font-family:var(--mono);padding-top:7px">Cross Functional</label>
+                      <textarea id="jira-cfg-jql-cf" rows="3" spellcheck="false"
+                        style="border:1.5px solid #a7f3d0;border-left:3px solid #059669;border-radius:7px;padding:6px 10px;font-size:10px;font-family:var(--mono);background:#fff;color:var(--text);width:100%;resize:vertical;line-height:1.5"></textarea>
+                      <label style="font-size:10px;font-weight:700;color:var(--sp-dark);font-family:var(--mono);padding-top:7px">Sprint Planning</label>
+                      <textarea id="jira-cfg-jql-sprintplan" rows="3" spellcheck="false"
+                        style="border:1.5px solid #a7f3d0;border-left:3px solid var(--sp-color);border-radius:7px;padding:6px 10px;font-size:10px;font-family:var(--mono);background:#fff;color:var(--text);width:100%;resize:vertical;line-height:1.5"></textarea>
+                    </div>
+                    <!-- BPML 3-file section -->
+                    <div style="background:#faf5ff;border:1.5px solid #ddd6fe;border-radius:9px;padding:12px 14px">
+                      <div style="font-size:9px;font-weight:800;color:var(--bpml-dark);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+                        <svg viewBox="0 0 12 12" fill="none" stroke="var(--bpml-color)" stroke-width="1.5" style="width:10px;height:10px"><rect x="1" y="1" width="10" height="10" rx="1.5"/><path d="M3 5h6M3 8h4"/></svg>
+                        BPML Structure — 3 separate JQL Files
+                      </div>
+                      <div style="display:grid;grid-template-columns:130px 1fr;gap:8px;align-items:start">
+                        <label style="font-size:10px;font-weight:700;color:var(--bpml-dark);font-family:var(--mono);padding-top:7px">
+                          File 1
+                          <div style="font-size:9px;font-weight:500;color:var(--text3);margin-top:1px">Level 1–4</div>
+                        </label>
+                        <textarea id="jira-cfg-jql-bpml1" rows="4" spellcheck="false"
+                          style="border:1.5px solid #ddd6fe;border-left:3px solid var(--bpml-color);border-radius:7px;padding:6px 10px;font-size:10px;font-family:var(--mono);background:#fff;color:var(--text);width:100%;resize:vertical;line-height:1.5"></textarea>
+                        <label style="font-size:10px;font-weight:700;color:#6d28d9;font-family:var(--mono);padding-top:7px">
+                          File 2
+                          <div style="font-size:9px;font-weight:500;color:var(--text3);margin-top:1px">RICEFW</div>
+                        </label>
+                        <textarea id="jira-cfg-jql-bpml2" rows="4" spellcheck="false"
+                          style="border:1.5px solid #ddd6fe;border-left:3px solid #7c3aed;border-radius:7px;padding:6px 10px;font-size:10px;font-family:var(--mono);background:#fff;color:var(--text);width:100%;resize:vertical;line-height:1.5"></textarea>
+                        <label style="font-size:10px;font-weight:700;color:#4338ca;font-family:var(--mono);padding-top:7px">
+                          File 3
+                          <div style="font-size:9px;font-weight:500;color:var(--text3);margin-top:1px">Req / FSD / FUT</div>
+                        </label>
+                        <textarea id="jira-cfg-jql-bpml3" rows="4" spellcheck="false"
+                          style="border:1.5px solid #ddd6fe;border-left:3px solid #6366f1;border-radius:7px;padding:6px 10px;font-size:10px;font-family:var(--mono);background:#fff;color:var(--text);width:100%;resize:vertical;line-height:1.5"></textarea>
+                      </div>
+                    </div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;padding-top:4px">
+                      <button onclick="_jiraCfgSave()"
+                        style="background:#059669;color:#fff;border:none;border-radius:8px;padding:7px 18px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:5px">
+                        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" style="width:11px;height:11px"><path d="M2 7l3.5 3.5L12 3"/></svg>
+                        Save Config
+                      </button>
+                      <button onclick="_jiraCfgReset()"
+                        style="background:#fff;border:1.5px solid #fca5a5;color:#dc2626;border-radius:8px;padding:7px 14px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font)">
+                        Reset Defaults
+                      </button>
+                      <button onclick="_jiraCfgToggleEdit()"
+                        style="background:#f1f5f9;border:1.5px solid var(--grey300);color:var(--text2);border-radius:8px;padding:7px 14px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font)">
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Start proxy footer -->
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding-top:10px;margin-top:10px;border-top:1px solid #bbf7d0">
+                    <div style="font-size:10px;font-weight:700;color:#065f46;flex-shrink:0">Start proxy:</div>
+                    <div style="display:flex;gap:6px;flex-wrap:wrap">
+                      <span style="background:#065f46;color:#fff;padding:3px 10px;border-radius:5px;font-size:10px;font-family:var(--mono)">python server.py</span>
+                      <span style="color:var(--text3);font-size:10px;align-self:center">or</span>
+                      <span style="background:#0f766e;color:#fff;padding:3px 10px;border-radius:5px;font-size:10px;font-family:var(--mono)">run-proxy.cmd</span>
+                      <span style="color:var(--text3);font-size:10px;align-self:center">or (Node)</span>
+                      <span style="background:#1d4ed8;color:#fff;padding:3px 10px;border-radius:5px;font-size:10px;font-family:var(--mono)">npm start</span>
+                    </div>
+                  </div>
+                  <div style="margin-top:8px;padding:7px 10px;background:#fef9c3;border:1px solid #fde047;border-radius:7px;font-size:10px;color:#713f12;line-height:1.5">
+                    ⚠️ <strong>Important:</strong> Serve this dashboard over <code style="font-family:var(--mono);font-size:9px">http://localhost</code> — not <code style="font-family:var(--mono);font-size:9px">file://</code> — so the browser allows <code style="font-family:var(--mono);font-size:9px">fetch</code> requests to the proxy.
+                  </div>
+                </div>
+
+                <!-- ── Master toggle: Apply Jira Pull to ALL cards ── -->
+                <div style="background:linear-gradient(135deg,#064e3b 0%,#065f46 100%);border-radius:10px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+                  <div>
+                    <div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:3px">Global Method Toggle</div>
+                    <div style="font-size:10px;color:rgba(255,255,255,0.75);line-height:1.4">Switch all upload cards between <strong style="color:#6ee7b7">CSV</strong> and <strong style="color:#6ee7b7">Jira Pull</strong> at once, then optionally apply Jira Pull to all cards in one click.</div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+                    <!-- Master toggle pill -->
+                    <div style="display:flex;align-items:center;gap:6px;background:rgba(0,0,0,0.2);border-radius:20px;padding:4px 8px">
+                      <span id="master-lbl-csv" style="font-size:10px;font-weight:700;font-family:var(--mono);color:#93c5fd">CSV</span>
+                      <div id="umt-master" onclick="_ucMasterToggle()" title="Switch ALL cards"
+                        style="position:relative;width:44px;height:22px;background:#6ee7b7;border-radius:11px;cursor:pointer;transition:background 0.2s;border:2px solid rgba(255,255,255,0.3)">
+                        <div id="umt-master-thumb" style="position:absolute;top:2px;left:2px;width:14px;height:14px;background:#fff;border-radius:50%;transition:transform 0.22s cubic-bezier(0.4,0,0.2,1);box-shadow:0 1px 3px rgba(0,0,0,0.3)"></div>
+                      </div>
+                      <span id="master-lbl-jira" style="font-size:10px;font-weight:700;font-family:var(--mono);color:rgba(255,255,255,0.5)">Jira</span>
+                    </div>
+                    <!-- Apply Jira Pull button -->
+                    <button id="apply-jira-all-btn" onclick="_ucApplyJiraAll()"
+                      style="background:#059669;color:#fff;border:2px solid #6ee7b7;border-radius:9px;padding:8px 16px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:6px;opacity:0.45;pointer-events:none;transition:opacity 0.2s,transform 0.1s;white-space:nowrap">
+                      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" style="width:11px;height:11px"><path d="M2 7c0-2.76 2.24-5 5-5s5 2.24 5 5"/><path d="M10 5l2 2 2-2"/><path d="M7 10v2M5 11l2 2 2-2"/></svg>
+                      Apply Jira Pull to All Cards
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Fallback notice -->
+                <div style="display:flex;align-items:flex-start;gap:8px;background:#fff7ed;border:1.5px solid #fed7aa;border-radius:9px;padding:10px 14px">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="#c2410c" stroke-width="1.5" style="width:13px;height:13px;flex-shrink:0;margin-top:1px"><circle cx="8" cy="8" r="7"/><path d="M8 5v3M8 10.5v.5"/></svg>
+                  <div style="font-size:11px;color:#7c2d12;line-height:1.5"><strong>If Jira Pull doesn't work</strong> — use the Global Toggle above (or the toggle on each card) to switch back to <strong>CSV</strong> and upload the file instead. CSV upload always works without a proxy and produces identical results.</div>
+                </div>
+              </div>
             </div>
           </div>
           <div style="display:flex;flex-wrap:wrap;gap:8px;padding-top:10px;border-top:1px solid var(--grey200)">
@@ -3232,12 +3527,25 @@
         <div class="card" id="api-key-card" style="margin-bottom:14px;border-left:4px solid #7c3aed">
           <div class="card-title">
             <svg viewBox="0 0 16 16" fill="none" stroke="#7c3aed" stroke-width="1.5" style="width:14px;height:14px"><path d="M11 1a4 4 0 014 4 4 4 0 01-4 4 4 4 0 01-1.56-.32L7 11H5v2H3v2H1v-2L6.32 7.56A4 4 0 0111 1z"/><circle cx="11.5" cy="4.5" r="1" fill="#7c3aed" stroke="none"/></svg>
-            <span style="font-weight:700;color:#5b21b6">Claude AI — API Key (for local / offline use)</span>
-            <span style="font-size:10px;font-family:var(--mono);color:var(--text3);margin-left:6px">Only needed when running the file locally — not needed on claude.ai</span>
+            <span style="font-weight:700;color:#5b21b6">Claude AI — API Key</span>
+            <span style="font-size:10px;font-family:var(--mono);color:var(--text3);margin-left:6px">Powers E2E Test Scenario generation in Test Planning — only needed when running locally</span>
           </div>
-          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:4px">
+
+          <!-- Context banner -->
+          <div style="display:flex;gap:10px;align-items:flex-start;background:#faf5ff;border:1.5px solid #ddd6fe;border-radius:9px;padding:10px 14px;margin-bottom:12px">
+            <svg viewBox="0 0 16 16" fill="none" stroke="#7c3aed" stroke-width="1.5" style="width:13px;height:13px;flex-shrink:0;margin-top:1px"><rect x="1" y="3" width="14" height="11" rx="1.5"/><path d="M5 3V1.5M11 3V1.5M1 7h14"/></svg>
+            <div style="font-size:11px;color:#5b21b6;line-height:1.6">
+              <strong>Used for:</strong> Generating AI-powered E2E Test Scenarios in the <strong>Test Planning</strong> tab. Not required for CSV uploads, BPML, Sprint, RAID, or any other dashboard function.
+              <span style="display:inline-flex;align-items:center;gap:4px;margin-left:6px;background:#ede9fe;border-radius:4px;padding:1px 7px;font-size:10px;font-weight:700;color:#5b21b6;white-space:nowrap">
+                <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" style="width:8px;height:8px"><circle cx="5" cy="5" r="4"/><path d="M5 3v2l1.5 1"/></svg>
+                Not needed on claude.ai
+              </span>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
             <input id="claude-api-key-input" type="password" placeholder="sk-ant-api03-…  (paste your Anthropic API key)"
-              style="flex:1;min-width:260px;border:1px solid #ddd6fe;border-radius:8px;padding:8px 14px;font-size:12px;font-family:var(--mono);color:var(--text);outline:none;background:#faf5ff"
+              style="flex:1;min-width:260px;border:1.5px solid #ddd6fe;border-radius:8px;padding:8px 14px;font-size:12px;font-family:var(--mono);color:var(--text);outline:none;background:#faf5ff"
               oninput="_apiKeySave()" autocomplete="off" spellcheck="false">
             <button onclick="_apiKeyToggleShow()" id="api-key-show-btn"
               style="background:#ede9fe;border:1px solid #ddd6fe;color:#5b21b6;border-radius:8px;padding:8px 14px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);white-space:nowrap">
@@ -3250,8 +3558,8 @@
             <span id="api-key-status" style="font-size:10px;font-family:var(--mono);color:var(--text3)"></span>
           </div>
           <div style="margin-top:8px;font-size:10px;color:var(--text3);font-family:var(--mono);line-height:1.6">
-            Key is stored in your browser's <strong>localStorage</strong> — never sent anywhere except directly to <code>api.anthropic.com</code>.
-            Generate a key at <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:#7c3aed">console.anthropic.com</a>.
+            Key stored in browser <strong>localStorage</strong> — sent only to <code>api.anthropic.com</code>, never anywhere else.
+            Generate at <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:#7c3aed">console.anthropic.com</a>.
           </div>
         </div>
 
@@ -3306,13 +3614,20 @@
                 <span class="usc-dot" style="background:var(--grey400)"></span>No file
               </div>
             </div>
-            <div class="upload-zone" id="sprint-drop-zone" onclick="document.getElementById('csv-sprint-input').click()">
+            <div class="uc-method-toggle">
+              <span class="umt-lbl umt-lbl-csv" id="ulbl-csv-sprint">CSV</span>
+              <div class="umt-track" id="umt-sprint" onclick="_ucToggle('sprint')" title="Toggle between CSV upload and Jira Pull">
+                <div class="umt-thumb"></div>
+              </div>
+              <span class="umt-lbl umt-lbl-jira" id="ulbl-jira-sprint">Jira Pull</span>
+            </div>
+            <div class="upload-zone uc-csv-zone" id="ucsv-sprint" style="margin:8px 14px 0" onclick="document.getElementById('csv-sprint-input').click()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16V8m0 0l-4 4m4-4l4 4"/><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1"/></svg>
               <div class="upload-zone-title">Drop Sprint CSV here</div>
               <div class="upload-zone-sub">Updates: Overview · Sprint Update · Workstream · Team</div>
             </div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-              <button type="button" class="upload-btn sprint-btn" style="padding:7px 14px;font-size:11px;margin:0" onclick="_jiraPullSprint()">Pull from Jira</button>
+            <div class="uc-jira-row" id="ujira-sprint">
+              <button type="button" class="upload-btn sprint-btn" style="padding:7px 14px;font-size:11px;margin:0" onclick="_jiraPullSprint()">⚡ Pull from Jira</button>
             </div>
             <div class="upload-field-guide">
               <div class="ufg-title">Expected fields</div>
@@ -3341,13 +3656,20 @@
                 <span class="usc-dot" style="background:var(--grey400)"></span>No file
               </div>
             </div>
-            <div class="upload-zone raid-zone" id="raid-drop-zone" onclick="document.getElementById('csv-raid-input').click()">
+            <div class="uc-method-toggle">
+              <span class="umt-lbl umt-lbl-csv" id="ulbl-csv-raid">CSV</span>
+              <div class="umt-track" id="umt-raid" onclick="_ucToggle('raid')" title="Toggle between CSV upload and Jira Pull">
+                <div class="umt-thumb"></div>
+              </div>
+              <span class="umt-lbl umt-lbl-jira" id="ulbl-jira-raid">Jira Pull</span>
+            </div>
+            <div class="upload-zone raid-zone uc-csv-zone" id="ucsv-raid" style="margin:8px 14px 0" onclick="document.getElementById('csv-raid-input').click()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16V8m0 0l-4 4m4-4l4 4"/><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1"/></svg>
               <div class="upload-zone-title">Drop RAID CSV here</div>
               <div class="upload-zone-sub">Updates: Overview · RAID Log · Workstream · Team</div>
             </div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-              <button type="button" class="upload-btn raid-btn" style="padding:7px 14px;font-size:11px;margin:0" onclick="_jiraPullRaid()">Pull from Jira</button>
+            <div class="uc-jira-row" id="ujira-raid">
+              <button type="button" class="upload-btn raid-btn" style="padding:7px 14px;font-size:11px;margin:0" onclick="_jiraPullRaid()">⚡ Pull from Jira</button>
             </div>
             <div class="upload-field-guide">
               <div class="ufg-title">Expected fields</div>
@@ -3376,13 +3698,20 @@
                 <span class="usc-dot" style="background:var(--grey400)"></span>No file
               </div>
             </div>
-            <div class="upload-zone" id="cf-drop-zone" onclick="document.getElementById('csv-cf-input').click()" style="border-color:#d1fae5">
+            <div class="uc-method-toggle">
+              <span class="umt-lbl umt-lbl-csv" id="ulbl-csv-cf">CSV</span>
+              <div class="umt-track" id="umt-cf" onclick="_ucToggle('cf')" title="Toggle between CSV upload and Jira Pull">
+                <div class="umt-thumb"></div>
+              </div>
+              <span class="umt-lbl umt-lbl-jira" id="ulbl-jira-cf">Jira Pull</span>
+            </div>
+            <div class="upload-zone uc-csv-zone" id="ucsv-cf" style="margin:8px 14px 0;border-color:#d1fae5" onclick="document.getElementById('csv-cf-input').click()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16V8m0 0l-4 4m4-4l4 4"/><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1"/></svg>
               <div class="upload-zone-title">Drop Cross Functional CSV here</div>
               <div class="upload-zone-sub">Updates: Overview · Cross Functional</div>
             </div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-              <button type="button" class="upload-btn" style="padding:7px 14px;font-size:11px;margin:0;background:#059669;color:#fff;border:none" onclick="_jiraPullCf()">Pull from Jira</button>
+            <div class="uc-jira-row" id="ujira-cf">
+              <button type="button" class="upload-btn" style="padding:7px 14px;font-size:11px;margin:0;background:#059669;color:#fff;border:none" onclick="_jiraPullCf()">⚡ Pull from Jira</button>
             </div>
             <div class="upload-field-guide">
               <div class="ufg-title">Expected fields</div>
@@ -3411,7 +3740,17 @@
               </div>
             </div>
             <!-- Three upload slots -->
-            <div style="display:flex;flex-direction:column;gap:8px;padding:12px 16px 8px">
+            <div style="padding:10px 14px 0">
+              <div class="uc-method-toggle" style="padding:0 0 8px 0">
+                <span class="umt-lbl umt-lbl-csv" id="ulbl-csv-bpml">CSV</span>
+                <div class="umt-track" id="umt-bpml" onclick="_ucToggle('bpml')" title="Toggle between CSV upload and Jira Pull">
+                  <div class="umt-thumb"></div>
+                </div>
+                <span class="umt-lbl umt-lbl-jira" id="ulbl-jira-bpml">Jira Pull</span>
+                <span style="font-size:10px;color:var(--text3);margin-left:6px">(pulls all 3 files at once)</span>
+              </div>
+            </div>
+            <div id="ucsv-bpml" class="uc-csv-zone" style="display:flex;flex-direction:column;gap:8px;padding:0 14px 8px">
               <!-- Slot 1: BPML Hierarchy -->
               <div style="border:1.5px dashed #ddd6fe;border-radius:8px;padding:10px 14px;cursor:pointer;transition:background 0.12s;background:#faf5ff"
                    id="bpml-drop-zone-1"
@@ -3466,10 +3805,14 @@
                   <span id="bpml-file3-dot" style="width:8px;height:8px;border-radius:50%;background:var(--grey300);flex-shrink:0"></span>
                 </div>
               </div>
+            </div>
+            <div class="uc-jira-row" id="ujira-bpml" style="padding:0 14px 8px">
               <button type="button" onclick="_jiraPullBpml()"
                 style="width:100%;background:#7c3aed;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font)">
-                Pull all 3 files from Jira &amp; build
+                ⚡ Pull all 3 files from Jira &amp; build
               </button>
+            </div>
+            <div style="padding:0 14px 8px">
               <!-- Build button -->
               <button id="bpml-build-btn" onclick="_bpmlBuildFromFiles()" disabled
                 style="margin-top:4px;width:100%;background:var(--bpml-color);color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);opacity:0.4;transition:opacity 0.2s"
@@ -3522,13 +3865,20 @@
                 <span class="usc-dot" style="background:var(--grey400)"></span>No file
               </div>
             </div>
-            <div class="upload-zone" id="spplan-drop-zone" onclick="document.getElementById('csv-sprintplan-input').click()" style="border-color:#cffafe">
+            <div class="uc-method-toggle">
+              <span class="umt-lbl umt-lbl-csv" id="ulbl-csv-spplan">CSV</span>
+              <div class="umt-track" id="umt-spplan" onclick="_ucToggle('spplan')" title="Toggle between CSV upload and Jira Pull">
+                <div class="umt-thumb"></div>
+              </div>
+              <span class="umt-lbl umt-lbl-jira" id="ulbl-jira-spplan">Jira Pull</span>
+            </div>
+            <div class="upload-zone uc-csv-zone" id="ucsv-spplan" style="margin:8px 14px 0;border-color:#cffafe" onclick="document.getElementById('csv-sprintplan-input').click()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16V8m0 0l-4 4m4-4l4 4"/><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1"/></svg>
               <div class="upload-zone-title">Drop Sprint Stories CSV here</div>
               <div class="upload-zone-sub">Updates: Sprint Planning tab — Full Items + Planning board</div>
             </div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-              <button type="button" class="upload-btn" style="padding:7px 14px;font-size:11px;margin:0;background:var(--sp-color);color:#fff;border:none" onclick="_jiraPullSprintPlan()">Pull from Jira</button>
+            <div class="uc-jira-row" id="ujira-spplan">
+              <button type="button" class="upload-btn" style="padding:7px 14px;font-size:11px;margin:0;background:var(--sp-color);color:#fff;border:none" onclick="_jiraPullSprintPlan()">⚡ Pull from Jira</button>
             </div>
             <div class="upload-field-guide">
               <div class="ufg-title">Expected fields</div>
@@ -3559,13 +3909,20 @@
                 <span class="usc-dot" style="background:var(--grey400)"></span>No file
               </div>
             </div>
-            <div class="upload-zone" id="testplan-drop-zone" onclick="document.getElementById('csv-testplan-input').click()" style="border-color:#fef3c7">
+            <div class="uc-method-toggle">
+              <span class="umt-lbl umt-lbl-csv" id="ulbl-csv-testplan">CSV</span>
+              <div class="umt-track" id="umt-testplan" onclick="_ucToggle('testplan')" title="Toggle between CSV upload and Jira Pull">
+                <div class="umt-thumb"></div>
+              </div>
+              <span class="umt-lbl umt-lbl-jira" id="ulbl-jira-testplan">Jira Pull</span>
+            </div>
+            <div class="upload-zone uc-csv-zone" id="ucsv-testplan" style="margin:8px 14px 0;border-color:#fef3c7" onclick="document.getElementById('csv-testplan-input').click()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16V8m0 0l-4 4m4-4l4 4"/><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1"/></svg>
               <div class="upload-zone-title">Drop Test Planning CSV here</div>
               <div class="upload-zone-sub">Same Jira stories CSV — focuses on FUT, FSD &amp; TC coverage</div>
             </div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-              <button type="button" class="upload-btn" style="padding:7px 14px;font-size:11px;margin:0;background:var(--tp-color);color:#fff;border:none" onclick="_jiraPullTestPlan()">Pull from Jira</button>
+            <div class="uc-jira-row" id="ujira-testplan">
+              <button type="button" class="upload-btn" style="padding:7px 14px;font-size:11px;margin:0;background:var(--tp-color);color:#fff;border:none" onclick="_jiraPullTestPlan()">⚡ Pull from Jira</button>
             </div>
             <div class="upload-field-guide">
               <div class="ufg-title">Expected fields</div>
@@ -4771,7 +5128,13 @@ function renderDueChart(d){
 }
 
 function renderWsChart(d){
-  const ctx=document.getElementById('ws-chart');
+  const noData = document.getElementById('ws-velocity-no-data');
+  const dataEl = document.getElementById('ws-velocity-data');
+  const ctx    = document.getElementById('ws-chart');
+  const hasData = d && d.subworkstreams && d.subworkstreams.length > 0;
+  if (noData) noData.style.display = hasData ? 'none' : 'block';
+  if (dataEl) dataEl.style.display = hasData ? 'block' : 'none';
+  if (!hasData) { if(wsChartObj){wsChartObj.destroy();wsChartObj=null;} return; }
   if(!ctx) return;
   if(wsChartObj){wsChartObj.destroy();wsChartObj=null;}
   wsChartObj=new Chart(ctx,{type:'bar',data:{
@@ -6175,6 +6538,292 @@ function handleRaidFile(file) {
   };
   rd.readAsText(file);
 }
+
+/* ── Jira Config: editable proxy + JQL panel ── */
+var _JIRA_CFG_KEY = 'pmo_jira_cfg';
+
+/* Pull defaults straight from the _JQL query panel definitions */
+function _jiraCfgDefaults() {
+  // _JQL is defined later in the file; access at call-time, not at parse-time
+  var jql = (typeof _JQL !== 'undefined') ? _JQL : {};
+  var bpml = Array.isArray(jql.bpml) ? jql.bpml : [];
+  return {
+    proxy:       'http://127.0.0.1:8787',
+    base:        'https://pmohub.pwc.com',
+    user:        '',
+    token:       '',
+    jqlSprint:    (jql.sprint      || '').trim(),
+    jqlRaid:      (jql.raid        || '').trim(),
+    jqlCf:        (jql.cf          || '').trim(),
+    jqlSprintPlan:(jql.sprintplan  || '').trim(),
+    jqlBpml1:    (bpml[0] && bpml[0].query ? bpml[0].query.trim() : ''),
+    jqlBpml2:    (bpml[1] && bpml[1].query ? bpml[1].query.trim() : ''),
+    jqlBpml3:    (bpml[2] && bpml[2].query ? bpml[2].query.trim() : '')
+  };
+}
+
+/* Auto-detect the logged-in user's email from various browser signals */
+/* ── Jira user detection: proxy /api/whoami → meta tag → blank ── */
+async function _jiraCfgDetectUser() {
+  // 1. Already manually saved — always trust this first
+  try {
+    var saved = JSON.parse(localStorage.getItem(_JIRA_CFG_KEY) || '{}');
+    if (saved.user) return { email: saved.user, src: 'saved' };
+  } catch(e) {}
+  // 2. Ask the local proxy — it knows the currently authenticated Jira user
+  try {
+    var base = (window.PMO_JIRA_PROXY || 'http://127.0.0.1:8787').replace(/\/$/, '');
+    var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function(){ ctrl.abort(); }, 2500) : null;
+    var r = await fetch(base + '/api/whoami', { method: 'GET', signal: ctrl ? ctrl.signal : undefined });
+    if (timer) clearTimeout(timer);
+    if (r.ok) {
+      var d = await r.json();
+      var email = d.emailAddress || d.email || d.name || '';
+      if (email && email.indexOf('@') !== -1) return { email: email, src: 'proxy' };
+    }
+  } catch(e) {}
+  // 3. Server-injected meta tag
+  try {
+    var meta = document.querySelector('meta[name="user-email"]') || document.querySelector('meta[name="current-user"]');
+    if (meta && meta.content && meta.content.indexOf('@') !== -1) return { email: meta.content, src: 'meta' };
+  } catch(e) {}
+  // 4. Nothing found — user must type it
+  return { email: '', src: '' };
+}
+
+function _jiraCfgLoad() {
+  var defs = _jiraCfgDefaults();
+  try {
+    var saved = JSON.parse(localStorage.getItem(_JIRA_CFG_KEY) || '{}');
+    return Object.assign({}, defs, saved);
+  } catch(e) { return defs; }
+}
+
+async function _jiraCfgRender() {
+  var c = _jiraCfgLoad();
+  var setText = function(id, v) { var el = document.getElementById(id); if (el) el.textContent = v || '—'; };
+  setText('jira-cfg-v-proxy',          c.proxy);
+  setText('jira-cfg-v-base',           c.base);
+  setText('jira-cfg-v-user',           c.user || '…detecting');
+  setText('jira-cfg-v-token',          c.token ? '••••••••' : '—');
+  setText('jira-cfg-v-jql-sprint',     c.jqlSprint);
+  setText('jira-cfg-v-jql-raid',       c.jqlRaid);
+  setText('jira-cfg-v-jql-cf',         c.jqlCf);
+  setText('jira-cfg-v-jql-sprintplan', c.jqlSprintPlan);
+  setText('jira-cfg-v-jql-bpml1',      c.jqlBpml1);
+  setText('jira-cfg-v-jql-bpml2',      c.jqlBpml2);
+  setText('jira-cfg-v-jql-bpml3',      c.jqlBpml3);
+  var pi = document.getElementById('pmo-jira-proxy-input');
+  if (pi && !pi.value) pi.value = c.proxy;
+  window.PMO_JIRA_PROXY = c.proxy;
+  // Async user detection — updates the display when result arrives
+  if (!c.user) {
+    _jiraCfgDetectUser().then(function(det) {
+      var userEl = document.getElementById('jira-cfg-v-user');
+      if (userEl) userEl.textContent = det.email || '— (enter in Edit Config)';
+      // pre-fill edit field too if it is already open
+      var editInput = document.getElementById('jira-cfg-user');
+      if (editInput && !editInput.value && det.email) {
+        editInput.value = det.email;
+        var srcEl = document.getElementById('jira-cfg-user-src');
+        if (srcEl) srcEl.textContent = det.src ? '← ' + det.src : '';
+      }
+    });
+  }
+}
+
+async function _jiraCfgToggleEdit() {
+  var view = document.getElementById('jira-cfg-view');
+  var edit = document.getElementById('jira-cfg-edit');
+  var lbl  = document.getElementById('jira-cfg-edit-label');
+  var icon = document.getElementById('jira-cfg-edit-icon');
+  var btn  = document.getElementById('jira-cfg-edit-btn');
+  var isEdit = edit.style.display !== 'none';
+  if (isEdit) {
+    edit.style.display = 'none'; view.style.display = 'grid';
+    lbl.textContent = 'Edit Config';
+    btn.style.background = '#f0fdf4'; btn.style.borderColor = '#6ee7b7'; btn.style.color = '#065f46';
+    icon.innerHTML = '<path d="M10 2l2 2-7 7H3V9l7-7z"/>';
+  } else {
+    var c = _jiraCfgLoad();
+    var fill = function(id, v) { var el = document.getElementById(id); if (el) el.value = v || ''; };
+    fill('pmo-jira-proxy-input',    c.proxy);
+    fill('jira-cfg-base',           c.base);
+    fill('jira-cfg-user',           c.user);
+    fill('jira-cfg-token',          c.token);
+    fill('jira-cfg-jql-sprint',     c.jqlSprint);
+    fill('jira-cfg-jql-raid',       c.jqlRaid);
+    fill('jira-cfg-jql-cf',         c.jqlCf);
+    fill('jira-cfg-jql-sprintplan', c.jqlSprintPlan);
+    fill('jira-cfg-jql-bpml1',      c.jqlBpml1);
+    fill('jira-cfg-jql-bpml2',      c.jqlBpml2);
+    fill('jira-cfg-jql-bpml3',      c.jqlBpml3);
+    view.style.display = 'none'; edit.style.display = 'flex';
+    lbl.textContent = 'Cancel Edit';
+    btn.style.background = '#fef2f2'; btn.style.borderColor = '#fca5a5'; btn.style.color = '#dc2626';
+    icon.innerHTML = '<path d="M11 3L3 11M3 3l8 8"/>';
+    // If user is blank, try async detection now and fill in when ready
+    var userInput = document.getElementById('jira-cfg-user');
+    if (userInput && !userInput.value) {
+      var srcEl = document.getElementById('jira-cfg-user-src');
+      if (srcEl) srcEl.textContent = '…';
+      _jiraCfgDetectUser().then(function(det) {
+        if (det.email && userInput && !userInput.value) {
+          userInput.value = det.email;
+          if (srcEl) srcEl.textContent = det.src ? '← ' + det.src : '';
+        } else {
+          if (srcEl) srcEl.textContent = '';
+        }
+      });
+    }
+  }
+}
+
+function _jiraCfgTokenToggle() {
+  var inp = document.getElementById('jira-cfg-token');
+  var btn = document.getElementById('jira-token-show-btn');
+  if (!inp) return;
+  var shown = inp.type === 'text';
+  inp.type = shown ? 'password' : 'text';
+  if (btn) btn.textContent = shown ? 'Show' : 'Hide';
+}
+
+function _jiraCfgSave() {
+  var g = function(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; };
+  var defs = _jiraCfgDefaults();
+  var cfg = {
+    proxy:        g('pmo-jira-proxy-input') || defs.proxy,
+    base:         g('jira-cfg-base')         || defs.base,
+    user:         g('jira-cfg-user'),
+    token:        g('jira-cfg-token'),
+    jqlSprint:    g('jira-cfg-jql-sprint')    || defs.jqlSprint,
+    jqlRaid:      g('jira-cfg-jql-raid')      || defs.jqlRaid,
+    jqlCf:        g('jira-cfg-jql-cf')        || defs.jqlCf,
+    jqlSprintPlan:g('jira-cfg-jql-sprintplan')|| defs.jqlSprintPlan,
+    jqlBpml1:     g('jira-cfg-jql-bpml1')     || defs.jqlBpml1,
+    jqlBpml2:     g('jira-cfg-jql-bpml2')     || defs.jqlBpml2,
+    jqlBpml3:     g('jira-cfg-jql-bpml3')     || defs.jqlBpml3
+  };
+  localStorage.setItem(_JIRA_CFG_KEY, JSON.stringify(cfg));
+  localStorage.setItem('pmo_jira_proxy', cfg.proxy);
+  window.PMO_JIRA_PROXY = cfg.proxy;
+  _jiraCfgRender();
+  var view = document.getElementById('jira-cfg-view');
+  var edit = document.getElementById('jira-cfg-edit');
+  var lbl  = document.getElementById('jira-cfg-edit-label');
+  var btn  = document.getElementById('jira-cfg-edit-btn');
+  var icon = document.getElementById('jira-cfg-edit-icon');
+  if (view) view.style.display = 'grid';
+  if (edit) edit.style.display = 'none';
+  if (lbl)  lbl.textContent = 'Edit Config';
+  if (btn)  { btn.style.background='#f0fdf4'; btn.style.borderColor='#6ee7b7'; btn.style.color='#065f46'; }
+  if (icon) icon.innerHTML = '<path d="M10 2l2 2-7 7H3V9l7-7z"/>';
+  if (typeof showToast === 'function') showToast('✓ Jira configuration saved');
+}
+
+function _jiraCfgReset() {
+  if (!confirm('Reset all Jira configuration to defaults (sourced from the Query Panel)?')) return;
+  localStorage.removeItem(_JIRA_CFG_KEY);
+  localStorage.removeItem('pmo_jira_proxy');
+  window.PMO_JIRA_PROXY = 'http://127.0.0.1:8787';
+  _jiraCfgRender();
+  var defs = _jiraCfgDefaults();
+  var fill = function(id, v) { var el = document.getElementById(id); if (el) el.value = v || ''; };
+  fill('pmo-jira-proxy-input',   defs.proxy);
+  fill('jira-cfg-base',          defs.base);
+  fill('jira-cfg-user',          '');
+  fill('jira-cfg-token',         '');
+  fill('jira-cfg-jql-sprint',    defs.jqlSprint);
+  fill('jira-cfg-jql-raid',      defs.jqlRaid);
+  fill('jira-cfg-jql-cf',        defs.jqlCf);
+  fill('jira-cfg-jql-sprintplan',defs.jqlSprintPlan);
+  fill('jira-cfg-jql-bpml1',     defs.jqlBpml1);
+  fill('jira-cfg-jql-bpml2',     defs.jqlBpml2);
+  fill('jira-cfg-jql-bpml3',     defs.jqlBpml3);
+  if (typeof showToast === 'function') showToast('Jira config reset to Query Panel defaults');
+}
+
+// Init config on load — runs after _JQL is defined
+document.addEventListener('DOMContentLoaded', function() { _jiraCfgRender(); });
+
+/* ── Upload card toggle: CSV ↔ Jira Pull ── */
+var _ALL_CARD_IDS = ['sprint','raid','cf','bpml','spplan','testplan'];
+var _masterJiraMode = false;
+
+function _ucToggle(cardId, forceJira) {
+  var track = document.getElementById('umt-' + cardId);
+  if (!track) return;
+  var jiraRow = document.getElementById('ujira-' + cardId);
+  var csvZone = document.getElementById('ucsv-' + cardId);
+  var lblCsv  = document.getElementById('ulbl-csv-' + cardId);
+  var lblJira = document.getElementById('ulbl-jira-' + cardId);
+  var isJira;
+  if (forceJira === true)  { isJira = true;  track.classList.add('jira-mode'); }
+  else if (forceJira === false) { isJira = false; track.classList.remove('jira-mode'); }
+  else { isJira = track.classList.toggle('jira-mode'); }
+  if (jiraRow) jiraRow.classList.toggle('active', isJira);
+  if (csvZone) csvZone.classList.toggle('dimmed', isJira);
+  if (lblCsv)  { lblCsv.style.color  = isJira ? 'var(--text3)' : '#1d6ff3'; lblCsv.style.fontWeight  = isJira ? '600' : '700'; }
+  if (lblJira) { lblJira.style.color = isJira ? '#059669' : 'var(--text3)'; lblJira.style.fontWeight = isJira ? '700' : '600'; }
+}
+
+/* ── Master toggle: flip ALL cards at once ── */
+function _ucMasterToggle() {
+  _masterJiraMode = !_masterJiraMode;
+  _ALL_CARD_IDS.forEach(function(id) { _ucToggle(id, _masterJiraMode); });
+  // Update master toggle visuals
+  var thumb = document.getElementById('umt-master-thumb');
+  var track = document.getElementById('umt-master');
+  var lblCsv  = document.getElementById('master-lbl-csv');
+  var lblJira = document.getElementById('master-lbl-jira');
+  var applyBtn = document.getElementById('apply-jira-all-btn');
+  if (thumb)   thumb.style.transform = _masterJiraMode ? 'translateX(22px)' : 'translateX(0)';
+  if (track)   track.style.background = _masterJiraMode ? '#059669' : '#6ee7b7';
+  if (lblCsv)  { lblCsv.style.color  = _masterJiraMode ? 'rgba(255,255,255,0.45)' : '#93c5fd';   lblCsv.style.fontWeight  = _masterJiraMode ? '600' : '700'; }
+  if (lblJira) { lblJira.style.color = _masterJiraMode ? '#6ee7b7' : 'rgba(255,255,255,0.45)'; lblJira.style.fontWeight = _masterJiraMode ? '700' : '600'; }
+  if (applyBtn) {
+    applyBtn.style.opacity = _masterJiraMode ? '1' : '0.45';
+    applyBtn.style.pointerEvents = _masterJiraMode ? 'all' : 'none';
+  }
+}
+
+/* ── Apply Jira Pull to ALL cards (fire all pull functions) ── */
+async function _ucApplyJiraAll() {
+  var btn = document.getElementById('apply-jira-all-btn');
+  var orig = btn ? btn.innerHTML : '';
+  if (btn) { btn.innerHTML = '<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" style="width:11px;height:11px;animation:spin 1s linear infinite"><path d="M7 1a6 6 0 016 6"/></svg> Pulling…'; btn.style.opacity='0.7'; btn.style.pointerEvents='none'; }
+  var results = [];
+  var tasks = [
+    { fn: '_jiraPullSprint',    label: 'Sprint'         },
+    { fn: '_jiraPullRaid',      label: 'RAID'           },
+    { fn: '_jiraPullCf',        label: 'Cross Functional'},
+    { fn: '_jiraPullBpml',      label: 'BPML'           },
+    { fn: '_jiraPullSprintPlan',label: 'Sprint Planning' },
+    { fn: '_jiraPullTestPlan',  label: 'Test Planning'  }
+  ];
+  for (var i = 0; i < tasks.length; i++) {
+    var t = tasks[i];
+    try {
+      if (typeof window[t.fn] === 'function') { await window[t.fn](); results.push('✓ ' + t.label); }
+      else { results.push('— ' + t.label + ' (fn missing)'); }
+    } catch(e) { results.push('✗ ' + t.label + ': ' + (e.message || e)); }
+  }
+  if (btn) { btn.innerHTML = orig; btn.style.opacity='1'; btn.style.pointerEvents='all'; }
+  var ok = results.filter(function(r){ return r.startsWith('✓'); }).length;
+  var fail = results.filter(function(r){ return r.startsWith('✗'); }).length;
+  if (typeof showToast === 'function') showToast(ok + ' pulled' + (fail ? ', ' + fail + ' failed — check proxy' : ' successfully'));
+}
+
+/* Add spin keyframe if not present */
+(function(){
+  if (!document.getElementById('spin-kf')) {
+    var s = document.createElement('style');
+    s.id = 'spin-kf';
+    s.textContent = '@keyframes spin{to{transform:rotate(360deg)}}';
+    document.head.appendChild(s);
+  }
+})();
 
 /* ── Jira proxy: fetch CSV from local server (see jira-proxy/server.mjs) ── */
 async function _pmoJiraFetchCsv(path) {
@@ -13738,6 +14387,11 @@ function renderInitialEmptyState() {
   const wsSprintDa2 = document.getElementById('ws-sprint-data');
   if (wsSprintNo2) wsSprintNo2.style.display = 'block';
   if (wsSprintDa2) wsSprintDa2.style.display = 'none';
+  const wsVelNo = document.getElementById('ws-velocity-no-data');
+  const wsVelDa = document.getElementById('ws-velocity-data');
+  if (wsVelNo) wsVelNo.style.display = 'block';
+  if (wsVelDa) wsVelDa.style.display = 'none';
+  if (wsChartObj) { wsChartObj.destroy(); wsChartObj = null; }
   const swTbody = document.getElementById('sw-tbody');
   if (swTbody) swTbody.innerHTML = '';
   // Team — empty state for new sprint stories table
