@@ -1044,7 +1044,7 @@
 
   .section-panel { display: none; }
   .section-panel.active { display: block; }
-  #sec-sprintcal.active { display: flex !important; }
+  /* Sprint Planning & Calendar panel uses flex when active */
 
   /* ── BPML HIERARCHY TREE ── */
   .bpml-l1-block { background:#fff;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;box-shadow:var(--shadow-sm);overflow:hidden; }
@@ -1164,6 +1164,11 @@
         Sprint Update
         <span class="sb-badge" id="sb-risk-count" style="background:#0f1c3f">0</span>
       </div>
+      <div class="sb-item" onclick="showSection('sprintplan')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 5h6M5 8h6M5 11h3"/><path d="M11 10l1.5 1.5L14 9"/></svg>
+        Sprint Planning &amp; Calendar
+        <span class="sb-badge" id="sb-sp-view-badge" style="background:var(--sp-color)">—</span>
+      </div>
       <div class="sb-item" onclick="showSection('raid')">
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2L2 13h12L8 2z"/><path d="M8 6v4M8 11.5v.5"/></svg>
         RAID Log
@@ -1179,22 +1184,9 @@
         BPML Structure
         <span class="sb-badge" id="sb-bpml-view-badge" style="background:var(--bpml-color)">—</span>
       </div>
-      <div class="sb-item" onclick="showSection('sprintplan')">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 5h6M5 8h6M5 11h3"/><path d="M11 10l1.5 1.5L14 9"/></svg>
-        Sprint Planning
-        <span class="sb-badge" id="sb-sp-view-badge" style="background:var(--sp-color)">—</span>
-      </div>
-      <div class="sb-item" id="sb-sprintcal" onclick="showSection('sprintcal')">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="2" width="14" height="13" rx="1.5"/><path d="M1 6h14M5 1v3M11 1v3M4 9h2v2H4z"/></svg>
-        Sprint Calendar
-      </div>
       <div class="sb-item" onclick="showSection('workstream')">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h8M2 12h10"/></svg>
-        Workstream
-      </div>
-      <div class="sb-item" onclick="showSection('team')">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="5" r="2.5"/><path d="M1 13c0-2.76 2.24-5 5-5s5 2.24 5 5"/><circle cx="12" cy="5" r="2"/><path d="M12 9c1.66 0 3 1.34 3 3"/></svg>
-        Team
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h8M2 12h10"/><circle cx="13" cy="12" r="2.5" fill="currentColor" stroke="none"/></svg>
+        Workstream &amp; Team
       </div>
       <div class="sb-item" onclick="showSection('testplan')">
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 2h6l3 3v9H2V2z"/><path d="M11 2v3h3"/><path d="M5 8h6M5 11h4"/></svg>
@@ -1210,13 +1202,14 @@
       <div class="sb-label">Query</div>
       <div class="sb-query-items">
       <!-- Sprint & Stories query item -->
+      <!-- Sprint Stories query item (covers Sprint Update + Sprint Planning — 2 JQL files) -->
       <div class="sb-item" onclick="_showJQL('sprint')" style="flex-direction:column;align-items:flex-start;gap:4px;padding:10px 12px;height:auto">
         <div style="display:flex;align-items:center;gap:8px;width:100%">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:15px;height:15px;flex-shrink:0;opacity:0.8"><path d="M2 2h12v3H2zM2 7h12v3H2zM2 12h7v3H2z"/></svg>
-          <span style="flex:1;font-size:12px">Sprint Update</span>
+          <span style="flex:1;font-size:12px">Sprint Stories</span>
           <span class="sb-badge" id="sb-count" style="background:#0f1c3f">0</span>
         </div>
-        <div style="font-size:9px;color:rgba(255,255,255,0.35);font-family:var(--mono);line-height:1.4;padding-left:23px;word-break:break-word">Click to view JQL query</div>
+        <div style="font-size:9px;color:rgba(255,255,255,0.35);font-family:var(--mono);line-height:1.4;padding-left:23px;word-break:break-word">2 JQL files — Sprint Update &amp; Sprint Planning</div>
       </div>
       <!-- RAID Log query item -->
       <div class="sb-item" onclick="_showJQL('raid')" style="flex-direction:column;align-items:flex-start;gap:4px;padding:10px 12px;height:auto">
@@ -1242,15 +1235,6 @@
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:15px;height:15px;flex-shrink:0;opacity:0.8"><rect x="1" y="3" width="14" height="10" rx="2"/><path d="M4 7h8M4 10h5"/><circle cx="12" cy="6" r="1.5" fill="currentColor" stroke="none"/></svg>
           <span style="flex:1;font-size:12px">BPML Structure</span>
           <span class="sb-badge" id="sb-bpml-count" style="background:var(--bpml-color)">0</span>
-        </div>
-        <div style="font-size:9px;color:rgba(255,255,255,0.35);font-family:var(--mono);line-height:1.4;padding-left:23px;word-break:break-word">Click to view JQL query</div>
-      </div>
-      <!-- Sprint Planning query item -->
-      <div class="sb-item" onclick="_showJQL('sprintplan')" style="flex-direction:column;align-items:flex-start;gap:4px;padding:10px 12px;height:auto">
-        <div style="display:flex;align-items:center;gap:8px;width:100%">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:15px;height:15px;flex-shrink:0;opacity:0.8"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 5h6M5 8h6M5 11h3"/><path d="M11 10l1.5 1.5L14 9"/></svg>
-          <span style="flex:1;font-size:12px">Sprint Planning</span>
-          <span class="sb-badge" id="sb-spplan-count" style="background:var(--sp-color)">0</span>
         </div>
         <div style="font-size:9px;color:rgba(255,255,255,0.35);font-family:var(--mono);line-height:1.4;padding-left:23px;word-break:break-word">Click to view JQL query</div>
       </div>
@@ -1329,13 +1313,11 @@
       <div class="section-nav">
         <div class="section-nav-btn active" onclick="showSection('overview')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1.5"/><rect x="9" y="1" width="6" height="6" rx="1.5"/><rect x="1" y="9" width="6" height="6" rx="1.5"/><rect x="9" y="9" width="6" height="6" rx="1.5"/></svg>Overview</div>
         <div class="section-nav-btn" onclick="showSection('risks')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 2h12v3H2zM2 7h12v3H2zM2 12h7v3H2z"/></svg>Sprint Update</div>
+        <div class="section-nav-btn" onclick="showSection('sprintplan')" style="--nav-accent:var(--sp-color)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 5h6M5 8h6M5 11h3"/><path d="M11 10l1.5 1.5L14 9"/></svg>Sprint Planning &amp; Calendar</div>
         <div class="section-nav-btn" onclick="showSection('raid')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2L2 13h12L8 2z"/><path d="M8 6v4M8 11.5v.5"/></svg>RAID Log</div>
         <div class="section-nav-btn" onclick="showSection('cf')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><path d="M1.5 8h13M8 1.5a11 11 0 010 13M8 1.5a11 11 0 000 13"/></svg>Cross Functional</div>
         <div class="section-nav-btn" onclick="showSection('bpml')" style="--nav-accent:var(--bpml-color)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="3" width="14" height="10" rx="2"/><path d="M5 7h6M5 10h4"/><circle cx="12" cy="6" r="1.5" fill="currentColor" stroke="none"/></svg>BPML Structure</div>
-        <div class="section-nav-btn" onclick="showSection('sprintplan')" style="--nav-accent:var(--sp-color)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 5h6M5 8h6M5 11h3"/><path d="M11 10l1.5 1.5L14 9"/></svg>Sprint Planning</div>
-        <div class="section-nav-btn" onclick="showSection('sprintcal')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="2" width="14" height="13" rx="1.5"/><path d="M1 6h14M5 1v3M11 1v3M4 9h2v2H4z"/></svg>Sprint Calendar</div>
-        <div class="section-nav-btn" onclick="showSection('workstream')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h8M2 12h10"/></svg>Workstream</div>
-        <div class="section-nav-btn" onclick="showSection('team')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="5" r="2.5"/><path d="M1 13c0-2.76 2.24-5 5-5s5 2.24 5 5"/><circle cx="12" cy="5" r="2"/><path d="M12 9c1.66 0 3 1.34 3 3"/></svg>Team</div>
+        <div class="section-nav-btn" onclick="showSection('workstream')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h8M2 12h10"/><circle cx="13" cy="12" r="2.5" fill="currentColor" stroke="none"/></svg>Workstream &amp; Team</div>
         <div class="section-nav-btn" onclick="showSection('testplan')" style="--nav-accent:var(--tp-color)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 2h6l3 3v9H2V2z"/><path d="M11 2v3h3"/><path d="M5 8h6M5 11h4"/></svg>Test Planning</div>
         <div class="section-nav-btn" onclick="showSection('search')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="4.5"/><path d="M10 10l3.5 3.5"/></svg>Search Jira</div>
         <div class="section-nav-btn" onclick="showSection('upload')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 10V3m0 0L5.5 5.5M8 3l2.5 2.5M3 11v1.5A1.5 1.5 0 004.5 14h7a1.5 1.5 0 001.5-1.5V11"/></svg>Upload Data</div>
@@ -1739,6 +1721,12 @@
       <!-- WORKSTREAM SECTION -->
       <div class="section-panel" id="sec-workstream">
 
+        <!-- ── WORKSTREAM SUB-SECTION ── -->
+        <div style="display:flex;align-items:center;gap:10px;margin:0 0 14px;padding-bottom:8px;border-bottom:2px solid var(--border)">
+          <svg viewBox="0 0 16 16" fill="none" stroke="var(--navy)" stroke-width="1.5" style="width:14px;height:14px;flex-shrink:0"><path d="M2 4h12M2 8h8M2 12h10"/></svg>
+          <span style="font-size:13px;font-weight:700;color:var(--navy);letter-spacing:-.01em">Workstream</span>
+        </div>
+
         <!-- Sprint Stories by workstream -->
         <div class="card" style="margin-bottom:14px">
           <div class="card-title">
@@ -1758,6 +1746,7 @@
               <thead><tr>
                 <th>Sub-Workstream</th>
                 <th>Total</th><th>Done</th><th>In Review</th><th>In Progress</th><th>Not Started</th><th>On Hold</th>
+                <th style="text-align:center">Overdue ⚠</th>
                 <th>Progress</th><th>Completion</th><th>Coverage</th>
               </tr></thead>
               <tbody id="sw-tbody"></tbody>
@@ -1809,6 +1798,7 @@
                 <th style="text-align:center">Decisions (D)</th>
                 <th style="text-align:center">Open</th>
                 <th style="text-align:center">High Priority</th>
+                <th style="text-align:center">Overdue ⚠</th>
                 <th>Coverage</th>
               </tr></thead>
               <tbody id="ws-raid-tbody"></tbody>
@@ -1816,10 +1806,12 @@
           </div>
         </div>
 
-      </div>
 
-      <!-- TEAM SECTION -->
-      <div class="section-panel" id="sec-team">
+        <!-- ── TEAM SUB-SECTION ── -->
+        <div style="display:flex;align-items:center;gap:10px;margin:22px 0 14px;padding-top:8px;border-top:2px solid var(--border)">
+          <svg viewBox="0 0 16 16" fill="none" stroke="var(--navy)" stroke-width="1.5" style="width:14px;height:14px;flex-shrink:0"><circle cx="6" cy="5" r="2.5"/><path d="M1 13c0-2.76 2.24-5 5-5s5 2.24 5 5"/><circle cx="12" cy="5" r="2"/><path d="M12 9c1.66 0 3 1.34 3 3"/></svg>
+          <span style="font-size:13px;font-weight:700;color:var(--navy);letter-spacing:-.01em">Team</span>
+        </div>
 
         <!-- Stories per assignee table -->
         <div class="card" style="margin-bottom:14px">
@@ -1852,6 +1844,7 @@
               </tr></thead>
               <tbody id="team-sprint-tbody"></tbody>
             </table>
+            <div id="tsp-pagination" style="display:none;align-items:center;justify-content:space-between;padding:8px 12px;border-top:1px solid var(--border);gap:8px;flex-wrap:wrap;"></div>
           </div>
         </div>
 
@@ -1880,11 +1873,13 @@
                 <th style="text-align:center">Decisions (D)</th>
                 <th style="text-align:center">Open</th>
                 <th style="text-align:center">High Priority</th>
+                <th style="text-align:center">Overdue ⚠</th>
                 <th style="text-align:center">Closed</th>
                 <th>Load</th>
               </tr></thead>
               <tbody id="team-raid-tbody"></tbody>
             </table>
+            <div id="tr-pagination" style="display:none;align-items:center;justify-content:space-between;padding:8px 12px;border-top:1px solid var(--border);gap:8px;flex-wrap:wrap;"></div>
           </div>
         </div>
       </div>
@@ -2199,15 +2194,20 @@
             <div class="raid-kpi-val" id="rk-decisions">0</div>
             <div class="raid-kpi-label">Decisions</div>
           </div>
-          <div class="raid-kpi open-kpi">
+          <div class="raid-kpi open-kpi" style="cursor:pointer" id="rk-open-card" title="Click to view open items">
             <div class="raid-kpi-letter" style="font-size:14px">Open</div>
             <div class="raid-kpi-val" id="rk-open">0</div>
             <div class="raid-kpi-label">Items open</div>
           </div>
-          <div class="raid-kpi critical-kpi">
+          <div class="raid-kpi critical-kpi" style="cursor:pointer" id="rk-critical-card" title="Click to view high priority items">
             <div class="raid-kpi-letter" style="font-size:14px">High</div>
             <div class="raid-kpi-val" id="rk-critical">0</div>
             <div class="raid-kpi-label">High priority</div>
+          </div>
+          <div class="raid-kpi" style="cursor:pointer;border-top:3px solid #991b1b;background:linear-gradient(135deg,#fff5f5,#fee2e2)" id="rk-overdue-card" title="Click to view overdue items">
+            <div class="raid-kpi-letter" style="font-size:14px;color:#991b1b">⚠</div>
+            <div class="raid-kpi-val" id="rk-overdue" style="color:#991b1b">0</div>
+            <div class="raid-kpi-label" style="color:#991b1b">Overdue</div>
           </div>
         </div>
 
@@ -2587,8 +2587,8 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" style="width:22px;height:22px"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 7h8M8 12h8M8 17h5"/><path d="M16 15l2 2 3-3"/></svg>
             </div>
             <div>
-              <div style="font-size:17px;font-weight:800;color:#fff;letter-spacing:-0.02em">Sprint Planning</div>
-              <div style="font-size:11px;color:rgba(255,255,255,0.6);font-family:var(--mono);margin-top:3px">Backlog grooming · story allocation · sprint capacity</div>
+              <div style="font-size:17px;font-weight:800;color:#fff;letter-spacing:-0.02em">Sprint Planning &amp; Calendar</div>
+              <div style="font-size:11px;color:rgba(255,255,255,0.6);font-family:var(--mono);margin-top:3px">Backlog grooming · story allocation · sprint capacity · calendar view</div>
             </div>
           </div>
           <div style="display:flex;align-items:center;gap:10px">
@@ -2865,6 +2865,28 @@
           </div><!-- /adhoc card -->
 
         </div><!-- /sp-data-state -->
+
+        <!-- Sprint Calendar — embedded at bottom of Sprint Planning & Calendar -->
+        <div style="margin-top:24px;border-top:2px solid var(--border);padding-top:20px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:0 2px">
+            <div style="width:32px;height:32px;background:linear-gradient(135deg,var(--sp-dark),var(--sp-color));border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="1.5" style="width:15px;height:15px"><rect x="1" y="2" width="14" height="13" rx="1.5"/><path d="M1 6h14M5 1v3M11 1v3M4 9h2v2H4z"/></svg>
+            </div>
+            <div>
+              <div style="font-size:14px;font-weight:800;color:var(--text);letter-spacing:-0.01em">Sprint Calendar</div>
+              <div style="font-size:11px;color:var(--text3)">Upload your Delivery Tracker (Sprint Planned tab) to generate a time-blocked calendar</div>
+            </div>
+            <span style="font-size:10px;background:#dbeafe;color:#1e40af;font-weight:600;padding:2px 9px;border-radius:20px;font-family:var(--mono);margin-left:auto">PG&amp;E SCM</span>
+          </div>
+          <div style="border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;min-height:600px">
+            <iframe id="sprint-cal-frame"
+              style="width:100%;border:none;min-height:600px;display:block"
+              title="Sprint Planning Calendar"
+              sandbox="allow-scripts allow-same-origin allow-downloads allow-modals">
+            </iframe>
+          </div>
+        </div>
+
       </div>
 
       <!-- TEST PLANNING SECTION -->
@@ -3242,6 +3264,81 @@
           </div>
         </div>
 
+
+        <!-- BPML Search -->
+        <div class="card" style="margin-top:14px">
+          <div class="card-title">
+            <span>
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:13px;height:13px;margin-right:6px;vertical-align:-2px"><circle cx="6.5" cy="6.5" r="4.5"/><path d="M10 10l3.5 3.5"/></svg>
+              BPML Structure — Search
+            </span>
+            <span class="bl-result-count" id="bpml-search-count"></span>
+          </div>
+
+          <!-- Filters + search fields -->
+          <div class="bl-toolbar" style="margin-bottom:8px">
+            <div class="bl-toolbar-left" style="flex-wrap:wrap;gap:8px;align-items:flex-end">
+              <div class="bl-filter-group">
+                <label class="bl-filter-label">Level</label>
+                <select id="bpml-search-level" class="bl-select">
+                  <option value="">All</option>
+                  <option value="1">L1</option>
+                  <option value="2">L2</option>
+                  <option value="3">L3</option>
+                  <option value="4">L4</option>
+                </select>
+              </div>
+              <div class="bl-filter-group">
+                <label class="bl-filter-label">Type</label>
+                <select id="bpml-search-type" class="bl-select">
+                  <option value="">All</option>
+                  <option value="bpml">BPML</option>
+                  <option value="ricefw">RICEFW / Story</option>
+                  <option value="req">Requirement</option>
+                  <option value="doc">FSD / FUT / Doc</option>
+                </select>
+              </div>
+              <div class="bl-filter-group" style="flex:1;min-width:260px">
+                <label class="bl-filter-label">Search Key / Summary / Name</label>
+                <input id="bpml-search-q2" type="text" placeholder="Type to search across Key, Summary, and Name…" class="bl-select" style="width:100%">
+              </div>
+              <button onclick="_bpmlSearchRun()" class="upload-btn" style="align-self:flex-end;margin-bottom:1px;background:var(--bpml-color);border-color:var(--bpml-color);color:#fff">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px"><circle cx="6.5" cy="6.5" r="4.5"/><path d="M10 10l3.5 3.5"/></svg>
+                Search
+              </button>
+              <button onclick="_bpmlSearchClear()" class="upload-btn" style="align-self:flex-end;margin-bottom:1px">Clear</button>
+            </div>
+          </div>
+          <div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin:-4px 0 10px 2px">Searches across all BPML levels, RICEFW/Stories, Requirements, and FSD/FUT items. Multiple words treated as AND.</div>
+
+          <!-- No data / empty state -->
+          <div id="bpml-search-empty" style="padding:28px;text-align:center;color:var(--text3);font-size:12px;font-family:var(--mono)">
+            Enter a search term above and click Search — or load BPML data first.
+          </div>
+
+          <!-- Results table -->
+          <div id="bpml-search-wrap" style="display:none;overflow-x:auto">
+            <table class="bl-table" id="bpml-search-table">
+              <thead>
+                <tr>
+                  <th class="bl-th" style="width:130px;white-space:nowrap">Key / ID</th>
+                  <th class="bl-th" style="width:50px;text-align:center">Level</th>
+                  <th class="bl-th" style="width:80px;text-align:center">Type</th>
+                  <th class="bl-th" style="min-width:280px">Summary / Name</th>
+                  <th class="bl-th" style="width:100px">Status</th>
+                  <th class="bl-th" style="width:130px">Assignee</th>
+                  <th class="bl-th" style="width:120px">Workstream</th>
+                </tr>
+              </thead>
+              <tbody id="bpml-search-tbody"></tbody>
+            </table>
+          </div>
+          <div class="bl-pagination" id="bpml-search-pag" style="display:none">
+            <div class="bl-page-info" id="bpml-search-info"></div>
+            <div class="bl-page-nav" id="bpml-search-nav"></div>
+          </div>
+        </div>
+
       </div><!-- /sec-search -->
 
       <!-- UPLOAD SECTION -->
@@ -3353,15 +3450,21 @@
                     <!-- divider -->
                     <div style="grid-column:1/-1;height:1px;background:#bbf7d0;margin:4px 0"></div>
                     <div style="grid-column:1/-1;font-size:9px;font-weight:800;color:#059669;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:2px">JQL Queries — from Query Panel</div>
-                    <span style="font-size:10px;font-weight:700;color:var(--navy);font-family:var(--mono);white-space:nowrap;padding-top:3px">Sprint &amp; Velocity</span>
+                    <!-- Sprint Stories — 3 files -->
+                    <div style="grid-column:1/-1;display:flex;align-items:center;gap:6px;margin-top:4px">
+                      <span style="font-size:9px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:0.06em">Sprint Stories — 2 JQL Files</span>
+                      <div style="flex:1;height:1px;background:#c7d7f5"></div>
+                    </div>
+                    <span style="font-size:10px;font-weight:700;color:var(--navy);font-family:var(--mono);white-space:nowrap;padding-top:3px">File 1<div style="font-size:9px;font-weight:500;color:var(--text3);margin-top:1px">Sprint Update</div></span>
                     <span id="jira-cfg-v-jql-sprint" style="font-size:9px;font-family:var(--mono);color:var(--text2);background:#f1f5f9;padding:4px 10px;border-radius:5px;white-space:pre-wrap;line-height:1.5;border-left:3px solid var(--navy)"></span>
+                    <span style="font-size:10px;font-weight:700;color:var(--sp-dark);font-family:var(--mono);white-space:nowrap;padding-top:3px">File 2<div style="font-size:9px;font-weight:500;color:var(--text3);margin-top:1px">Sprint Planning</div></span>
+                    <span id="jira-cfg-v-jql-sprintplan" style="font-size:9px;font-family:var(--mono);color:var(--text2);background:#f1f5f9;padding:4px 10px;border-radius:5px;white-space:pre-wrap;line-height:1.5;border-left:3px solid var(--sp-color)"></span>
+                    <!-- RAID + CF -->
+                    <div style="grid-column:1/-1;height:1px;background:#e2e8f0;margin:4px 0"></div>
                     <span style="font-size:10px;font-weight:700;color:#4f46e5;font-family:var(--mono);white-space:nowrap;padding-top:3px">RAID Log</span>
                     <span id="jira-cfg-v-jql-raid" style="font-size:9px;font-family:var(--mono);color:var(--text2);background:#f1f5f9;padding:4px 10px;border-radius:5px;white-space:pre-wrap;line-height:1.5;border-left:3px solid #6366f1"></span>
                     <span style="font-size:10px;font-weight:700;color:#065f46;font-family:var(--mono);white-space:nowrap;padding-top:3px">Cross Functional</span>
                     <span id="jira-cfg-v-jql-cf" style="font-size:9px;font-family:var(--mono);color:var(--text2);background:#f1f5f9;padding:4px 10px;border-radius:5px;white-space:pre-wrap;line-height:1.5;border-left:3px solid #059669"></span>
-                    <span style="font-size:10px;font-weight:700;color:var(--sp-dark);font-family:var(--mono);white-space:nowrap;padding-top:3px">Sprint Planning</span>
-                    <span id="jira-cfg-v-jql-sprintplan" style="font-size:9px;font-family:var(--mono);color:var(--text2);background:#f1f5f9;padding:4px 10px;border-radius:5px;white-space:pre-wrap;line-height:1.5;border-left:3px solid var(--sp-color)"></span>
-                    <!-- BPML — 3 files -->
                     <div style="grid-column:1/-1;display:flex;align-items:center;gap:6px;margin-top:4px">
                       <span style="font-size:9px;font-weight:800;color:var(--bpml-dark);text-transform:uppercase;letter-spacing:0.06em">BPML Structure — 3 JQL Files</span>
                       <div style="flex:1;height:1px;background:#ddd6fe"></div>
@@ -3416,18 +3519,33 @@
                       <span style="font-size:9px;color:var(--text3);font-family:var(--mono)">editable</span>
                     </div>
                     <div style="display:grid;grid-template-columns:130px 1fr;gap:8px;align-items:start">
-                      <label style="font-size:10px;font-weight:700;color:var(--navy);font-family:var(--mono);padding-top:7px">Sprint &amp; Velocity</label>
-                      <textarea id="jira-cfg-jql-sprint" rows="3" spellcheck="false"
-                        style="border:1.5px solid #a7f3d0;border-left:3px solid var(--navy);border-radius:7px;padding:6px 10px;font-size:10px;font-family:var(--mono);background:#fff;color:var(--text);width:100%;resize:vertical;line-height:1.5"></textarea>
                       <label style="font-size:10px;font-weight:700;color:#4f46e5;font-family:var(--mono);padding-top:7px">RAID Log</label>
                       <textarea id="jira-cfg-jql-raid" rows="3" spellcheck="false"
                         style="border:1.5px solid #a7f3d0;border-left:3px solid #6366f1;border-radius:7px;padding:6px 10px;font-size:10px;font-family:var(--mono);background:#fff;color:var(--text);width:100%;resize:vertical;line-height:1.5"></textarea>
                       <label style="font-size:10px;font-weight:700;color:#065f46;font-family:var(--mono);padding-top:7px">Cross Functional</label>
                       <textarea id="jira-cfg-jql-cf" rows="3" spellcheck="false"
                         style="border:1.5px solid #a7f3d0;border-left:3px solid #059669;border-radius:7px;padding:6px 10px;font-size:10px;font-family:var(--mono);background:#fff;color:var(--text);width:100%;resize:vertical;line-height:1.5"></textarea>
-                      <label style="font-size:10px;font-weight:700;color:var(--sp-dark);font-family:var(--mono);padding-top:7px">Sprint Planning</label>
-                      <textarea id="jira-cfg-jql-sprintplan" rows="3" spellcheck="false"
-                        style="border:1.5px solid #a7f3d0;border-left:3px solid var(--sp-color);border-radius:7px;padding:6px 10px;font-size:10px;font-family:var(--mono);background:#fff;color:var(--text);width:100%;resize:vertical;line-height:1.5"></textarea>
+                    </div>
+                    <!-- Sprint Stories 3-file section -->
+                    <div style="background:#f0f4ff;border:1.5px solid #c7d7f5;border-radius:9px;padding:12px 14px">
+                      <div style="font-size:9px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+                        <svg viewBox="0 0 12 12" fill="none" stroke="var(--navy)" stroke-width="1.5" style="width:10px;height:10px"><path d="M1 2h10v2H1zM1 5h10v2H1zM1 8h6v2H1z"/></svg>
+                        Sprint Stories — 2 separate JQL Files
+                      </div>
+                      <div style="display:grid;grid-template-columns:130px 1fr;gap:8px;align-items:start">
+                        <label style="font-size:10px;font-weight:700;color:var(--navy);font-family:var(--mono);padding-top:7px">
+                          File 1
+                          <div style="font-size:9px;font-weight:500;color:var(--text3);margin-top:1px">Sprint Update</div>
+                        </label>
+                        <textarea id="jira-cfg-jql-sprint" rows="4" spellcheck="false"
+                          style="border:1.5px solid #c7d7f5;border-left:3px solid var(--navy);border-radius:7px;padding:6px 10px;font-size:10px;font-family:var(--mono);background:#fff;color:var(--text);width:100%;resize:vertical;line-height:1.5"></textarea>
+                        <label style="font-size:10px;font-weight:700;color:var(--sp-dark);font-family:var(--mono);padding-top:7px">
+                          File 2
+                          <div style="font-size:9px;font-weight:500;color:var(--text3);margin-top:1px">Sprint Planning</div>
+                        </label>
+                        <textarea id="jira-cfg-jql-sprintplan" rows="4" spellcheck="false"
+                          style="border:1.5px solid #c7d7f5;border-left:3px solid var(--sp-color);border-radius:7px;padding:6px 10px;font-size:10px;font-family:var(--mono);background:#fff;color:var(--text);width:100%;resize:vertical;line-height:1.5"></textarea>
+                      </div>
                     </div>
                     <!-- BPML 3-file section -->
                     <div style="background:#faf5ff;border:1.5px solid #ddd6fe;border-radius:9px;padding:12px 14px">
@@ -3990,22 +4108,7 @@
         </div>
       </div>
 
-      <!-- Sprint Calendar section panel -->
-      <div class="section-panel" id="sec-sprintcal" style="padding:0;flex:1;display:none;flex-direction:column;">
-        <div style="background:#fff;border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
-          <div style="display:flex;align-items:center;gap:10px;">
-            <svg viewBox="0 0 16 16" fill="none" stroke="var(--navy)" stroke-width="1.5" style="width:16px;height:16px"><rect x="1" y="2" width="14" height="13" rx="1.5"/><path d="M1 6h14M5 1v3M11 1v3M4 9h2v2H4z"/></svg>
-            <span style="font-size:14px;font-weight:700;color:var(--text)">Sprint Planning Calendar</span>
-            <span style="font-size:10px;background:#dbeafe;color:#1e40af;font-weight:600;padding:2px 9px;border-radius:20px;font-family:var(--mono)">PG&amp;E SCM</span>
-          </div>
-          <span style="font-size:11px;color:var(--text3)">Upload your Delivery Tracker (Sprint Planned tab) to generate a time-blocked calendar</span>
-        </div>
-        <iframe id="sprint-cal-frame"
-          style="flex:1;border:none;width:100%;min-height:calc(100vh - 160px);"
-          title="Sprint Planning Calendar"
-          sandbox="allow-scripts allow-same-origin allow-downloads allow-modals">
-        </iframe>
-      </div>
+
 
     <div class="footer">
       <span id="footer-left">PG&amp;E Propel (CONAMER1000364) &nbsp;&middot;&nbsp; Supply Chain &nbsp;&middot;&nbsp; PMO Dashboard</span>
@@ -4288,12 +4391,12 @@ function showSection(id){
   document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active','active-bpml','active-sprintplan','active-testplan'));
   document.getElementById('sec-'+id).classList.add('active');
   const btns = document.querySelectorAll('.section-nav-btn');
-  const map = ['overview','risks','raid','cf','bpml','sprintplan','sprintcal','workstream','team','testplan','search','upload'];
+  const map = ['overview','risks','sprintplan','raid','cf','bpml','workstream','testplan','search','upload'];
   const idx = map.indexOf(id);
   const themedCls = {bpml:'active-bpml',sprintplan:'active-sprintplan',testplan:'active-testplan'};
   if(idx>=0) btns[idx].classList.add(themedCls[id]||'active');
   const sbItems = document.querySelectorAll('.sb-item');
-  const sbMap = ['overview','risks','raid','cf','bpml','sprintplan','sprintcal','workstream','team','testplan','search'];
+  const sbMap = ['overview','risks','sprintplan','raid','cf','bpml','workstream','testplan','search'];
   const si = sbMap.indexOf(id);
   if(si>=0) sbItems[si].classList.add(themedCls[id]||'active');
   if(id==='risks') setTimeout(()=>{
@@ -4306,7 +4409,8 @@ function showSection(id){
   if(id==='workstream') setTimeout(()=>{ renderWSRaidTable(window._raidData); if(window._data) renderWsChart(window._data); }, 50);
   if(id==='team') setTimeout(()=>{ renderTeamSprintTable(window._data); renderTeamRaidTable(window._raidData); },50);
   if(id==='search') setTimeout(()=>{ _suSearchInit(); }, 50);
-  if(id==='sprintcal') setTimeout(()=>{ _initSprintCalFrame(); }, 50);
+  if(id==='sprintcal') { id='sprintplan'; } // merged into Sprint Planning & Calendar
+  if(id==='sprintplan') setTimeout(()=>{ _initSprintCalFrame(); }, 50);
   if(id==='testplan') setTimeout(()=>{
     // Update E2E generator notice based on whether BPML is loaded
     const noBpml = document.getElementById('ts-no-bpml');
@@ -4483,24 +4587,35 @@ function renderSWTable(d){
   if (!tb) return;
 
   // Totals accumulator
-  const tot = {total:0, done:0, review:0, inprogress:0, ns:0, hold:0};
-  const grandTotal = d.subworkstreams.reduce((s, sw) => s + sw.total, 0);
+  const tot = {total:0, done:0, review:0, inprogress:0, ns:0, hold:0, overdue:0};
+  const bl = d.backlog || [];
+  const today_sw = (function(){ const p=(d.reportDate||'').split('-'); return p.length===3?new Date(+p[0],+p[1]-1,+p[2]):new Date(); })();
 
-  tb.innerHTML = d.subworkstreams.map(sw => {
+  // Sort descending by total
+  const swRows = [...d.subworkstreams].sort((a,b) => b.total - a.total);
+  const grandTotal = swRows.reduce((s, sw) => s + sw.total, 0);
+
+  tb.innerHTML = swRows.map(sw => {
     const ip  = sw.inprogress || 0;
     const pct = sw.total > 0 ? Math.round(sw.done / sw.total * 100) : 0;
     const pc  = pct===0?'zero':pct<25?'low':pct<75?'mid':'hi';
     const coveragePct = grandTotal > 0 ? Math.round(sw.total / grandTotal * 100) : 0;
     const coverageColor = coveragePct > 30 ? '#6366f1' : coveragePct > 15 ? '#3b82f6' : '#60a5fa';
+
+    // Overdue: items in this workstream with past due date and not completed
+    const swOverdueItems = bl.filter(b => b.ws === sw.name && b.due && b.due !== '—'
+      && new Date(parseDue(b.due)) < today_sw && b.status !== 'Completed');
+    const overdue = swOverdueItems.length;
+
     tot.total      += sw.total;
     tot.done       += sw.done;
     tot.review     += sw.review;
     tot.inprogress += ip;
     tot.ns         += sw.ns;
     tot.hold       += sw.hold;
+    tot.overdue    += overdue;
 
     // Helper: clickable count → registers drill data, emits simple onclick="drill(idx)"
-    const bl = d.backlog || [];
     const _lnk = (count, statuses, label) => {
       if (!count) return '<span style="color:var(--text3)">—</span>';
       const items = bl.filter(b => b.ws === sw.name && statuses.includes(b.status));
@@ -4510,6 +4625,12 @@ function renderSWTable(d){
         title="Click to view ${count} ${label} item${count!==1?'s':''}">${count}</span>`;
     };
 
+    const ovIdx = overdue > 0 ? _regDrill(sw.name + ' — Overdue', 'Sub-Workstream · Overdue', swOverdueItems, 'ws') : -1;
+    const overdueLnk = overdue > 0
+      ? `<span style="cursor:pointer;font-weight:700;text-decoration:underline;text-underline-offset:2px;background:#fee2e2;color:#991b1b;padding:1px 5px;border-radius:3px"
+          onclick="_drill(${ovIdx})" title="View overdue items">${overdue}</span>`
+      : '<span style="color:var(--text3)">—</span>';
+
     return `<tr>
       <td class="sw-name">${sw.name}</td>
       <td class="sw-num">${_lnk(sw.total, ['Completed','In Review','In Progress','Not Started','On Hold'], 'All')}</td>
@@ -4518,6 +4639,7 @@ function renderSWTable(d){
       <td class="sw-num" style="color:#3b82f6">${_lnk(ip,            ['In Progress'],'In Progress')}</td>
       <td class="sw-num" style="color:var(--red)">${_lnk(sw.ns,      ['Not Started'],'Not Started')}</td>
       <td class="sw-num" style="color:#ea580c">${_lnk(sw.hold,       ['On Hold'],    'On Hold')}</td>
+      <td class="sw-num">${overdueLnk}</td>
       <td class="sw-bar-cell"><div class="progress-bar"><div class="progress-fill" style="background:var(--blue);width:${pct}%"></div></div></td>
       <td><span class="pct-pill ${pc}">${pct}%</span></td>
       <td class="sw-bar-cell">
@@ -4538,6 +4660,7 @@ function renderSWTable(d){
     <td class="sw-num" style="color:#93c5fd;font-weight:600">${tot.inprogress}</td>
     <td class="sw-num" style="color:#fca5a5;font-weight:600">${tot.ns}</td>
     <td class="sw-num" style="color:#fdba74;font-weight:600">${tot.hold}</td>
+    <td class="sw-num" style="color:${tot.overdue>0?'#fca5a5':'rgba(255,255,255,0.4)'};font-weight:${tot.overdue>0?'700':'400'}">${tot.overdue||'—'}</td>
     <td class="sw-bar-cell">
       <div class="progress-bar"><div class="progress-fill" style="background:#60a5fa;width:${totPct}%"></div></div>
     </td>
@@ -4557,10 +4680,18 @@ function renderTeamSprintTable(d){
   if(!tbody) return;
 
   const _rpB=(d.reportDate||'').split('-'); const today=_rpB.length===3?new Date(+_rpB[0],+_rpB[1]-1,+_rpB[2]):new Date();
-  const grandTotal = d.team.reduce((s,t)=>s+t.total,0);
+  // Sort descending by total
+  const teamRows = [...d.team].sort((a,b) => b.total - a.total);
+  const grandTotal = teamRows.reduce((s,t)=>s+t.total,0);
   const tot = {total:0,done:0,review:0,inprogress:0,ns:0,hold:0,overdue:0};
 
-  tbody.innerHTML = d.team.map((t, ri) => {
+  // ── pagination state (10 rows per page) ──
+  const PAGE_SIZE = 10;
+  let _tsp_page = 0;
+  const totalPages = () => Math.max(1, Math.ceil(teamRows.length / PAGE_SIZE));
+
+  function _tsp_buildRows(pageRows) {
+    return pageRows.map((t, ri) => { return (()=>{
     const rowBg  = ri%2===0 ? '#fff' : '#f8fafc';
     const pct    = t.total>0 ? Math.round(t.done/t.total*100) : 0;
     const pc     = pct===0?'zero':pct<25?'low':pct<75?'mid':'hi';
@@ -4611,24 +4742,56 @@ function renderTeamSprintTable(d){
         <div style="font-size:9px;font-family:var(--mono);color:var(--text3);margin-top:1px">${pctBar}% of team</div>
       </td>
     </tr>`;
-  }).join('');
+    })(); }).join('');
+  } // end _tsp_buildRows
 
-  // Totals row
-  const totPct = tot.total>0 ? Math.round(tot.done/tot.total*100) : 0;
-  const totPc  = totPct===0?'zero':totPct<25?'low':totPct<75?'mid':'hi';
-  tbody.innerHTML += `<tr class="sw-total-row" style="background:var(--navy)">
-    <td style="padding:9px 8px;font-size:11px;font-weight:700;color:#fff">TOTAL</td>
-    <td class="sw-num" style="color:rgba(255,255,255,0.5)">—</td>
-    <td class="sw-num" style="color:#fff;font-weight:700">${tot.total}</td>
-    <td class="sw-num" style="color:#86efac;font-weight:700">${tot.done}</td>
-    <td class="sw-num" style="color:#fde68a;font-weight:600">${tot.review}</td>
-    <td class="sw-num" style="color:#93c5fd;font-weight:600">${tot.inprogress}</td>
-    <td class="sw-num" style="color:#fca5a5;font-weight:600">${tot.ns}</td>
-    <td class="sw-num" style="color:#fdba74;font-weight:600">${tot.hold}</td>
-    <td class="sw-num" style="color:${tot.overdue>0?'#fca5a5':'rgba(255,255,255,0.4)'};font-weight:${tot.overdue>0?'700':'400'}">${tot.overdue||'—'}</td>
-    <td><span class="pct-pill ${totPc}" style="background:rgba(255,255,255,0.15);color:#fff">${totPct}%</span></td>
-    <td class="sw-num" style="color:rgba(255,255,255,0.5)">—</td>
-  </tr>`;
+  // Totals row (always shown, across all pages)
+  // Accumulate totals across ALL rows (not just current page)
+  teamRows.forEach(t => {
+    const ip2 = t.inprogress||0;
+    const overdue2 = d.critical.filter(c=>c.type==='overdue' && c.assignee.split('@')[0]===t.name).length;
+    tot.total+=t.total; tot.done+=t.done; tot.review+=t.review;
+    tot.inprogress+=ip2; tot.ns+=t.ns; tot.hold+=t.hold; tot.overdue+=overdue2;
+  });
+
+  function _tsp_render() {
+    const start = _tsp_page * PAGE_SIZE;
+    const pageRows = teamRows.slice(start, start + PAGE_SIZE);
+    tbody.innerHTML = _tsp_buildRows(pageRows);
+
+    // Totals row
+    const totPct = tot.total>0 ? Math.round(tot.done/tot.total*100) : 0;
+    const totPc  = totPct===0?'zero':totPct<25?'low':totPct<75?'mid':'hi';
+    tbody.innerHTML += `<tr class="sw-total-row" style="background:var(--navy)">
+      <td style="padding:9px 8px;font-size:11px;font-weight:700;color:#fff">TOTAL</td>
+      <td class="sw-num" style="color:rgba(255,255,255,0.5)">—</td>
+      <td class="sw-num" style="color:#fff;font-weight:700">${tot.total}</td>
+      <td class="sw-num" style="color:#86efac;font-weight:700">${tot.done}</td>
+      <td class="sw-num" style="color:#fde68a;font-weight:600">${tot.review}</td>
+      <td class="sw-num" style="color:#93c5fd;font-weight:600">${tot.inprogress}</td>
+      <td class="sw-num" style="color:#fca5a5;font-weight:600">${tot.ns}</td>
+      <td class="sw-num" style="color:#fdba74;font-weight:600">${tot.hold}</td>
+      <td class="sw-num" style="color:${tot.overdue>0?'#fca5a5':'rgba(255,255,255,0.4)'};font-weight:${tot.overdue>0?'700':'400'}">${tot.overdue||'—'}</td>
+      <td><span class="pct-pill ${totPc}" style="background:rgba(255,255,255,0.15);color:#fff">${totPct}%</span></td>
+      <td class="sw-num" style="color:rgba(255,255,255,0.5)">—</td>
+    </tr>`;
+
+    // Pagination controls
+    const pg = totalPages();
+    const paginationEl = document.getElementById('tsp-pagination');
+    if (paginationEl) {
+      if (pg <= 1) { paginationEl.style.display='none'; return; }
+      paginationEl.style.display='flex';
+      paginationEl.innerHTML =
+        `<button onclick="_tsp_prev()" style="padding:4px 10px;border:1px solid var(--border);border-radius:5px;background:#fff;cursor:pointer;font-size:11px;color:var(--text2)" ${_tsp_page===0?'disabled':''}>← Prev</button>` +
+        `<span style="font-size:11px;color:var(--text3);font-family:var(--mono)">Page ${_tsp_page+1} of ${pg} &nbsp;·&nbsp; ${teamRows.length} members</span>` +
+        `<button onclick="_tsp_next()" style="padding:4px 10px;border:1px solid var(--border);border-radius:5px;background:#fff;cursor:pointer;font-size:11px;color:var(--text2)" ${_tsp_page>=pg-1?'disabled':''}>Next →</button>`;
+    }
+  }
+
+  window._tsp_prev = function() { if(_tsp_page>0){_tsp_page--;_tsp_render();} };
+  window._tsp_next = function() { if(_tsp_page<totalPages()-1){_tsp_page++;_tsp_render();} };
+  _tsp_render();
 }
 
 /* legacy stub — team-list no longer in DOM but kept to avoid errors if called */
@@ -5216,7 +5379,7 @@ function _blRenderPagination(totalPages, start, pageCount) {
   // "Showing X–Y of Z" — but note chosen vs page size
   info.textContent = total === 0
     ? 'No results'
-    : `Showing ${start + 1}–${end} of ${total} · 20 per page`;
+    : `Showing ${start + 1}–${end} of ${total} · 10 per page`;
 
   if (totalPages <= 1) { nav.innerHTML = ''; return; }
 
@@ -5347,9 +5510,10 @@ function renderWSRaidTable(rd) {
   // Aggregate items by workstream
   const wsMap = {};
   const UNCAT = 'Unassigned';
+  const now_wsraid = new Date();
   rd.items.forEach(item => {
     const ws = (item.ws && item.ws.trim()) ? item.ws.trim() : UNCAT;
-    if (!wsMap[ws]) wsMap[ws] = { name: ws, total: 0, R: 0, A: 0, I: 0, D: 0, open: 0, high: 0 };
+    if (!wsMap[ws]) wsMap[ws] = { name: ws, total: 0, R: 0, A: 0, I: 0, D: 0, open: 0, high: 0, overdue: 0 };
     const m = wsMap[ws];
     m.total++;
     const t = normaliseType(item.type);
@@ -5360,6 +5524,8 @@ function renderWSRaidTable(rd) {
     else if (letter === 'D') m.D++;
     if (normaliseStatus(item.status) === 'Open')   m.open++;
     if (normalisePrio(item.priority) === 'High')   m.high++;
+    const raidDue = parseRaidDue(item.due);
+    if (raidDue && raidDue < now_wsraid && normaliseStatus(item.status) !== 'Closed') m.overdue++;
   });
 
   const rows = Object.values(wsMap).sort((a, b) => b.total - a.total);
@@ -5387,6 +5553,16 @@ function renderWSRaidTable(rd) {
     const highBg  = ws.high > 2 ? '#fee2e2' : ws.high > 0 ? '#fef3c7' : '';
     const openBg  = openPct > 70 ? '#fff5f5' : openPct > 40 ? '#fffbeb' : '';
     const allIdx  = _regDrill(`${ws.name} — All RAID Items`, `RAID · All`, rd.items.filter(i=>(i.ws&&i.ws.trim()?i.ws.trim():'Unassigned')===ws.name), 'raid');
+    const overdueWsItems = rd.items.filter(i => {
+      const iws = (i.ws && i.ws.trim()) ? i.ws.trim() : 'Unassigned';
+      const d2 = parseRaidDue(i.due);
+      return iws === ws.name && d2 && d2 < now_wsraid && normaliseStatus(i.status) !== 'Closed';
+    });
+    const ovWsIdx = ws.overdue > 0 ? _regDrill(`${ws.name} — Overdue RAID`, `RAID · Overdue`, overdueWsItems, 'raid') : -1;
+    const overdueWsLnk = ws.overdue > 0
+      ? `<span style="cursor:pointer;font-weight:700;text-decoration:underline;text-underline-offset:2px;background:#fee2e2;color:#991b1b;padding:1px 5px;border-radius:3px"
+          onclick="_drill(${ovWsIdx})" title="View overdue RAID items">${ws.overdue}</span>`
+      : '<span style="color:var(--text3)">—</span>';
 
     return `<tr style="background:${rowBg}">
       <td class="sw-name">${ws.name}</td>
@@ -5397,6 +5573,7 @@ function renderWSRaidTable(rd) {
       <td class="sw-num" style="color:#2563eb;font-weight:${ws.D>0?'600':'400'}">${_wsRaidLnk(ws.D, ws.name, i=>normaliseType(i.type)[0]==='D', 'Decisions', 'color:#2563eb')}</td>
       <td class="sw-num" style="background:${openBg};color:${ws.open>0?'#6366f1':'var(--text3)'};font-weight:${ws.open>0?'600':'400'}">${_wsRaidLnk(ws.open, ws.name, i=>{const s=normaliseStatus(i.status);return s==='Open'||s==='In Progress';}, 'Open', 'color:#6366f1')}</td>
       <td class="sw-num" style="background:${highBg};color:${ws.high>0?'#991b1b':'var(--text3)'};font-weight:${ws.high>0?'600':'400'}">${_wsRaidLnk(ws.high, ws.name, i=>normalisePrio(i.priority)==='High', 'High Priority', 'color:#991b1b')}</td>
+      <td class="sw-num">${overdueWsLnk}</td>
       <td class="sw-bar-cell">
         <div class="progress-bar"><div class="progress-fill" style="background:#6366f1;width:${highPct}%"></div></div>
         <div style="font-size:9px;font-family:var(--mono);color:var(--text3);margin-top:2px">${highPct}% of total</div>
@@ -5406,8 +5583,8 @@ function renderWSRaidTable(rd) {
 
   // Totals row
   const totals = rows.reduce((a, r) => ({
-    total: a.total+r.total, R: a.R+r.R, A: a.A+r.A, I: a.I+r.I, D: a.D+r.D, open: a.open+r.open, high: a.high+r.high
-  }), { total:0, R:0, A:0, I:0, D:0, open:0, high:0 });
+    total: a.total+r.total, R: a.R+r.R, A: a.A+r.A, I: a.I+r.I, D: a.D+r.D, open: a.open+r.open, high: a.high+r.high, overdue: a.overdue+r.overdue
+  }), { total:0, R:0, A:0, I:0, D:0, open:0, high:0, overdue:0 });
 
   tbody.innerHTML += `<tr class="sw-total-row" style="background:var(--navy)">
     <td style="padding:9px 8px;font-size:11px;font-weight:700;color:#fff">TOTAL</td>
@@ -5418,6 +5595,7 @@ function renderWSRaidTable(rd) {
     <td class="sw-num" style="color:#93c5fd;font-weight:600">${totals.D}</td>
     <td class="sw-num" style="color:#c4b5fd;font-weight:600">${totals.open}</td>
     <td class="sw-num" style="color:#fca5a5;font-weight:700">${totals.high}</td>
+    <td class="sw-num" style="color:${totals.overdue>0?'#fca5a5':'rgba(255,255,255,0.4)'};font-weight:${totals.overdue>0?'700':'400'}">${totals.overdue||'—'}</td>
     <td class="sw-num" style="color:rgba(255,255,255,0.5)">—</td>
   </tr>`;
 }
@@ -5453,9 +5631,28 @@ function renderTeamRaidTable(rd) {
     if (normalisePrio(item.priority)==='High') m.high++;
   });
 
+  const now_tr = new Date();
+  // Add overdue count per owner
+  Object.values(ownerMap).forEach(m => {
+    m.overdue = rd.items.filter(i => {
+      const owner = (i.owner && i.owner.trim()) ? i.owner.trim() : 'Unassigned';
+      const d2 = parseRaidDue(i.due);
+      return owner === m.name && d2 && d2 < now_tr && normaliseStatus(i.status) !== 'Closed';
+    }).length;
+  });
+
   const rows = Object.values(ownerMap).sort((a,b) => b.total - a.total);
   const grandTotal = rows.reduce((s,r) => s+r.total, 0);
-  const tot = {total:0,R:0,A:0,I:0,D:0,open:0,high:0,closed:0};
+  const tot = {total:0,R:0,A:0,I:0,D:0,open:0,high:0,overdue:0,closed:0};
+  rows.forEach(ow => {
+    tot.total+=ow.total; tot.R+=ow.R; tot.A+=ow.A; tot.I+=ow.I; tot.D+=ow.D;
+    tot.open+=ow.open; tot.high+=ow.high; tot.overdue+=ow.overdue; tot.closed+=ow.closed;
+  });
+
+  // ── pagination state (10 rows per page) ──
+  const TR_PAGE = 10;
+  let _tr_page = 0;
+  const trTotalPages = () => Math.max(1, Math.ceil(rows.length / TR_PAGE));
 
   // Helper: filter rd.items for a given owner + optional predicate, register drill, return clickable span
   const _raidLnk = (count, ownerName, predicate, label, style) => {
@@ -5470,47 +5667,81 @@ function renderTeamRaidTable(rd) {
       title="Click to view ${count} ${label} item${count!==1?'s':''}">${count}</span>`;
   };
 
-  tbody.innerHTML = rows.map((ow, ri) => {
-    const rowBg   = ri%2===0 ? '#fff' : '#f8fafc';
-    const pct     = grandTotal>0 ? Math.round(ow.total/grandTotal*100) : 0;
-    const highBg  = ow.high>2?'#fee2e2':ow.high>0?'#fef3c7':'';
-    const openBg  = ow.open/ow.total>0.7?'#fff5f5':ow.open/ow.total>0.4?'#fffbeb':'';
-    tot.total+=ow.total; tot.R+=ow.R; tot.A+=ow.A; tot.I+=ow.I; tot.D+=ow.D;
-    tot.open+=ow.open; tot.high+=ow.high; tot.closed+=ow.closed;
-    const allIdx = _regDrill(`${ow.name} — All RAID Items`, `RAID · All`, rd.items.filter(i=>(i.owner&&i.owner.trim()?i.owner.trim():'Unassigned')===ow.name), 'raid');
-    const raidOwnerDisplay = ow.name.includes('@')
-      ? ow.name.split('@')[0].split('.').map(p=>p.charAt(0).toUpperCase()+p.slice(1)).join(' ')
-      : ow.name.split('.').map(p=>p.charAt(0).toUpperCase()+p.slice(1)).join(' ');
-    return `<tr style="background:${rowBg}">
-      <td class="sw-name" title="${ow.email||''}">${raidOwnerDisplay}</td>
-      <td class="sw-num" style="font-weight:600"><span style="cursor:pointer;color:var(--blue);font-weight:700;text-decoration:underline;text-underline-offset:2px" onclick="_drill(${allIdx})" title="View all ${ow.total} RAID items">${ow.total}</span></td>
-      <td class="sw-num" style="color:#dc2626;font-weight:${ow.R>0?'600':'400'}">${_raidLnk(ow.R, ow.name, i=>normaliseType(i.type)[0]==='R', 'Risks', 'color:#dc2626')}</td>
-      <td class="sw-num" style="color:#d97706;font-weight:${ow.A>0?'600':'400'}">${_raidLnk(ow.A, ow.name, i=>normaliseType(i.type)[0]==='A', 'Actions', 'color:#d97706')}</td>
-      <td class="sw-num" style="color:#ea580c;font-weight:${ow.I>0?'600':'400'}">${_raidLnk(ow.I, ow.name, i=>normaliseType(i.type)[0]==='I', 'Issues', 'color:#ea580c')}</td>
-      <td class="sw-num" style="color:#2563eb;font-weight:${ow.D>0?'600':'400'}">${_raidLnk(ow.D, ow.name, i=>normaliseType(i.type)[0]==='D', 'Decisions', 'color:#2563eb')}</td>
-      <td class="sw-num" style="background:${openBg};color:${ow.open>0?'#6366f1':'var(--text3)'};font-weight:${ow.open>0?'600':'400'}">${_raidLnk(ow.open, ow.name, i=>{const s=normaliseStatus(i.status);return s==='Open'||s==='In Progress';}, 'Open', 'color:#6366f1')}</td>
-      <td class="sw-num" style="background:${highBg};color:${ow.high>0?'#991b1b':'var(--text3)'};font-weight:${ow.high>0?'600':'400'}">${_raidLnk(ow.high, ow.name, i=>normalisePrio(i.priority)==='High', 'High Priority', 'color:#991b1b')}</td>
-      <td class="sw-num" style="color:${ow.closed>0?'var(--green)':'var(--text3)'};font-weight:${ow.closed>0?'600':'400'}">${_raidLnk(ow.closed, ow.name, i=>normaliseStatus(i.status)==='Closed', 'Closed', 'color:var(--green)')}</td>
-      <td class="sw-bar-cell">
-        <div class="progress-bar"><div class="progress-fill" style="background:#6366f1;width:${pct}%"></div></div>
-        <div style="font-size:9px;font-family:var(--mono);color:var(--text3);margin-top:1px">${pct}% of total</div>
-      </td>
-    </tr>`;
-  }).join('');
+  function _tr_buildRows(pageRows) {
+    return pageRows.map((ow, ri) => {
+      const rowBg   = ri%2===0 ? '#fff' : '#f8fafc';
+      const pct     = grandTotal>0 ? Math.round(ow.total/grandTotal*100) : 0;
+      const highBg  = ow.high>2?'#fee2e2':ow.high>0?'#fef3c7':'';
+      const openBg  = ow.open/ow.total>0.7?'#fff5f5':ow.open/ow.total>0.4?'#fffbeb':'';
+      const allIdx = _regDrill(`${ow.name} — All RAID Items`, `RAID · All`, rd.items.filter(i=>(i.owner&&i.owner.trim()?i.owner.trim():'Unassigned')===ow.name), 'raid');
+      const raidOwnerDisplay = ow.name.includes('@')
+        ? ow.name.split('@')[0].split('.').map(p=>p.charAt(0).toUpperCase()+p.slice(1)).join(' ')
+        : ow.name.split('.').map(p=>p.charAt(0).toUpperCase()+p.slice(1)).join(' ');
+      const overdueOwnerItems = rd.items.filter(i => {
+        const owner = (i.owner && i.owner.trim()) ? i.owner.trim() : 'Unassigned';
+        const d2 = parseRaidDue(i.due);
+        return owner === ow.name && d2 && d2 < now_tr && normaliseStatus(i.status) !== 'Closed';
+      });
+      const ovOwIdx = ow.overdue > 0 ? _regDrill(`${ow.name} — Overdue RAID`, `RAID · Overdue`, overdueOwnerItems, 'raid') : -1;
+      const overdueOwnerLnk = ow.overdue > 0
+        ? `<span style="cursor:pointer;font-weight:700;text-decoration:underline;text-underline-offset:2px;background:#fee2e2;color:#991b1b;padding:1px 5px;border-radius:3px"
+            onclick="_drill(${ovOwIdx})" title="View overdue RAID items">${ow.overdue}</span>`
+        : '<span style="color:var(--text3)">—</span>';
+      return `<tr style="background:${rowBg}">
+        <td class="sw-name" title="${ow.email||''}">${raidOwnerDisplay}</td>
+        <td class="sw-num" style="font-weight:600"><span style="cursor:pointer;color:var(--blue);font-weight:700;text-decoration:underline;text-underline-offset:2px" onclick="_drill(${allIdx})" title="View all ${ow.total} RAID items">${ow.total}</span></td>
+        <td class="sw-num" style="color:#dc2626;font-weight:${ow.R>0?'600':'400'}">${_raidLnk(ow.R, ow.name, i=>normaliseType(i.type)[0]==='R', 'Risks', 'color:#dc2626')}</td>
+        <td class="sw-num" style="color:#d97706;font-weight:${ow.A>0?'600':'400'}">${_raidLnk(ow.A, ow.name, i=>normaliseType(i.type)[0]==='A', 'Actions', 'color:#d97706')}</td>
+        <td class="sw-num" style="color:#ea580c;font-weight:${ow.I>0?'600':'400'}">${_raidLnk(ow.I, ow.name, i=>normaliseType(i.type)[0]==='I', 'Issues', 'color:#ea580c')}</td>
+        <td class="sw-num" style="color:#2563eb;font-weight:${ow.D>0?'600':'400'}">${_raidLnk(ow.D, ow.name, i=>normaliseType(i.type)[0]==='D', 'Decisions', 'color:#2563eb')}</td>
+        <td class="sw-num" style="background:${openBg};color:${ow.open>0?'#6366f1':'var(--text3)'};font-weight:${ow.open>0?'600':'400'}">${_raidLnk(ow.open, ow.name, i=>{const s=normaliseStatus(i.status);return s==='Open'||s==='In Progress';}, 'Open', 'color:#6366f1')}</td>
+        <td class="sw-num" style="background:${highBg};color:${ow.high>0?'#991b1b':'var(--text3)'};font-weight:${ow.high>0?'600':'400'}">${_raidLnk(ow.high, ow.name, i=>normalisePrio(i.priority)==='High', 'High Priority', 'color:#991b1b')}</td>
+        <td class="sw-num">${overdueOwnerLnk}</td>
+        <td class="sw-num" style="color:${ow.closed>0?'var(--green)':'var(--text3)'};font-weight:${ow.closed>0?'600':'400'}">${_raidLnk(ow.closed, ow.name, i=>normaliseStatus(i.status)==='Closed', 'Closed', 'color:var(--green)')}</td>
+        <td class="sw-bar-cell">
+          <div class="progress-bar"><div class="progress-fill" style="background:#6366f1;width:${pct}%"></div></div>
+          <div style="font-size:9px;font-family:var(--mono);color:var(--text3);margin-top:1px">${pct}% of total</div>
+        </td>
+      </tr>`;
+    }).join('');
+  }
 
-  // Totals row
-  tbody.innerHTML += `<tr class="sw-total-row" style="background:var(--navy)">
-    <td style="padding:9px 8px;font-size:11px;font-weight:700;color:#fff">TOTAL</td>
-    <td class="sw-num" style="color:#fff;font-weight:700">${tot.total}</td>
-    <td class="sw-num" style="color:#fca5a5;font-weight:600">${tot.R}</td>
-    <td class="sw-num" style="color:#fde68a;font-weight:600">${tot.A}</td>
-    <td class="sw-num" style="color:#fdba74;font-weight:600">${tot.I}</td>
-    <td class="sw-num" style="color:#93c5fd;font-weight:600">${tot.D}</td>
-    <td class="sw-num" style="color:#c4b5fd;font-weight:700">${tot.open}</td>
-    <td class="sw-num" style="color:#fca5a5;font-weight:700">${tot.high}</td>
-    <td class="sw-num" style="color:#86efac;font-weight:700">${tot.closed}</td>
-    <td class="sw-num" style="color:rgba(255,255,255,0.5)">—</td>
-  </tr>`;
+  function _tr_render() {
+    const start = _tr_page * TR_PAGE;
+    const pageRows = rows.slice(start, start + TR_PAGE);
+    tbody.innerHTML = _tr_buildRows(pageRows);
+
+    // Totals row (always across all data)
+    tbody.innerHTML += `<tr class="sw-total-row" style="background:var(--navy)">
+      <td style="padding:9px 8px;font-size:11px;font-weight:700;color:#fff">TOTAL</td>
+      <td class="sw-num" style="color:#fff;font-weight:700">${tot.total}</td>
+      <td class="sw-num" style="color:#fca5a5;font-weight:600">${tot.R}</td>
+      <td class="sw-num" style="color:#fde68a;font-weight:600">${tot.A}</td>
+      <td class="sw-num" style="color:#fdba74;font-weight:600">${tot.I}</td>
+      <td class="sw-num" style="color:#93c5fd;font-weight:600">${tot.D}</td>
+      <td class="sw-num" style="color:#c4b5fd;font-weight:700">${tot.open}</td>
+      <td class="sw-num" style="color:#fca5a5;font-weight:700">${tot.high}</td>
+      <td class="sw-num" style="color:${tot.overdue>0?'#fca5a5':'rgba(255,255,255,0.4)'};font-weight:${tot.overdue>0?'700':'400'}">${tot.overdue||'—'}</td>
+      <td class="sw-num" style="color:#86efac;font-weight:700">${tot.closed}</td>
+      <td class="sw-num" style="color:rgba(255,255,255,0.5)">—</td>
+    </tr>`;
+
+    // Pagination controls
+    const pg = trTotalPages();
+    const paginationEl = document.getElementById('tr-pagination');
+    if (paginationEl) {
+      if (pg <= 1) { paginationEl.style.display='none'; return; }
+      paginationEl.style.display='flex';
+      paginationEl.innerHTML =
+        `<button onclick="_tr_prev()" style="padding:4px 10px;border:1px solid var(--border);border-radius:5px;background:#fff;cursor:pointer;font-size:11px;color:var(--text2)" ${_tr_page===0?'disabled':''}>← Prev</button>` +
+        `<span style="font-size:11px;color:var(--text3);font-family:var(--mono)">Page ${_tr_page+1} of ${pg} &nbsp;·&nbsp; ${rows.length} owners</span>` +
+        `<button onclick="_tr_next()" style="padding:4px 10px;border:1px solid var(--border);border-radius:5px;background:#fff;cursor:pointer;font-size:11px;color:var(--text2)" ${_tr_page>=pg-1?'disabled':''}>Next →</button>`;
+    }
+  }
+
+  window._tr_prev = function() { if(_tr_page>0){_tr_page--;_tr_render();} };
+  window._tr_next = function() { if(_tr_page<trTotalPages()-1){_tr_page++;_tr_render();} };
+  _tr_render();
 }
 
 function renderTeamChart(d){
@@ -6727,15 +6958,16 @@ function _jiraCfgDefaults() {
   // _JQL is defined later in the file; access at call-time, not at parse-time
   var jql = (typeof _JQL !== 'undefined') ? _JQL : {};
   var bpml = Array.isArray(jql.bpml) ? jql.bpml : [];
+  var sprint = Array.isArray(jql.sprint) ? jql.sprint : [];
   return {
     proxy:       'http://127.0.0.1:8787',
     base:        'https://pmohub.pwc.com',
     user:        '',
     token:       '',
-    jqlSprint:    (jql.sprint      || '').trim(),
+    jqlSprint:    (sprint[0] && sprint[0].query ? sprint[0].query.trim() : (typeof jql.sprint === 'string' ? jql.sprint.trim() : '')),
     jqlRaid:      (jql.raid        || '').trim(),
     jqlCf:        (jql.cf          || '').trim(),
-    jqlSprintPlan:(jql.sprintplan  || '').trim(),
+    jqlSprintPlan:(sprint[1] && sprint[1].query ? sprint[1].query.trim() : (typeof jql.sprintplan === 'string' ? jql.sprintplan.trim() : '')),
     jqlBpml1:    (bpml[0] && bpml[0].query ? bpml[0].query.trim() : ''),
     jqlBpml2:    (bpml[1] && bpml[1].query ? bpml[1].query.trim() : ''),
     jqlBpml3:    (bpml[2] && bpml[2].query ? bpml[2].query.trim() : '')
@@ -6788,9 +7020,9 @@ async function _jiraCfgRender() {
   setText('jira-cfg-v-user',           c.user || '…detecting');
   setText('jira-cfg-v-token',          c.token ? '••••••••' : '—');
   setText('jira-cfg-v-jql-sprint',     c.jqlSprint);
+  setText('jira-cfg-v-jql-sprintplan', c.jqlSprintPlan);
   setText('jira-cfg-v-jql-raid',       c.jqlRaid);
   setText('jira-cfg-v-jql-cf',         c.jqlCf);
-  setText('jira-cfg-v-jql-sprintplan', c.jqlSprintPlan);
   setText('jira-cfg-v-jql-bpml1',      c.jqlBpml1);
   setText('jira-cfg-v-jql-bpml2',      c.jqlBpml2);
   setText('jira-cfg-v-jql-bpml3',      c.jqlBpml3);
@@ -6833,9 +7065,9 @@ async function _jiraCfgToggleEdit() {
     fill('jira-cfg-user',           c.user);
     fill('jira-cfg-token',          c.token);
     fill('jira-cfg-jql-sprint',     c.jqlSprint);
+    fill('jira-cfg-jql-sprintplan', c.jqlSprintPlan);
     fill('jira-cfg-jql-raid',       c.jqlRaid);
     fill('jira-cfg-jql-cf',         c.jqlCf);
-    fill('jira-cfg-jql-sprintplan', c.jqlSprintPlan);
     fill('jira-cfg-jql-bpml1',      c.jqlBpml1);
     fill('jira-cfg-jql-bpml2',      c.jqlBpml2);
     fill('jira-cfg-jql-bpml3',      c.jqlBpml3);
@@ -6878,9 +7110,9 @@ function _jiraCfgSave() {
     user:         g('jira-cfg-user'),
     token:        g('jira-cfg-token'),
     jqlSprint:    g('jira-cfg-jql-sprint')    || defs.jqlSprint,
+    jqlSprintPlan:g('jira-cfg-jql-sprintplan')|| defs.jqlSprintPlan,
     jqlRaid:      g('jira-cfg-jql-raid')      || defs.jqlRaid,
     jqlCf:        g('jira-cfg-jql-cf')        || defs.jqlCf,
-    jqlSprintPlan:g('jira-cfg-jql-sprintplan')|| defs.jqlSprintPlan,
     jqlBpml1:     g('jira-cfg-jql-bpml1')     || defs.jqlBpml1,
     jqlBpml2:     g('jira-cfg-jql-bpml2')     || defs.jqlBpml2,
     jqlBpml3:     g('jira-cfg-jql-bpml3')     || defs.jqlBpml3
@@ -6915,9 +7147,9 @@ function _jiraCfgReset() {
   fill('jira-cfg-user',          '');
   fill('jira-cfg-token',         '');
   fill('jira-cfg-jql-sprint',    defs.jqlSprint);
+  fill('jira-cfg-jql-sprintplan',defs.jqlSprintPlan);
   fill('jira-cfg-jql-raid',      defs.jqlRaid);
   fill('jira-cfg-jql-cf',        defs.jqlCf);
-  fill('jira-cfg-jql-sprintplan',defs.jqlSprintPlan);
   fill('jira-cfg-jql-bpml1',     defs.jqlBpml1);
   fill('jira-cfg-jql-bpml2',     defs.jqlBpml2);
   fill('jira-cfg-jql-bpml3',     defs.jqlBpml3);
@@ -8459,7 +8691,7 @@ function normalisePrio(p){
 }
 
 /* ── RAID PAGINATION STATE ── */
-const _raid={data:[],filtered:[],pageSize:20,currentPage:1};
+const _raid={data:[],filtered:[],pageSize:10,currentPage:1};
 
 /* ── RAID RENDER ── */
 let raidTypeChart=null,raidStatusChart=null,raidPrioChart=null;
@@ -8472,6 +8704,25 @@ function renderRAID(d){
   document.getElementById('rk-decisions').textContent=d.typeCounts.Decision||0;
   document.getElementById('rk-open').textContent=d.open;
   document.getElementById('rk-critical').textContent=d.high;
+  // Overdue: items with past due date and not closed
+  const _raidNow = new Date(); _raidNow.setHours(0,0,0,0);
+  const _raidOverdueItems = d.items.filter(i => {
+    const due = parseRaidDue(i.due);
+    return due && due < _raidNow && normaliseStatus(i.status) !== 'Closed';
+  });
+  document.getElementById('rk-overdue').textContent = _raidOverdueItems.length;
+  // Wire KPI click → drill-down modal
+  const _rkDrill = (cardId, label, items) => {
+    const card = document.getElementById(cardId);
+    if (!card) return;
+    card.onclick = () => {
+      const idx = _regDrill('RAID — ' + label, 'RAID · ' + label, items, 'raid');
+      _drill(idx);
+    };
+  };
+  _rkDrill('rk-open-card',     'Open Items',       d.items.filter(i => { const s=normaliseStatus(i.status); return s==='Open'||s==='In Progress'; }));
+  _rkDrill('rk-critical-card', 'High Priority',    d.items.filter(i => normalisePrio(i.priority)==='High'));
+  _rkDrill('rk-overdue-card',  'Overdue',          _raidOverdueItems);
   const aLabel=document.querySelector('.assumptions-kpi .raid-kpi-label');
   if(aLabel) aLabel.textContent='Actions';
   document.getElementById('raid-empty').style.display='none';
@@ -8569,7 +8820,7 @@ function _raidRefresh(){
     ?src.items.length+' items'
     :_raid.filtered.length+' of '+src.items.length+' items';
   _raidRenderChips(tf,sf,pf,wf);
-  _raid.pageSize=20;
+  _raid.pageSize=10;
   const totalPages=Math.max(1,Math.ceil(_raid.filtered.length/_raid.pageSize));
   if(_raid.currentPage>totalPages) _raid.currentPage=totalPages;
   const start=(_raid.currentPage-1)*_raid.pageSize;
@@ -8678,7 +8929,7 @@ function _raidRenderPagination(totalPages,start,pageCount){
   const nav=document.getElementById('raid-page-nav');
   const end=start+pageCount;
   const total=_raid.filtered.length;
-  info.textContent=total===0?'No results':`Showing ${start+1}\u2013${end} of ${total} \u00b7 20 per page`;
+  info.textContent=total===0?'No results':`Showing ${start+1}\u2013${end} of ${total} \u00b7 10 per page`;
   if(totalPages<=1){nav.innerHTML='';return;}
   const cur=_raid.currentPage;
   const pages=[];
@@ -8880,7 +9131,7 @@ function resetAllData() {
   if (sbCfQuery) { sbCfQuery.textContent = '0'; sbCfQuery.style.display = ''; }
 
   // Reset RAID KPI tiles
-  ['rk-risks','rk-assumptions','rk-issues','rk-decisions','rk-open','rk-critical'].forEach(id => {
+  ['rk-risks','rk-assumptions','rk-issues','rk-decisions','rk-open','rk-critical','rk-overdue'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.textContent = '0';
   });
@@ -9192,13 +9443,30 @@ function _regDrill(title, subtitle, items, mode) {
 }
 
 const _JQL = {
-  sprint: `project = "PG&E - Propel (CONAMER1000364)"
+  sprint: [
+    {
+      label: 'File 1 — Sprint Update (Sprint & Velocity)',
+      color: 'var(--navy)',
+      query: `project = "PG&E - Propel (CONAMER1000364)"
 AND status not in (Withdrawn)
 AND issuetype = story
 AND "Story Category" is not EMPTY
 AND "Story Category" not in (Requirement)
 AND Workstream = "Supply Chain"
-AND "Story Category" in (Config, FUT, "Data Cleanse", FSD, Other, "L3 Functional Design Closure")`,
+AND "Story Category" in (Config, FUT, "Data Cleanse", FSD, Other, "L3 Functional Design Closure")`
+    },
+    {
+      label: 'File 2 — Sprint Planning (Full Stories)',
+      color: 'var(--sp-color)',
+      query: `project = "PG&E - Propel (CONAMER1000364)"
+AND status not in (Withdrawn)
+AND issuetype = story
+AND "Story Category" is not EMPTY
+AND "Story Category" not in (Requirement)
+AND Workstream = "Supply Chain"
+AND "Story Category" in (Config, FUT, "Data Cleanse", FSD, Other, "L3 Functional Design Closure")`
+    }
+  ],
 
   raid: `project = "PG&E - Propel (CONAMER1000364)"
 AND status not in (Withdrawn, Closed, Completed)
@@ -9239,13 +9507,6 @@ AND "Phase (Multi)" in ("Release 1","Enterprise Design")`
     }
   ],
 
-  sprintplan: `project = "PG&E - Propel (CONAMER1000364)"
-AND status not in (Withdrawn)
-AND issuetype = story
-AND "Story Category" is not EMPTY
-AND "Story Category" not in (Requirement)
-AND Workstream = "Supply Chain"
-AND "Story Category" in (Config, FUT, "Data Cleanse", FSD, Other, "L3 Functional Design Closure")`
 };
 
 const _JQL_TITLES = {
@@ -9253,7 +9514,6 @@ const _JQL_TITLES = {
   raid:        'RAID Log',
   cf:          'Cross Functional',
   bpml:        'BPML Structure',
-  sprintplan:  'Sprint Planning'
 };
 
 function _showJQL(type) {
@@ -9267,7 +9527,6 @@ function _showJQL(type) {
     raid:       {border:'#6366f1',           title:'#4f46e5'},
     cf:         {border:'#059669',           title:'#065f46'},
     bpml:       {border:'var(--bpml-color)', title:'var(--bpml-dark)'},
-    sprintplan: {border:'var(--sp-color)',   title:'var(--sp-dark)'},
   };
   const ac = accents[type] || accents.sprint;
 
@@ -10037,6 +10296,154 @@ function _raidSearchClear() {
   const empty = document.getElementById('raid-search-empty');
   if (empty) { empty.style.display='block'; empty.textContent='Enter a search term above and click Search — or load a RAID CSV first.'; }
   const countEl = document.getElementById('raid-search-count'); if (countEl) countEl.textContent = '';
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BPML SEARCH (in Search Jira tab)
+═══════════════════════════════════════════════════════════════ */
+const _bpmlSearch = { results: [], page: 1, pageSize: 10 };
+
+function _bpmlSearchRun() {
+  // Gather all BPML items from all loaded data stores
+  const allItems = [];
+  const now = new Date(); now.setHours(0,0,0,0);
+
+  // Helper to normalise display name
+  const _dn = (e) => e ? e.replace(/@.*/,'').replace(/\./g,' ').replace(/\b\w/g,c=>c.toUpperCase()).trim() : '—';
+
+  // Level filter
+  const lvlF  = (document.getElementById('bpml-search-level')||{}).value || '';
+  const typeF = (document.getElementById('bpml-search-type')||{}).value  || '';
+  const rawQ  = (document.getElementById('bpml-search-q2')||{}).value.trim().toLowerCase();
+  const words = rawQ ? rawQ.split(/\s+/).filter(Boolean) : [];
+
+  // Wire Enter key
+  const qEl = document.getElementById('bpml-search-q2');
+  if (qEl && !qEl._wired) { qEl.onkeydown=(e)=>{ if(e.key==='Enter') _bpmlSearchRun(); }; qEl._wired=true; }
+
+  // Collect from _bpmlAllItems (levels 1-4) if available
+  const bpmlItems = window._bpmlAllItems || window._bpmlData || [];
+  if (Array.isArray(bpmlItems)) {
+    bpmlItems.forEach(it => {
+      allItems.push({
+        key: it.key || it.id || '—',
+        level: it.level ? 'L' + it.level : (it.issueType || '—'),
+        levelNum: it.level || 0,
+        itemType: 'bpml',
+        summary: it.summary || it.name || '—',
+        status: it.status || '—',
+        assignee: _dn(it.assignee),
+        ws: it.ws || it.workstream || '—',
+      });
+    });
+  }
+
+  // Collect RICEFW/Stories from _bpmlOrphans + hierarchy
+  const ricefw = (window._bpmlOrphans && window._bpmlOrphans.ricefw) || [];
+  ricefw.forEach(it => {
+    allItems.push({
+      key: it.key || '—', level: 'RICEFW', levelNum: 5, itemType: 'ricefw',
+      summary: it.summary || it.name || '—', status: it.status || '—',
+      assignee: _dn(it.assignee), ws: it.ws || '—',
+    });
+  });
+
+  // Collect Requirements
+  const reqs = (window._bpmlOrphans && window._bpmlOrphans.req) || [];
+  reqs.forEach(it => {
+    allItems.push({
+      key: it.key || '—', level: 'Req', levelNum: 6, itemType: 'req',
+      summary: it.summary || it.name || '—', status: it.status || '—',
+      assignee: _dn(it.assignee), ws: it.ws || '—',
+    });
+  });
+
+  // Collect FSD/FUT/Docs
+  const docs = (window._bpmlOrphans && window._bpmlOrphans.docs) || [];
+  docs.forEach(it => {
+    allItems.push({
+      key: it.key || '—', level: 'Doc', levelNum: 7, itemType: 'doc',
+      summary: it.summary || it.name || '—', status: it.status || '—',
+      assignee: _dn(it.assignee), ws: it.ws || '—',
+    });
+  });
+
+  const empty = document.getElementById('bpml-search-empty');
+
+  if (!allItems.length) {
+    if (empty) { empty.style.display='block'; empty.textContent='No BPML data loaded — upload BPML files first.'; }
+    document.getElementById('bpml-search-wrap').style.display='none';
+    document.getElementById('bpml-search-pag').style.display='none';
+    return;
+  }
+
+  _bpmlSearch.results = allItems.filter(it => {
+    // Level filter
+    if (lvlF) {
+      if (lvlF === '1' && it.levelNum !== 1) return false;
+      if (lvlF === '2' && it.levelNum !== 2) return false;
+      if (lvlF === '3' && it.levelNum !== 3) return false;
+      if (lvlF === '4' && it.levelNum !== 4) return false;
+    }
+    // Type filter
+    if (typeF && it.itemType !== typeF) return false;
+    // Text filter
+    if (!words.length) return true;
+    const haystack = ((it.key||'') + ' ' + (it.summary||'')).toLowerCase();
+    return words.every(w => haystack.includes(w));
+  });
+
+  _bpmlSearch.page = 1;
+  _bpmlSearchPage(1);
+}
+
+function _bpmlSearchPage(page) {
+  _bpmlSearch.page = page;
+  const typeColors = {
+    bpml:'#dbeafe', ricefw:'#dcfce7', req:'#fef3c7', doc:'#f3e8ff'
+  };
+  const typeText = {
+    bpml:'#1e40af', ricefw:'#166534', req:'#92400e', doc:'#6b21a8'
+  };
+  const typeLabels = {
+    bpml:'BPML', ricefw:'RICEFW', req:'Req', doc:'Doc'
+  };
+  _searchPaginate(
+    _bpmlSearch.results, page, _bpmlSearch.pageSize,
+    'bpml-search-info', 'bpml-search-nav',
+    (items) => items.map((it, ri) => {
+      const rowBg = ri%2===0?'':'background:#f8fafc';
+      const tc = typeColors[it.itemType]||'#f1f5f9';
+      const tt = typeText[it.itemType]||'#475569';
+      const tl = typeLabels[it.itemType]||it.itemType;
+      const sumShort = (it.summary||'—').length > 90
+        ? it.summary.slice(0,89)+'…' : (it.summary||'—');
+      return `<tr style="${rowBg}">
+        <td style="padding:8px 10px;border-top:1px solid var(--grey200);font-family:var(--mono);font-size:11px;font-weight:600;white-space:nowrap;color:var(--blue)">${it.key}</td>
+        <td style="padding:8px 10px;border-top:1px solid var(--grey200);text-align:center">
+          <span style="background:#f1f5f9;color:#475569;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:700;font-family:var(--mono)">${it.level}</span></td>
+        <td style="padding:8px 10px;border-top:1px solid var(--grey200);text-align:center">
+          <span style="background:${tc};color:${tt};border-radius:4px;padding:2px 7px;font-size:9px;font-weight:700;font-family:var(--mono)">${tl}</span></td>
+        <td style="padding:8px 10px;border-top:1px solid var(--grey200);font-size:12px;max-width:300px" title="${it.summary||''}">${sumShort}</td>
+        <td style="padding:8px 10px;border-top:1px solid var(--grey200);font-size:11px;font-family:var(--mono);color:var(--text2)">${it.status}</td>
+        <td style="padding:8px 10px;border-top:1px solid var(--grey200);font-size:11px;font-family:var(--mono);color:var(--text2);white-space:nowrap">${it.assignee}</td>
+        <td style="padding:8px 10px;border-top:1px solid var(--grey200);font-size:11px;color:var(--text2)">${it.ws}</td>
+      </tr>`;
+    }).join(''),
+    'bpml-search-tbody', 'bpml-search-wrap', 'bpml-search-pag', 'bpml-search-count'
+  );
+}
+
+function _bpmlSearchClear() {
+  ['bpml-search-level','bpml-search-type','bpml-search-q2'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  _bpmlSearch.results = []; _bpmlSearch.page = 1;
+  document.getElementById('bpml-search-wrap').style.display = 'none';
+  document.getElementById('bpml-search-pag').style.display = 'none';
+  const empty = document.getElementById('bpml-search-empty');
+  if (empty) { empty.style.display='block'; empty.textContent='Enter a search term above and click Search — or load BPML data first.'; }
+  const countEl = document.getElementById('bpml-search-count'); if (countEl) countEl.textContent = '';
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -12430,7 +12837,7 @@ function _tsExportCSV() {
 window._spData    = null;  // all parsed stories
 window._spPlanned = [];    // keys of planned items (ordered)
 
-const _sp = { filtered: [], page: 1, pageSize: 25 };
+const _sp = { filtered: [], page: 1, pageSize: 10 };
 
 // ── helpers ──
 function _spFmtEmail(e) {
@@ -15470,7 +15877,7 @@ function _uploadRefreshAllCards(){
 }
 
 function _uploadSectionName(section){
-  return {sprint:'Sprint Update',raid:'RAID Log',cf:'Cross Functional',bpml:'BPML Structure',sprintplan:'Sprint Planning',testplan:'Test Planning'}[section]||section;
+  return {sprint:'Sprint Update',raid:'RAID Log',cf:'Cross Functional',bpml:'BPML Structure',sprintplan:'Sprint Planning & Calendar',testplan:'Test Planning'}[section]||section;
 }
 
 function _toTitleCase(str){
