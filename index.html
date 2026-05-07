@@ -2074,6 +2074,9 @@
         <div id="su-team-snap" style="display:none"></div>
         <div id="su-critical"  style="display:none"></div>
 
+
+        </div><!-- /su-sections-body -->
+
         <!-- Full sprint backlog (moved from Full Backlog tab) -->
         <div class="card" style="margin-top:14px">
 
@@ -2166,7 +2169,7 @@
 
         </div>
 
-        </div><!-- /su-sections-body -->
+
 
         </div><!-- /su-data-state -->
       </div>
@@ -4557,6 +4560,7 @@ function showSection(id){
     if(window._data) {
       _suShowSprintSelector(window._data);
       renderWsChart(window._data);
+      try { renderBacklog(window._data); } catch(e) { console.warn('renderBacklog on tab switch:', e); }
     }
   }, 150);
   if(id==='cf') setTimeout(()=>{ renderCFCharts(window._cfData); }, 150);
@@ -5357,12 +5361,12 @@ function renderBacklog(d) {
   // Populate workstream dropdown
   const wsSet = [...new Set(bl.map(b => b.ws).filter(Boolean))].sort();
   const wsSelect = document.getElementById('bl-filter-ws');
-  wsSelect.innerHTML = '<option value="">All</option>' + wsSet.map(w => `<option>${w}</option>`).join('');
+  if (wsSelect) wsSelect.innerHTML = '<option value="">All</option>' + wsSet.map(w => `<option>${w}</option>`).join('');
 
   // Populate category dropdown dynamically
   const catSet = [...new Set(bl.map(b => b.cat).filter(Boolean))].sort();
   const catSelect = document.getElementById('bl-filter-cat');
-  catSelect.innerHTML = '<option value="">All</option>' + catSet.map(c => `<option>${c}</option>`).join('');
+  if (catSelect) catSelect.innerHTML = '<option value="">All</option>' + catSet.map(c => `<option>${c}</option>`).join('');
 
   // Populate assignee dropdown — display Title Case name, value = username for filtering
   const asnSet = [...new Set(bl.map(b => b.assignee).filter(Boolean))].sort();
@@ -5380,10 +5384,13 @@ function renderBacklog(d) {
     return `<option value="${r}">${display}</option>`;
   }).join('');
 
-  // Wire filters
-  document.getElementById('bl-filter-status').onchange   = () => { _bl.currentPage = 1; _blRefresh(d.reportDate); };
-  document.getElementById('bl-filter-ws').onchange       = () => { _bl.currentPage = 1; _blRefresh(d.reportDate); };
-  document.getElementById('bl-filter-cat').onchange      = () => { _bl.currentPage = 1; _blRefresh(d.reportDate); };
+  // Wire filters (null-guarded)
+  const stEl2 = document.getElementById('bl-filter-status');
+  if (stEl2) stEl2.onchange = () => { _bl.currentPage = 1; _blRefresh(d.reportDate); };
+  const wsEl2 = document.getElementById('bl-filter-ws');
+  if (wsEl2) wsEl2.onchange = () => { _bl.currentPage = 1; _blRefresh(d.reportDate); };
+  const ctEl2 = document.getElementById('bl-filter-cat');
+  if (ctEl2) ctEl2.onchange = () => { _bl.currentPage = 1; _blRefresh(d.reportDate); };
   const asnEl = document.getElementById('bl-filter-assignee');
   if (asnEl) asnEl.onchange = () => { _bl.currentPage = 1; _blRefresh(d.reportDate); };
   const revEl = document.getElementById('bl-filter-reviewer');
@@ -5395,9 +5402,9 @@ function renderBacklog(d) {
 }
 
 function _blRefresh(reportDate) {
-  const sf  = document.getElementById('bl-filter-status').value;
-  const wf  = document.getElementById('bl-filter-ws').value;
-  const cf  = document.getElementById('bl-filter-cat').value;
+  const sf  = (document.getElementById('bl-filter-status')||{}).value||'';
+  const wf  = (document.getElementById('bl-filter-ws')||{}).value||'';
+  const cf  = (document.getElementById('bl-filter-cat')||{}).value||'';
   const af  = (document.getElementById('bl-filter-assignee')||{}).value||'';
   const rf  = (document.getElementById('bl-filter-reviewer')||{}).value||'';
   const df  = (document.getElementById('bl-filter-date')||{}).value||'';
@@ -5439,7 +5446,7 @@ function _blRefresh(reportDate) {
 
   // Result count
   const rc = document.getElementById('bl-result-count');
-  rc.textContent = _bl.filtered.length === _bl.data.length
+  if (rc) rc.textContent = _bl.filtered.length === _bl.data.length
     ? _bl.data.length + ' stories'
     : _bl.filtered.length + ' of ' + _bl.data.length + ' stories';
 
@@ -5461,7 +5468,8 @@ function _blRefresh(reportDate) {
     return `<span title="${rawEmail||username}" style="cursor:help">${display}</span>`;
   };
 
-  document.getElementById('bl-tbody').innerHTML = pageRows.length === 0
+  const blTbody = document.getElementById('bl-tbody');
+  if (blTbody) blTbody.innerHTML = pageRows.length === 0
     ? `<tr><td colspan="9" style="padding:32px;text-align:center;color:var(--text3);font-size:12px">No stories match the selected filters.</td></tr>`
     : pageRows.map((b, ri) => {
         const isOv = b.due && b.due !== '—' && new Date(parseDue(b.due)) < today && b.status !== 'Completed';
