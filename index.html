@@ -5025,8 +5025,9 @@ function renderSprintUpdate(d) {
 
   // Velocity: stories still to deliver = ns + inprogress (in-progress still need completing)
   const toDeliver  = d.ns + inprogress;
-  const velPerDay  = daysLeft > 0 ? (toDeliver / daysLeft).toFixed(1) : '∞';
-  const velOk      = parseFloat(velPerDay) < 2;
+  const velPerDay  = daysLeft > 0 ? (toDeliver / daysLeft).toFixed(1) : (toDeliver > 0 ? 'Sprint ended' : '✓ Done');
+  const velNum     = daysLeft > 0 ? parseFloat(velPerDay) : 0;
+  const velOk      = toDeliver === 0 || (daysLeft > 0 && velNum < 2);
 
   // Header
   document.getElementById('su-meta-line').textContent =
@@ -5107,15 +5108,29 @@ function renderSprintUpdate(d) {
   const vb = document.getElementById('su-velocity-box');
   vb.className = 'su-velocity-box' + (velOk ? ' ok' : '');
   document.getElementById('su-vel-num').textContent = velPerDay;
-  // Build category breakdown dynamically from all categories in the loaded file
+  // Hide the "stories/day" unit when sprint has ended or all done
+  const velUnitEl = document.querySelector('.su-vel-unit');
+  if (velUnitEl) velUnitEl.style.display = daysLeft > 0 && toDeliver > 0 ? '' : 'none';
+  // Build sub-label based on days remaining
   const catBreakdownParts = (d.categories || [])
     .map(c => { const rem = c.review + (c.inprogress||0) + c.ns + c.hold; return rem > 0 ? rem + ' ' + c.name : ''; })
     .filter(Boolean);
   const catBreakdownStr = catBreakdownParts.length > 0
     ? catBreakdownParts.join(', ')
     : d.ns + ' not started, ' + inprogress + ' in progress';
-  document.getElementById('su-vel-sub').textContent =
-    'stories/day to complete ' + toDeliver + ' remaining across ' + (d.categories||[]).length + ' categor' + ((d.categories||[]).length === 1 ? 'y' : 'ies') + ' (' + catBreakdownStr + ') in ' + daysLeft + ' days';
+  let velSubText;
+  if (daysLeft <= 0 && toDeliver > 0) {
+    velSubText = toDeliver + ' item' + (toDeliver !== 1 ? 's' : '') + ' still open after sprint end'
+      + (catBreakdownStr ? ' (' + catBreakdownStr + ')' : '')
+      + ' — escalate or carry over to next sprint.';
+  } else if (toDeliver === 0) {
+    velSubText = 'All sprint items completed' + (daysLeft > 0 ? ' with ' + daysLeft + ' days to spare.' : '.');
+  } else {
+    velSubText = 'stories/day to complete ' + toDeliver + ' remaining across '
+      + (d.categories||[]).length + ' categor' + ((d.categories||[]).length === 1 ? 'y' : 'ies')
+      + ' (' + catBreakdownStr + ') in ' + daysLeft + ' days';
+  }
+  document.getElementById('su-vel-sub').textContent = velSubText;
 
   // Risk count badge — su-risk-ct shows critical/high internally; sidebar shows total stories like RAID
   const critHigh = (d.risks||[]).filter(r => r.prio === 'critical' || r.prio === 'high').length;
@@ -5131,14 +5146,14 @@ function renderSprintUpdate(d) {
     catCells.innerHTML = d.categories.sort((a,b)=>((b.done+b.review+b.inprogress+b.ns+b.hold)-(a.done+a.review+a.inprogress+a.ns+a.hold))).map(cat => {
       const total = cat.done + cat.review + (cat.inprogress||0) + cat.ns + cat.hold;
       const pct   = total > 0 ? Math.round(cat.done / total * 100) : 0;
-      const pc    = pct===0?'zero':pct<50?'low':pct<80?'mid':'hi';
+      const pc    = pct===0?'zero':pct<50?'low':pct<100?'mid':'hi';
       const catItems = bl2.filter(b => b.cat === cat.name);
       const idx = _regDrill('Category — ' + cat.name, 'Sprint · ' + cat.name + ' · ' + total + ' items', catItems, 'ws');
       return `<div onclick="_drill(${idx})" title="Click to view ${total} ${cat.name} items" style="cursor:pointer;border:1px solid var(--grey200);border-radius:8px;padding:8px 12px;min-width:110px;background:#fff;transition:background 0.15s" onmouseover="this.style.background='#f0f4ff'" onmouseout="this.style.background='#fff'">
         <div style="font-size:16px;font-weight:800;color:var(--navy);line-height:1">${total}</div>
         <div style="font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin:3px 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px">${cat.name}</div>
         <div style="height:4px;background:var(--grey200);border-radius:2px;overflow:hidden">
-          <div style="height:100%;background:${pct>=80?'var(--green)':pct>=50?'var(--amber)':pct>0?'#3b82f6':'var(--grey300)'};width:${pct}%;transition:width 0.4s"></div>
+          <div style="height:100%;background:${pct===100?'var(--green)':pct>=50?'var(--amber)':pct>0?'#3b82f6':'var(--grey300)'};width:${pct}%;transition:width 0.4s"></div>
         </div>
         <div style="font-size:9px;color:var(--text3);margin-top:3px;font-family:var(--mono)">${pct}% done · ${cat.done}/${total}</div>
       </div>`;
@@ -7602,9 +7617,14 @@ function _renderOvSprintSummary(d) {
   const daysLeft = calcDaysLeft(d.reportDate, d.sprintEnd);
   const spPct = Math.round(d.spDone / d.spTotal * 100);
   const storiesRemaining = d.total - d.done;
-  const storiesPerDay = daysLeft > 0 ? (storiesRemaining / daysLeft).toFixed(1) : '\u221e';
+  const storiesPerDay = daysLeft > 0 ? (storiesRemaining / daysLeft).toFixed(1) : null;
   const cls = pct < 15 ? 'critical' : pct < 50 ? 'warning' : 'good';
   const overdueCount = d.critical.filter(c => c.type === 'overdue').length;
+  const velLine = daysLeft > 0 && storiesRemaining > 0
+    ? '<li>Team must complete <strong>' + storiesPerDay + ' stories/day</strong> for the remaining ' + daysLeft + ' days (' + storiesRemaining + ' stories still to close).</li>'
+    : storiesRemaining > 0
+    ? '<li>&#9888; <strong>Sprint ended</strong> with <strong>' + storiesRemaining + ' stories still open</strong> — carry over or escalate immediately.</li>'
+    : '<li>&#10003; All sprint stories completed.</li>';
   el.innerHTML =
     '<div class="ins-block ' + cls + ' full">' +
     '<div class="ins-block-title">&#128203; Sprint Update Summary</div>' +
@@ -7612,7 +7632,7 @@ function _renderOvSprintSummary(d) {
     '<li>Sprint is <strong>' + (pct < 15 ? 'critically behind' : pct < 50 ? 'behind schedule' : 'on track') + '</strong> \u2014 <strong>' + pct + '%</strong> complete with <strong>' + daysLeft + '</strong> working days remaining.</li>' +
     '<li><strong>' + d.done + '</strong> done, <strong>' + d.review + '</strong> in review, <strong>' + (d.inprogress||0) + '</strong> in progress, <strong>' + d.ns + '</strong> not started, <strong>' + d.hold + '</strong> on hold.</li>' +
     '<li>Story point velocity: <strong>' + spPct + '%</strong> (' + d.spDone + ' of ' + d.spTotal + ' points). ' + (spPct < 20 ? 'Critically low — immediate action required.' : spPct < 60 ? 'Moderate — needs acceleration.' : 'Good, maintain cadence.') + '</li>' +
-    '<li>Team must complete <strong>' + storiesPerDay + ' stories/day</strong> for the remaining ' + daysLeft + ' days (' + storiesRemaining + ' stories still to close).</li>' +
+    velLine +
     (overdueCount > 0 ? '<li>\u26a0 <strong>' + overdueCount + ' item' + (overdueCount>1?'s':' ') + ' overdue</strong> \u2014 escalation required immediately.</li>' : '') +
     '</ul></div>';
 }
@@ -7852,7 +7872,11 @@ function _renderHighlights(d, rd, cf) {
   const daysLeft = calcDaysLeft(d.reportDate, d.sprintEnd);
   const overdueItems = d.critical.filter(c => c.type === 'overdue');
   const holdItems    = d.critical.filter(c => c.type === 'hold');
-  const storiesPerDay = daysLeft > 0 ? (d.ns / daysLeft).toFixed(1) : '\u221e';
+  const storiesPerDay = daysLeft > 0 ? (d.ns / daysLeft).toFixed(1) : null;
+  const velText = daysLeft > 0 && d.ns > 0
+    ? `Needs <strong>${storiesPerDay} stories/day</strong> to finish on time.`
+    : d.ns > 0 ? `<strong>Sprint ended</strong> with ${d.ns} items still open — carry over or escalate.`
+    : `All items complete.`;
 
   const items = [];
 
@@ -7860,7 +7884,7 @@ function _renderHighlights(d, rd, cf) {
   items.push({
     badge: pctDone < 15 ? 'critical' : pctDone < 40 ? 'high' : pctDone < 70 ? 'medium' : 'good',
     source: 'sprint',
-    text: `Sprint is <strong>${pctDone}% complete</strong> with ${daysLeft} days left. Needs <strong>${storiesPerDay} stories/day</strong> to finish on time.`,
+    text: `Sprint is <strong>${pctDone}% complete</strong> with ${daysLeft} days left. ${velText}`,
     nav: null
   });
   if (overdueItems.length > 0) {
@@ -8119,7 +8143,7 @@ function _renderOvFeed(d, rd, cf) {
     items.push({
       cls: pctDone < 15 ? 'critical' : pctDone < 50 ? 'warning' : 'good',
       title: '\uD83D\uDCCA Sprint Health',
-      body: `${pctDone}% complete with ${daysLeft} days remaining. Story point velocity: ${spPct}%. Team must deliver ${daysLeft > 0 ? (d.ns/daysLeft).toFixed(1) : '\u221e'} stories/day to finish on time.`,
+      body: `${pctDone}% complete with ${daysLeft} days remaining. Story point velocity: ${spPct}%. Team must deliver ${daysLeft > 0 ? (d.ns/daysLeft).toFixed(1) + ' stories/day' : d.ns > 0 ? 'sprint ended with ' + d.ns + ' items open' : 'all items complete'} to finish on time.`,
       nav: 'risks'
     });
     items.push({
@@ -8328,7 +8352,12 @@ function renderSprintInsights(d) {
   const overdueCount = overdueItems.length;
   const holdItems = d.critical.filter(c => c.type === 'hold');
   const nodateItems = d.critical.filter(c => c.type === 'nodate');
-  const storiesPerDay = daysLeft > 0 ? (d.ns / daysLeft).toFixed(1) : '∞';
+  const storiesPerDay = daysLeft > 0 ? (d.ns / daysLeft).toFixed(1) : null;
+  const velLineAI = daysLeft > 0 && d.ns > 0
+    ? `<li>To finish on time, the team must complete <strong>${storiesPerDay} stories per day</strong> for the remaining ${daysLeft} days.</li>`
+    : d.ns > 0
+    ? `<li>&#9888; <strong>Sprint ended with ${d.ns} stories still open</strong> — escalate or carry over to next sprint.</li>`
+    : `<li>&#10003; All sprint stories completed.</li>`;
   const spPct = Math.round(d.spDone / d.spTotal * 100);
 
   // RAG chip (Sprint Update tab panel) — RED if overdue>0 AND <50%, AMBER if overdue>0 OR <70%, GREEN only if 0 overdue AND >=70%
@@ -8354,7 +8383,7 @@ function renderSprintInsights(d) {
       <li>Sprint is <strong>${pctDone < 15 ? 'critically behind' : pctDone < 50 ? 'behind schedule' : 'on track'}</strong> — <strong>${pctDone}%</strong> complete with <strong>${daysLeft}</strong> working days remaining.</li>
       <li><strong>${d.done}</strong> stories done, <strong>${d.review}</strong> in review, <strong>${d.inprogress||0}</strong> in progress, <strong>${d.ns}</strong> not started, <strong>${d.hold}</strong> on hold.</li>
       <li>Story point velocity is <strong>${spPct}%</strong> (${d.spDone} of ${d.spTotal} points delivered). ${spPct < 20 ? 'Critically low throughput — immediate action required.' : spPct < 60 ? 'Moderate progress — needs acceleration.' : 'Good velocity, maintain cadence.'}</li>
-      <li>To finish on time, the team must complete <strong>${storiesPerDay} stories per day</strong> for the remaining ${daysLeft} days.</li>
+      <li>To finish on time, the team must complete <strong>${storiesPerDay !== null ? storiesPerDay + ' stories per day' : (d.ns > 0 ? 'sprint ended — ' + d.ns + ' items still open' : 'all done')}</strong>${storiesPerDay !== null ? ' for the remaining ' + daysLeft + ' days' : ''}.</li>
       ${pctNS > 70 ? `<li><strong>⚠ ${pctNS}% of stories are Not Started</strong> — mobilisation urgently required across all workstreams.</li>` : ''}
     </ul>`
   });
@@ -10341,7 +10370,7 @@ function generateEmailReport() {
       <ul style="margin:0;padding-left:18px;line-height:1.8;font-size:12px">
         <li>Sprint is <strong>${pctDone < 15 ? 'critically behind' : pctDone < 50 ? 'behind schedule' : 'on track'}</strong> — <strong>${pctDone}%</strong> complete with <strong>${daysLeft}</strong> working days remaining.</li>
         <li><strong>${done}</strong> done · <strong>${review}</strong> in review · <strong>${ip}</strong> in progress · <strong>${ns}</strong> not started · <strong>${hold}</strong> on hold.</li>
-        <li>Story point velocity: <strong>${spPct}</strong> (${d.spDone} of ${d.spTotal} pts). Team needs <strong>${daysLeft > 0 ? (d.ns/daysLeft).toFixed(1) : '\u221e'} stories/day</strong> to finish on time.</li>
+        <li>Story point velocity: <strong>${spPct}</strong> (${d.spDone} of ${d.spTotal} pts). Team needs <strong>${daysLeft > 0 && d.ns > 0 ? (d.ns/daysLeft).toFixed(1) + ' stories/day' : d.ns > 0 ? 'sprint ended — ' + d.ns + ' open' : 'all complete'}</strong> to finish on time.</li>
         ${overdue > 0 ? `<li>&#9888; <strong>${overdue} item${overdue>1?'s':''} overdue</strong> — escalation required immediately.</li>` : ''}
         ${d.subworkstreams && d.subworkstreams.filter(s=>s.done===0).length > 0 ? `<li><strong>${d.subworkstreams.filter(s=>s.done===0).length} workstream${d.subworkstreams.filter(s=>s.done===0).length>1?'s':''} at 0%:</strong> ${d.subworkstreams.filter(s=>s.done===0).slice(0,3).map(s=>s.name).join(', ')}.</li>` : ''}
       </ul>
