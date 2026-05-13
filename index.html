@@ -5023,8 +5023,8 @@ function renderSprintUpdate(d) {
   const spPct       = d.spTotal > 0 ? Math.round(d.spDone / d.spTotal * 100) : 0;
   const overdueItems = d.critical.filter(c => c.type === 'overdue');
 
-  // Velocity: stories still to deliver = ns + inprogress (in-progress still need completing)
-  const toDeliver  = d.ns + inprogress;
+  // Velocity: all non-completed stories still to deliver (matches category bar definition of "remaining")
+  const toDeliver  = d.total - d.done;   // review + inprogress + ns + hold
   const velPerDay  = daysLeft > 0 ? (toDeliver / daysLeft).toFixed(1) : (toDeliver > 0 ? 'Sprint ended' : '✓ Done');
   const velNum     = daysLeft > 0 ? parseFloat(velPerDay) : 0;
   const velOk      = toDeliver === 0 || (daysLeft > 0 && velNum < 2);
@@ -5115,13 +5115,19 @@ function renderSprintUpdate(d) {
   const catBreakdownParts = (d.categories || [])
     .map(c => { const rem = c.review + (c.inprogress||0) + c.ns + c.hold; return rem > 0 ? rem + ' ' + c.name : ''; })
     .filter(Boolean);
+  const remainBreakdown = [
+    d.review   > 0 ? d.review   + ' In Review'   : '',
+    inprogress > 0 ? inprogress + ' In Progress' : '',
+    d.ns       > 0 ? d.ns       + ' Not Started' : '',
+    d.hold     > 0 ? d.hold     + ' On Hold'     : '',
+  ].filter(Boolean).join(', ');
   const catBreakdownStr = catBreakdownParts.length > 0
     ? catBreakdownParts.join(', ')
-    : d.ns + ' not started, ' + inprogress + ' in progress';
+    : remainBreakdown || 'none remaining';
   let velSubText;
   if (daysLeft <= 0 && toDeliver > 0) {
     velSubText = toDeliver + ' item' + (toDeliver !== 1 ? 's' : '') + ' still open after sprint end'
-      + (catBreakdownStr ? ' (' + catBreakdownStr + ')' : '')
+      + (remainBreakdown ? ' (' + remainBreakdown + ')' : '')
       + ' — escalate or carry over to next sprint.';
   } else if (toDeliver === 0) {
     velSubText = 'All sprint items completed' + (daysLeft > 0 ? ' with ' + daysLeft + ' days to spare.' : '.');
